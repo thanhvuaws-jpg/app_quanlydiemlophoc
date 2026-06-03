@@ -88,19 +88,27 @@ public class ImportExportActivity extends AppCompatActivity {
     private void handleImportXml() {
         try {
             List<Student> imported = XmlStudentParser.parseSample(this);
+            int insertCount = 0, skipCount = 0;
             for (Student s : imported) {
-                dao.insert(new Student(s.getName(), s.getClassName(), s.getEmail(), s.getPhone()));
+                if (!dao.existsByNameAndClass(s.getName(), s.getClassName())) {
+                    dao.insert(new Student(s.getName(), s.getClassName(), s.getEmail(), s.getPhone()));
+                    insertCount++;
+                } else {
+                    skipCount++;
+                }
             }
             loadStudentsFromDb();
-            logger.log("Import XML: " + imported.size() + " students");
-            txtCsvContent.setText("Đã import " + imported.size() + " sinh viên từ students_sample.xml");
+            logger.log("Import XML: " + insertCount + " inserted, " + skipCount + " skipped");
+            String msg = "Đã import " + insertCount + " sinh viên từ students_sample.xml";
+            if (skipCount > 0) msg += "\n⚠ Bỏ qua " + skipCount + " (đã tồn tại)";
+            txtCsvContent.setText(msg);
             txtExplanation.setText(ExplanationBuilder.build(
                     "Click nút \"Import sinh viên từ XML mẫu\"",
                     "Nguồn dữ liệu là file res/raw/students_sample.xml.",
                     "Parser kiểm tra các tag student, id, name, className, email, phone.",
-                    "Dùng XmlPullParser đọc từng tag, tạo object Student, sau đó insert từng Student vào SQLite.",
+                    "Kiểm tra trùng bằng existsByNameAndClass() trước khi insert — tránh duplicate khi nhấn nhiều lần.",
                     "XML nằm trong res/raw; dữ liệu sau import được ghi vào SQLite bảng students.",
-                    "RecyclerView hiển thị danh sách sinh viên đã import; log ghi lại số lượng import."
+                    "RecyclerView hiển thị danh sách; log ghi lại số inserted và skipped."
             ));
         } catch (Exception e) {
             Toast.makeText(this, "Import XML lỗi: " + e.getMessage(), Toast.LENGTH_LONG).show();

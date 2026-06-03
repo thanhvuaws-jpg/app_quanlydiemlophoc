@@ -40,6 +40,11 @@ public class ClassDAO {
 
     public int delete(int id) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
+        // Reset class_id về 0 cho sinh viên thuộc lớp này trước khi xóa
+        ContentValues resetValues = new ContentValues();
+        resetValues.put(DatabaseHelper.COL_CLASS_ID, 0);
+        db.update(DatabaseHelper.TABLE_STUDENTS, resetValues,
+                DatabaseHelper.COL_CLASS_ID + "=?", new String[]{String.valueOf(id)});
         int rows = db.delete(DatabaseHelper.TABLE_CLASSES,
                 DatabaseHelper.CLS_ID + "=?", new String[]{String.valueOf(id)});
         db.close();

@@ -18,7 +18,9 @@ import java.util.List;
 
 import vn.edu.vaa.classmanagerdemo.R;
 import vn.edu.vaa.classmanagerdemo.adapters.StudentAdapter;
+import vn.edu.vaa.classmanagerdemo.database.ClassDAO;
 import vn.edu.vaa.classmanagerdemo.database.StudentDAO;
+import vn.edu.vaa.classmanagerdemo.models.ClassRoom;
 import vn.edu.vaa.classmanagerdemo.models.Student;
 import vn.edu.vaa.classmanagerdemo.storage.ActionLogger;
 import vn.edu.vaa.classmanagerdemo.storage.AppPreferenceManager;
@@ -27,7 +29,7 @@ import vn.edu.vaa.classmanagerdemo.utils.Validator;
 import vn.edu.vaa.classmanagerdemo.utils.NavigationHelper;
 
 public class StudentActivity extends AppCompatActivity {
-    private EditText edtName, edtClass, edtEmail, edtPhone;
+    private EditText edtName, edtClass, edtEmail, edtPhone, edtStudentCode;
     private TextView txtResult, txtExplanation;
     private RecyclerView recyclerView;
     private StudentDAO dao;
@@ -47,7 +49,7 @@ public class StudentActivity extends AppCompatActivity {
             finish();
             return;
         }
-        
+
         setContentView(R.layout.activity_student);
         dao = new StudentDAO(this);
         logger = new ActionLogger(this);
@@ -56,7 +58,7 @@ public class StudentActivity extends AppCompatActivity {
         initListeners();
         loadStudents("");
         txtExplanation.setText("Chức năng quản lý sinh viên dùng SQLite CRUD.\n\n" +
-                "Thêm, sửa, xóa, tìm kiếm sinh viên như một app quản lý bình thường. Khung bên dưới giải thích chính xác sau mỗi thao tác: click gì, lấy dữ liệu gì, lưu ở đâu và kết quả gì.");
+                "Thêm, sửa, xóa, tìm kiếm sinh viên. Sinh viên thêm từ đây tự động liên kết vào bảng lớp.");
         NavigationHelper.setupBottomNavigation(this, R.id.nav_students);
     }
 
@@ -67,6 +69,7 @@ public class StudentActivity extends AppCompatActivity {
     }
 
     private void initViews() {
+        edtStudentCode = findViewById(R.id.edtStudentCode);
         edtName = findViewById(R.id.edtName);
         edtClass = findViewById(R.id.edtClass);
         edtEmail = findViewById(R.id.edtEmail);
@@ -81,6 +84,7 @@ public class StudentActivity extends AppCompatActivity {
             @Override
             public void onStudentClick(Student student, int position) {
                 selectedStudentId = student.getId();
+                edtStudentCode.setText(student.getStudentCode());
                 edtName.setText(student.getName());
                 edtClass.setText(student.getClassName());
                 edtEmail.setText(student.getEmail());
@@ -88,7 +92,7 @@ public class StudentActivity extends AppCompatActivity {
                 txtResult.setText("Đã chọn sinh viên id=" + student.getId());
                 txtExplanation.setText(ExplanationBuilder.build(
                         "Click vào item sinh viên trong RecyclerView",
-                        "Lấy object Student tại vị trí được click: id, name, className, email, phone.",
+                        "Lấy object Student tại vị trí được click: id, studentCode, name, className, email, phone.",
                         "Không cần validate vì đây là dữ liệu đã có trong danh sách.",
                         "Đưa dữ liệu Student lên form và lưu selectedStudentId để chuẩn bị cập nhật.",
                         "Dữ liệu đang tồn tại trong SQLite bảng students; form chỉ hiển thị bản sao để sửa.",
@@ -128,13 +132,22 @@ public class StudentActivity extends AppCompatActivity {
     }
 
     private Student getStudentFromForm() {
-        return new Student(
+        Student s = new Student(
                 selectedStudentId,
                 edtName.getText().toString().trim(),
                 edtClass.getText().toString().trim(),
                 edtEmail.getText().toString().trim(),
                 edtPhone.getText().toString().trim()
         );
+        s.setStudentCode(edtStudentCode.getText().toString().trim());
+        // Tự động tạo/lấy classId từ tên lớp để liên kết với bảng classes
+        String className = edtClass.getText().toString().trim();
+        if (!className.isEmpty()) {
+            ClassDAO classDAO = new ClassDAO(this);
+            ClassRoom cr = classDAO.getOrCreate(className, "");
+            s.setClassId(cr.getId());
+        }
+        return s;
     }
 
     private void handleAddStudent() {
@@ -144,7 +157,7 @@ public class StudentActivity extends AppCompatActivity {
         }
         Student s = getStudentFromForm();
         s.setId(0);
-        long id = dao.insert(s);
+        long id = dao.insertFull(s);
         logger.log("Insert Student: " + s.getName());
         loadStudents("");
         clearFormOnly();
@@ -152,11 +165,11 @@ public class StudentActivity extends AppCompatActivity {
         txtResult.setText("Insert SQLite trả về id=" + id);
         txtExplanation.setText(ExplanationBuilder.build(
                 "Click nút \"Thêm sinh viên\"",
-                "Lấy name, className, email, phone từ các EditText.",
+                "Lấy studentCode, name, className, email, phone từ các EditText.",
                 "Kiểm tra name/className không rỗng; email đúng định dạng nếu có nhập; phone gồm 10-11 chữ số nếu có nhập.",
-                "Tạo object Student và gọi StudentDAO.insert(student). Sau đó load lại danh sách.",
-                "Dữ liệu được ghi vào SQLite database class_manager.db, bảng students.",
-                "RecyclerView hiển thị sinh viên mới; Toast báo kết quả; actions.log ghi lại thao tác."
+                "Tạo object Student, gọi ClassDAO.getOrCreate() để lấy classId, rồi gọi StudentDAO.insertFull().",
+                "Dữ liệu được ghi vào SQLite database class_manager.db, bảng students với đầy đủ student_code và class_id.",
+                "RecyclerView hiển thị sinh viên mới; sinh viên xuất hiện trong ClassDetailActivity của lớp tương ứng."
         ));
     }
 
@@ -176,7 +189,7 @@ public class StudentActivity extends AppCompatActivity {
                 "Click nút \"Cập nhật sinh viên đã chọn\"",
                 "Lấy dữ liệu mới từ form và selectedStudentId đã có từ lần click item.",
                 "Validate giống thao tác thêm.",
-                "Gọi StudentDAO.update(student) với điều kiện WHERE id=?",
+                "Gọi StudentDAO.update(student) với điều kiện WHERE id=? — cập nhật đủ 6 field bao gồm student_code và class_id.",
                 "SQLite cập nhật bản ghi trong bảng students.",
                 "Danh sách được load lại và form được làm mới."
         ));
@@ -214,7 +227,7 @@ public class StudentActivity extends AppCompatActivity {
             txtExplanation.setText(ExplanationBuilder.build(
                     "Nhập từ khóa trong SearchView",
                     "keyword = nội dung người dùng đang nhập.",
-                    "Nếu keyword rỗng thì lấy toàn bộ danh sách; nếu không rỗng thì tìm theo name hoặc className.",
+                    "Nếu keyword rỗng thì lấy toàn bộ danh sách; nếu không rỗng thì tìm theo name, className hoặc student_code.",
                     "Gọi StudentDAO.search(keyword), dùng câu SQL LIKE ?.",
                     "Đọc dữ liệu từ SQLite bảng students.",
                     "RecyclerView chỉ hiển thị các sinh viên khớp từ khóa."
@@ -237,6 +250,7 @@ public class StudentActivity extends AppCompatActivity {
 
     private void clearFormOnly() {
         selectedStudentId = -1;
+        edtStudentCode.setText("");
         edtName.setText("");
         edtClass.setText("");
         edtEmail.setText("");

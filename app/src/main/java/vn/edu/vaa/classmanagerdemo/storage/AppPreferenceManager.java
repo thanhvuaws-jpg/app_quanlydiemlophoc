@@ -51,7 +51,12 @@ public class AppPreferenceManager {
         }
     }
 
-    // Kept for compatibility with older code if needed.
+    /**
+     * @deprecated Dùng saveLoginSession() + saveAppSettings() thay thế.
+     * Method này lưu darkMode vào key chung (không per-user) nên không
+     * tương thích với isDarkMode() hiện tại.
+     */
+    @Deprecated
     public void save(String username, boolean remember, boolean darkMode, String language) {
         prefs.edit()
                 .putString(KEY_USERNAME, username)

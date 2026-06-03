@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String DB_NAME = "class_manager.db";
-    public static final int DB_VERSION = 3;
+    public static final int DB_VERSION = 4;
 
     // ── users ──
     public static final String TABLE_USERS = "users";
@@ -100,13 +100,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             try { db.execSQL("ALTER TABLE " + TABLE_STUDENTS + " ADD COLUMN " + COL_STUDENT_CODE + " TEXT"); } catch (Exception ignored) {}
             try { db.execSQL("ALTER TABLE " + TABLE_STUDENTS + " ADD COLUMN " + COL_CLASS_ID + " INTEGER DEFAULT 0"); } catch (Exception ignored) {}
         }
+        if (oldVersion < 4) {
+            // Rehash seed user passwords sang SHA-256
+            String hashed = "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92";
+            db.execSQL("UPDATE " + TABLE_USERS + " SET " + USER_PASSWORD + "='" + hashed +
+                    "' WHERE " + USER_USERNAME + " IN ('admin','teacher') AND length(" + USER_PASSWORD + ") < 32");
+        }
     }
 
     private void seedUsers(SQLiteDatabase db) {
+        // SHA-256("123456") = 8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92
+        String hashed = "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92";
         db.execSQL("INSERT OR IGNORE INTO " + TABLE_USERS + " (" +
                 USER_ID + ", " + USER_FULL_NAME + ", " + USER_USERNAME + ", " + USER_PASSWORD + ", " + USER_EMAIL + ", " + USER_PHONE + ") VALUES " +
-                "(1, 'Quản trị viên', 'admin', '123456', 'admin@vaa.edu.vn', '0900000000')," +
-                "(2, 'Giảng viên demo', 'teacher', '123456', 'teacher@vaa.edu.vn', '0911111111');");
+                "(1, 'Quản trị viên', 'admin', '" + hashed + "', 'admin@vaa.edu.vn', '0900000000')," +
+                "(2, 'Giảng viên demo', 'teacher', '" + hashed + "', 'teacher@vaa.edu.vn', '0911111111');");
     }
 
     private void seedStudents(SQLiteDatabase db) {

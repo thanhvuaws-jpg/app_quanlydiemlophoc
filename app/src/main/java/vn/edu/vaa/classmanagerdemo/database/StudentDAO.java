@@ -36,6 +36,8 @@ public class StudentDAO {
         values.put(DatabaseHelper.COL_CLASS, student.getClassName());
         values.put(DatabaseHelper.COL_EMAIL, student.getEmail());
         values.put(DatabaseHelper.COL_PHONE, student.getPhone());
+        values.put(DatabaseHelper.COL_STUDENT_CODE, student.getStudentCode());
+        values.put(DatabaseHelper.COL_CLASS_ID, student.getClassId());
         int rows = db.update(DatabaseHelper.TABLE_STUDENTS, values,
                 DatabaseHelper.COL_ID + "=?",
                 new String[]{String.valueOf(student.getId())});
@@ -104,6 +106,18 @@ public class StudentDAO {
         c.close();
         db.close();
         return list;
+    }
+
+    public boolean existsByNameAndClass(String name, String className) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor c = db.rawQuery(
+                "SELECT 1 FROM " + DatabaseHelper.TABLE_STUDENTS +
+                " WHERE " + DatabaseHelper.COL_NAME + "=? AND " + DatabaseHelper.COL_CLASS + "=?",
+                new String[]{name, className});
+        boolean exists = c.moveToFirst();
+        c.close();
+        db.close();
+        return exists;
     }
 
     public boolean existsByStudentCode(String code) {

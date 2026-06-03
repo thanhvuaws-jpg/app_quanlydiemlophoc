@@ -215,9 +215,15 @@ public class GradeActivity extends AppCompatActivity {
                 .setMessage("Xóa điểm môn \"" + score.getSubject() + "\": " + score.getScore() + "?")
                 .setPositiveButton("Xóa", (d, w) -> {
                     scoreDAO.deleteById(score.getId());
-                    scoreList.remove(position);
-                    scoreAdapter.notifyItemRemoved(position);
-                    int studentId = studentList.isEmpty() ? -1 : studentList.get(spinnerStudent.getSelectedItemPosition()).getId();
+                    if (position >= 0 && position < scoreList.size()) {
+                        scoreList.remove(position);
+                        scoreAdapter.notifyItemRemoved(position);
+                    }
+                    int studentId = -1;
+                    int selectedPos = spinnerStudent.getSelectedItemPosition();
+                    if (!studentList.isEmpty() && selectedPos >= 0 && selectedPos < studentList.size()) {
+                        studentId = studentList.get(selectedPos).getId();
+                    }
                     updateStats(studentId);
                 })
                 .setNegativeButton("Hủy", null).show();

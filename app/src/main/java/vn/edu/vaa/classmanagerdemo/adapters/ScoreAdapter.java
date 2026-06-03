@@ -61,7 +61,10 @@ public class ScoreAdapter extends RecyclerView.Adapter<ScoreAdapter.ViewHolder> 
         h.tvGrade.setTextColor(parsedColor);
 
         h.itemView.setOnLongClickListener(v -> {
-            if (listener != null) listener.onDelete(s, h.getAdapterPosition());
+            int pos = h.getBindingAdapterPosition();
+            if (listener != null && pos != RecyclerView.NO_POSITION) {
+                listener.onDelete(list.get(pos), pos);
+            }
             return true;
         });
     }

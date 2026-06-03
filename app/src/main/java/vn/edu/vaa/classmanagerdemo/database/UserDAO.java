@@ -5,6 +5,10 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 import vn.edu.vaa.classmanagerdemo.models.User;
 
 public class UserDAO {
@@ -19,7 +23,7 @@ public class UserDAO {
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.USER_FULL_NAME, user.getFullName());
         values.put(DatabaseHelper.USER_USERNAME, user.getUsername());
-        values.put(DatabaseHelper.USER_PASSWORD, user.getPassword());
+        values.put(DatabaseHelper.USER_PASSWORD, hashPassword(user.getPassword()));
         values.put(DatabaseHelper.USER_EMAIL, user.getEmail());
         values.put(DatabaseHelper.USER_PHONE, user.getPhone());
         long id = db.insert(DatabaseHelper.TABLE_USERS, null, values);
@@ -29,8 +33,8 @@ public class UserDAO {
 
     public boolean usernameExists(String username) {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor c = db.rawQuery("SELECT " + DatabaseHelper.USER_ID + " FROM " + DatabaseHelper.TABLE_USERS + " WHERE " + DatabaseHelper.USER_USERNAME + "=?",
-                new String[]{username.trim()});
+        Cursor c = db.rawQuery("SELECT " + DatabaseHelper.USER_ID + " FROM " + DatabaseHelper.TABLE_USERS
+                + " WHERE " + DatabaseHelper.USER_USERNAME + "=?", new String[]{username.trim()});
         boolean exists = c.moveToFirst();
         c.close();
         db.close();
@@ -39,12 +43,12 @@ public class UserDAO {
 
     public User login(String username, String password) {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor c = db.rawQuery("SELECT * FROM " + DatabaseHelper.TABLE_USERS + " WHERE " + DatabaseHelper.USER_USERNAME + "=? AND " + DatabaseHelper.USER_PASSWORD + "=?",
-                new String[]{username.trim(), password});
+        Cursor c = db.rawQuery(
+                "SELECT * FROM " + DatabaseHelper.TABLE_USERS +
+                " WHERE " + DatabaseHelper.USER_USERNAME + "=? AND " + DatabaseHelper.USER_PASSWORD + "=?",
+                new String[]{username.trim(), hashPassword(password)});
         User user = null;
-        if (c.moveToFirst()) {
-            user = fromCursor(c);
-        }
+        if (c.moveToFirst()) user = fromCursor(c);
         c.close();
         db.close();
         return user;
@@ -52,12 +56,10 @@ public class UserDAO {
 
     public User findById(int id) {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor c = db.rawQuery("SELECT * FROM " + DatabaseHelper.TABLE_USERS + " WHERE " + DatabaseHelper.USER_ID + "=?",
-                new String[]{String.valueOf(id)});
+        Cursor c = db.rawQuery("SELECT * FROM " + DatabaseHelper.TABLE_USERS
+                + " WHERE " + DatabaseHelper.USER_ID + "=?", new String[]{String.valueOf(id)});
         User user = null;
-        if (c.moveToFirst()) {
-            user = fromCursor(c);
-        }
+        if (c.moveToFirst()) user = fromCursor(c);
         c.close();
         db.close();
         return user;
@@ -72,5 +74,18 @@ public class UserDAO {
                 c.getString(c.getColumnIndexOrThrow(DatabaseHelper.USER_EMAIL)),
                 c.getString(c.getColumnIndexOrThrow(DatabaseHelper.USER_PHONE))
         );
+    }
+
+    // SHA-256 luôn có sẵn trên Android
+    static String hashPassword(String password) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            byte[] bytes = md.digest(password.getBytes(StandardCharsets.UTF_8));
+            StringBuilder sb = new StringBuilder();
+            for (byte b : bytes) sb.append(String.format("%02x", b));
+            return sb.toString();
+        } catch (NoSuchAlgorithmException e) {
+            return password;
+        }
     }
 }

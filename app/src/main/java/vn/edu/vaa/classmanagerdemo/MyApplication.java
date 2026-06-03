@@ -8,16 +8,17 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        
+
         AppPreferenceManager prefs = new AppPreferenceManager(this);
-        
-        // If the user did not choose "Remember login" previously, clear their login session on new app launch
+
+        // Đọc darkMode TRƯỚC khi clearLoginSession (isDarkMode() cần username còn trong prefs)
+        boolean darkMode = prefs.isDarkMode();
+
         if (!prefs.isRememberLogin()) {
             prefs.clearLoginSession();
         }
-        
-        // Read saved Dark Mode preference and apply it at application startup
-        if (prefs.isDarkMode()) {
+
+        if (darkMode) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         } else {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
