@@ -165,16 +165,19 @@ public class GradeActivity extends AppCompatActivity {
             @Override public void onNothingSelected(android.widget.AdapterView<?> parent) {}
         });
 
+        // Tìm index của SV cần preselect
+        int targetIndex = 0;
         if (preselectedStudentId > 0) {
             for (int i = 0; i < studentList.size(); i++) {
                 if (studentList.get(i).getId() == preselectedStudentId) {
-                    spinnerStudent.setSelection(i);
+                    targetIndex = i;
                     break;
                 }
             }
-        } else {
-            loadScoresForStudent(studentList.get(0).getId());
         }
+        // Luôn gọi loadScoresForStudent trực tiếp — không phụ thuộc callback onItemSelected
+        spinnerStudent.setSelection(targetIndex);
+        loadScoresForStudent(studentList.get(targetIndex).getId());
     }
 
     private void loadScoresForStudent(int studentId) {
