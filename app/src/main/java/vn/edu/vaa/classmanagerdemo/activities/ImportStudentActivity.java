@@ -5,9 +5,9 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Button;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,7 +17,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import vn.edu.vaa.classmanagerdemo.R;
@@ -27,8 +26,11 @@ import vn.edu.vaa.classmanagerdemo.models.ClassRoom;
 import vn.edu.vaa.classmanagerdemo.models.Student;
 import vn.edu.vaa.classmanagerdemo.storage.AppPreferenceManager;
 import vn.edu.vaa.classmanagerdemo.storage.ExcelImporter;
+import vn.edu.vaa.classmanagerdemo.utils.DebounceClickListener;
+import vn.edu.vaa.classmanagerdemo.utils.LoadingHelper;
 
 public class ImportStudentActivity extends AppCompatActivity {
+    private static final String TAG = "ImportStudentActivity";
 
     private TextView tvFileInfo, tvPreview, tvResult;
     private Button btnImportNow;
@@ -38,6 +40,7 @@ public class ImportStudentActivity extends AppCompatActivity {
     private List<String[]> parsedRows;
     private ClassDAO classDAO;
     private StudentDAO studentDAO;
+    private final LoadingHelper loading = new LoadingHelper();
 
     private final ActivityResultLauncher<String[]> filePicker =
             registerForActivityResult(new ActivityResultContracts.OpenDocument(), uri -> {
@@ -45,7 +48,7 @@ public class ImportStudentActivity extends AppCompatActivity {
                 selectedUri = uri;
                 selectedFilename = getFilenameFromUri(uri);
                 tvFileInfo.setText("File: " + selectedFilename);
-                parseFile();
+                parseFileInBackground();
             });
 
     @Override
@@ -68,86 +71,135 @@ public class ImportStudentActivity extends AppCompatActivity {
         btnImportNow.setEnabled(false);
 
         Button btnPick = findViewById(R.id.btnPickFile);
-        btnPick.setOnClickListener(v -> filePicker.launch(new String[]{"*/*"}));
-        btnImportNow.setOnClickListener(v -> confirmImport());
+        // Debounce tránh mở picker nhiều lần
+        btnPick.setOnClickListener(DebounceClickListener.wrap(v -> filePicker.launch(new String[]{"*/*"})));
+        btnImportNow.setOnClickListener(DebounceClickListener.wrap(v -> confirmImport()));
     }
 
-    private void parseFile() {
-        try {
-            parsedRows = ExcelImporter.parse(this, selectedUri, selectedFilename);
-            if (parsedRows.isEmpty()) {
-                tvPreview.setText("File rỗng");
-                btnImportNow.setEnabled(false);
-                return;
+    // Đọc file trên background thread — tránh block UI khi file lớn
+    private void parseFileInBackground() {
+        loading.show(this, "Đang đọc file " + selectedFilename + "...");
+        btnImportNow.setEnabled(false);
+        tvPreview.setText("Đang phân tích file...");
+        tvResult.setText("");
+
+        new Thread(() -> {
+            List<String[]> rows = null;
+            Exception error = null;
+            try {
+                rows = ExcelImporter.parse(this, selectedUri, selectedFilename);
+            } catch (Exception e) {
+                error = e;
             }
-            // Show preview (first 8 rows)
-            StringBuilder sb = new StringBuilder();
-            sb.append("Tổng: ").append(parsedRows.size()).append(" dòng\n\n");
-            int preview = Math.min(parsedRows.size(), 8);
-            for (int i = 0; i < preview; i++) {
-                sb.append(String.join("  |  ", parsedRows.get(i))).append("\n");
-            }
-            if (parsedRows.size() > 8) sb.append("... và ").append(parsedRows.size() - 8).append(" dòng nữa");
-            tvPreview.setText(sb.toString());
-            btnImportNow.setEnabled(true);
-            tvResult.setText("");
-        } catch (Exception e) {
-            tvPreview.setText("Lỗi đọc file: " + e.getMessage());
-            btnImportNow.setEnabled(false);
+            final List<String[]> finalRows = rows;
+            final Exception finalError = error;
+            runOnUiThread(() -> {
+                loading.dismiss();
+                if (finalError != null) {
+                    String msg = "Lỗi đọc file: " + finalError.getMessage();
+                    Log.e(TAG, msg, finalError);
+                    tvPreview.setText(msg);
+                    Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+                    btnImportNow.setEnabled(false);
+                    return;
+                }
+                parsedRows = finalRows;
+                if (parsedRows == null || parsedRows.isEmpty()) {
+                    tvPreview.setText("File rỗng hoặc không đọc được dữ liệu.");
+                    btnImportNow.setEnabled(false);
+                    return;
+                }
+                showPreview();
+            });
+        }).start();
+    }
+
+    private void showPreview() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Tổng: ").append(parsedRows.size()).append(" dòng\n\n");
+        int preview = Math.min(parsedRows.size(), 8);
+        for (int i = 0; i < preview; i++) {
+            sb.append(String.join("  |  ", parsedRows.get(i))).append("\n");
         }
+        if (parsedRows.size() > 8) sb.append("... và ").append(parsedRows.size() - 8).append(" dòng nữa");
+        tvPreview.setText(sb.toString());
+        btnImportNow.setEnabled(true);
+        Log.d(TAG, "Đọc file xong: " + parsedRows.size() + " dòng từ " + selectedFilename);
     }
 
     private void confirmImport() {
-        int dataRows = parsedRows.size() - 1; // subtract header
-        if (dataRows <= 0) { Toast.makeText(this, "Không có dữ liệu để import", Toast.LENGTH_SHORT).show(); return; }
+        if (parsedRows == null || parsedRows.size() < 2) {
+            Toast.makeText(this, "Không có dữ liệu để import (cần ít nhất 1 dòng dữ liệu sau header)", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        int dataRows = parsedRows.size() - 1;
         new AlertDialog.Builder(this)
                 .setTitle("Xác nhận import")
                 .setMessage("Import " + dataRows + " sinh viên từ file \"" + selectedFilename + "\"?\n\n" +
                         "Định dạng cột: MSSV | Họ tên | Lớp | Email | SĐT")
-                .setPositiveButton("Import", (d, w) -> doImport())
+                .setPositiveButton("Import", (d, w) -> doImportInBackground())
                 .setNegativeButton("Hủy", null).show();
     }
 
-    private void doImport() {
-        if (parsedRows == null || parsedRows.size() < 2) return;
-
-        int success = 0, skipped = 0;
-        // Row 0 = header, skip it
-        for (int i = 1; i < parsedRows.size(); i++) {
-            String[] row = parsedRows.get(i);
-            if (row.length < 2) continue;
-
-            String mssv = row.length > 0 ? row[0].trim() : "";
-            String name = row.length > 1 ? row[1].trim() : "";
-            String className = row.length > 2 ? row[2].trim() : "";
-            String email = row.length > 3 ? row[3].trim() : "";
-            String phone = row.length > 4 ? row[4].trim() : "";
-
-            if (name.isEmpty()) continue;
-
-            // Skip if MSSV already exists
-            if (!mssv.isEmpty() && studentDAO.existsByStudentCode(mssv)) {
-                skipped++;
-                continue;
-            }
-
-            // Get or create the class
-            int cid = 0;
-            if (!className.isEmpty()) {
-                ClassRoom cr = classDAO.getOrCreate(className, "");
-                cid = cr.getId();
-            }
-
-            Student s = new Student(mssv, name, cid, email, phone, className);
-            studentDAO.insertFull(s);
-            success++;
-        }
-
-        String result = "✓ Import thành công: " + success + " sinh viên";
-        if (skipped > 0) result += "\n⚠ Bỏ qua " + skipped + " (MSSV đã tồn tại)";
-        tvResult.setText(result);
+    // Import trên background thread — tránh block UI với file nhiều dòng
+    private void doImportInBackground() {
+        loading.show(this, "Đang import dữ liệu...");
         btnImportNow.setEnabled(false);
-        Toast.makeText(this, "Import xong!", Toast.LENGTH_SHORT).show();
+
+        new Thread(() -> {
+            int success = 0, skipped = 0;
+            String lastError = null;
+            try {
+                for (int i = 1; i < parsedRows.size(); i++) {
+                    String[] row = parsedRows.get(i);
+                    if (row.length < 2) continue;
+
+                    String mssv = row.length > 0 ? row[0].trim() : "";
+                    String name = row.length > 1 ? row[1].trim() : "";
+                    String className = row.length > 2 ? row[2].trim() : "";
+                    String email = row.length > 3 ? row[3].trim() : "";
+                    String phone = row.length > 4 ? row[4].trim() : "";
+
+                    if (name.isEmpty()) continue;
+
+                    if (!mssv.isEmpty() && studentDAO.existsByStudentCode(mssv)) {
+                        skipped++;
+                        Log.d(TAG, "Bỏ qua MSSV đã tồn tại: " + mssv);
+                        continue;
+                    }
+
+                    int cid = 0;
+                    if (!className.isEmpty()) {
+                        ClassRoom cr = classDAO.getOrCreate(className, "");
+                        cid = cr.getId();
+                    }
+
+                    Student s = new Student(mssv, name, cid, email, phone, className);
+                    studentDAO.insertFull(s);
+                    success++;
+                }
+            } catch (Exception e) {
+                lastError = "Lỗi import: " + e.getMessage();
+                Log.e(TAG, lastError, e);
+            }
+
+            final int finalSuccess = success;
+            final int finalSkipped = skipped;
+            final String finalError = lastError;
+            runOnUiThread(() -> {
+                loading.dismiss();
+                if (finalError != null) {
+                    Toast.makeText(this, finalError, Toast.LENGTH_LONG).show();
+                    tvResult.setText("⚠ " + finalError);
+                    return;
+                }
+                String result = "✓ Import thành công: " + finalSuccess + " sinh viên";
+                if (finalSkipped > 0) result += "\n⚠ Bỏ qua " + finalSkipped + " (MSSV đã tồn tại)";
+                tvResult.setText(result);
+                Log.d(TAG, "Import xong: " + finalSuccess + " inserted, " + finalSkipped + " skipped");
+                Toast.makeText(this, "Import xong! " + finalSuccess + " sinh viên đã thêm.", Toast.LENGTH_LONG).show();
+            });
+        }).start();
     }
 
     private String getFilenameFromUri(Uri uri) {
@@ -157,6 +209,8 @@ public class ImportStudentActivity extends AppCompatActivity {
                 int idx = c.getColumnIndex(OpenableColumns.DISPLAY_NAME);
                 if (idx >= 0) name = c.getString(idx);
             }
+        } catch (Exception e) {
+            Log.e(TAG, "Lỗi lấy tên file: " + e.getMessage(), e);
         }
         return name;
     }

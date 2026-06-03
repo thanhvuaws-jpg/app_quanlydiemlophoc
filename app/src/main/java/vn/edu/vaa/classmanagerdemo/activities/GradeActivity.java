@@ -27,7 +27,10 @@ import vn.edu.vaa.classmanagerdemo.database.StudentDAO;
 import vn.edu.vaa.classmanagerdemo.models.ClassRoom;
 import vn.edu.vaa.classmanagerdemo.models.Score;
 import vn.edu.vaa.classmanagerdemo.models.Student;
+import android.util.Log;
 import vn.edu.vaa.classmanagerdemo.storage.AppPreferenceManager;
+import vn.edu.vaa.classmanagerdemo.utils.DebounceClickListener;
+import vn.edu.vaa.classmanagerdemo.utils.LoadingHelper;
 
 public class GradeActivity extends AppCompatActivity {
 
@@ -40,6 +43,8 @@ public class GradeActivity extends AppCompatActivity {
     private TextView tvAverage, tvScoreCount;
     private RecyclerView recyclerScores;
 
+    private static final String TAG = "GradeActivity";
+    private final LoadingHelper loading = new LoadingHelper();
     private List<ClassRoom> classList = new ArrayList<>();
     private List<Student> studentList = new ArrayList<>();
     private final List<Score> scoreList = new ArrayList<>();
@@ -86,7 +91,7 @@ public class GradeActivity extends AppCompatActivity {
         loadClasses();
 
         Button btnSave = findViewById(R.id.btnSaveScore);
-        btnSave.setOnClickListener(v -> handleSaveScore());
+        btnSave.setOnClickListener(DebounceClickListener.wrap(v -> handleSaveScore()));
     }
 
     private void setupSemesters() {
@@ -97,7 +102,17 @@ public class GradeActivity extends AppCompatActivity {
     }
 
     private void loadClasses() {
-        classList = classDAO.getAll();
+        try {
+            loading.show(this, "Đang tải danh sách lớp...");
+            classList = classDAO.getAll();
+        } catch (Exception e) {
+            loading.dismiss();
+            String err = "Lỗi tải lớp: " + e.getMessage();
+            Log.e(TAG, err, e);
+            Toast.makeText(this, err, Toast.LENGTH_LONG).show();
+            return;
+        }
+        loading.dismiss();
         if (classList.isEmpty()) {
             Toast.makeText(this, "Chưa có lớp nào. Hãy tạo lớp trước.", Toast.LENGTH_LONG).show();
             return;
@@ -199,14 +214,30 @@ public class GradeActivity extends AppCompatActivity {
         } catch (NumberFormatException e) { edtScoreValue.setError("Điểm không hợp lệ"); return; }
         if (scoreVal < 0 || scoreVal > 10) { edtScoreValue.setError("Điểm từ 0 đến 10"); return; }
 
-        int studentId = studentList.get(spinnerStudent.getSelectedItemPosition()).getId();
-        String semester = spinnerSemester.getSelectedItem().toString();
+        int selectedPos = spinnerStudent.getSelectedItemPosition();
+        if (selectedPos < 0 || selectedPos >= studentList.size()) {
+            Toast.makeText(this, "Không xác định được sinh viên — thử chọn lại lớp", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        int studentId = studentList.get(selectedPos).getId();
+        String semester = spinnerSemester.getSelectedItem() != null
+                ? spinnerSemester.getSelectedItem().toString() : "";
 
-        scoreDAO.insert(new Score(studentId, subject, scoreVal, semester));
-        edtSubject.setText("");
-        edtScoreValue.setText("");
-        loadScoresForStudent(studentId);
-        Toast.makeText(this, "Đã lưu điểm", Toast.LENGTH_SHORT).show();
+        try {
+            loading.show(this, "Đang lưu điểm...");
+            scoreDAO.insert(new Score(studentId, subject, scoreVal, semester));
+            Log.d(TAG, "Lưu điểm SV id=" + studentId + " môn=" + subject + " điểm=" + scoreVal);
+            edtSubject.setText("");
+            edtScoreValue.setText("");
+            loadScoresForStudent(studentId);
+            Toast.makeText(this, "Đã lưu điểm " + subject + ": " + scoreVal, Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            String err = "Lỗi lưu điểm: " + e.getMessage();
+            Log.e(TAG, err, e);
+            Toast.makeText(this, err, Toast.LENGTH_LONG).show();
+        } finally {
+            loading.dismiss();
+        }
     }
 
     private void confirmDeleteScore(Score score, int position) {

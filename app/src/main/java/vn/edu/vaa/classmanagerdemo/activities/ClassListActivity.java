@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -17,7 +18,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,13 +27,17 @@ import vn.edu.vaa.classmanagerdemo.adapters.ClassAdapter;
 import vn.edu.vaa.classmanagerdemo.database.ClassDAO;
 import vn.edu.vaa.classmanagerdemo.models.ClassRoom;
 import vn.edu.vaa.classmanagerdemo.storage.AppPreferenceManager;
+import vn.edu.vaa.classmanagerdemo.utils.DebounceClickListener;
+import vn.edu.vaa.classmanagerdemo.utils.LoadingHelper;
 
 public class ClassListActivity extends AppCompatActivity {
+    private static final String TAG = "ClassListActivity";
 
     private ClassDAO dao;
     private ClassAdapter adapter;
     private final List<ClassRoom> classes = new ArrayList<>();
     private TextView tvStats;
+    private final LoadingHelper loading = new LoadingHelper();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,7 +77,8 @@ public class ClassListActivity extends AppCompatActivity {
         });
 
         FloatingActionButton fab = findViewById(R.id.fabAddClass);
-        fab.setOnClickListener(v -> showAddDialog(null));
+        // Debounce FAB tránh nhấn liên tục mở nhiều dialog
+        fab.setOnClickListener(DebounceClickListener.wrap(v -> showAddDialog(null)));
 
         loadClasses("");
     }
@@ -85,17 +90,26 @@ public class ClassListActivity extends AppCompatActivity {
     }
 
     private void loadClasses(String keyword) {
-        classes.clear();
-        List<ClassRoom> all = dao.getAll();
-        for (ClassRoom cr : all) {
-            if (keyword.isEmpty() || cr.getName().toLowerCase().contains(keyword.toLowerCase())) {
-                classes.add(cr);
+        try {
+            loading.show(this, "Đang tải danh sách lớp...");
+            List<ClassRoom> all = dao.getAll();
+            classes.clear();
+            for (ClassRoom cr : all) {
+                if (keyword.isEmpty() || cr.getName().toLowerCase().contains(keyword.toLowerCase())) {
+                    classes.add(cr);
+                }
             }
+            adapter.notifyDataSetChanged();
+            int total = 0;
+            for (ClassRoom cr : all) total += cr.getStudentCount();
+            tvStats.setText(all.size() + " lớp  •  " + total + " sinh viên");
+        } catch (Exception e) {
+            String err = "Lỗi tải danh sách lớp: " + e.getMessage();
+            Log.e(TAG, err, e);
+            Toast.makeText(this, err, Toast.LENGTH_LONG).show();
+        } finally {
+            loading.dismiss();
         }
-        adapter.notifyDataSetChanged();
-        int total = 0;
-        for (ClassRoom cr : all) total += cr.getStudentCount();
-        tvStats.setText(all.size() + " lớp  •  " + total + " sinh viên");
     }
 
     private void showAddDialog(ClassRoom existing) {
@@ -112,17 +126,28 @@ public class ClassListActivity extends AppCompatActivity {
                 .setPositiveButton(existing == null ? "Thêm" : "Lưu", (d, w) -> {
                     String name = etName.getText() != null ? etName.getText().toString().trim() : "";
                     String year = etYear.getText() != null ? etYear.getText().toString().trim() : "";
-                    if (name.isEmpty()) { Toast.makeText(this, "Tên lớp không được rỗng", Toast.LENGTH_SHORT).show(); return; }
-                    if (existing == null) {
-                        dao.insert(new ClassRoom(name, year));
-                        Toast.makeText(this, "Đã thêm lớp " + name, Toast.LENGTH_SHORT).show();
-                    } else {
-                        existing.setName(name);
-                        existing.setSchoolYear(year);
-                        dao.update(existing);
-                        Toast.makeText(this, "Đã cập nhật", Toast.LENGTH_SHORT).show();
+                    if (name.isEmpty()) {
+                        Toast.makeText(this, "Tên lớp không được rỗng", Toast.LENGTH_SHORT).show();
+                        return;
                     }
-                    loadClasses("");
+                    try {
+                        if (existing == null) {
+                            dao.insert(new ClassRoom(name, year));
+                            Log.d(TAG, "Thêm lớp: " + name);
+                            Toast.makeText(this, "Đã thêm lớp " + name, Toast.LENGTH_SHORT).show();
+                        } else {
+                            existing.setName(name);
+                            existing.setSchoolYear(year);
+                            dao.update(existing);
+                            Log.d(TAG, "Cập nhật lớp: " + name);
+                            Toast.makeText(this, "Đã cập nhật lớp " + name, Toast.LENGTH_SHORT).show();
+                        }
+                        loadClasses("");
+                    } catch (Exception e) {
+                        String err = "Lỗi lưu lớp: " + e.getMessage();
+                        Log.e(TAG, err, e);
+                        Toast.makeText(this, err, Toast.LENGTH_LONG).show();
+                    }
                 })
                 .setNegativeButton("Hủy", null)
                 .show();
@@ -130,7 +155,7 @@ public class ClassListActivity extends AppCompatActivity {
 
     private void showDeleteDialog(ClassRoom cr) {
         new AlertDialog.Builder(this)
-                .setTitle("Tùy chọn")
+                .setTitle("Tùy chọn: " + cr.getName())
                 .setItems(new String[]{"Sửa lớp", "Xóa lớp"}, (d, which) -> {
                     if (which == 0) showAddDialog(cr);
                     else confirmDelete(cr);
@@ -142,9 +167,16 @@ public class ClassListActivity extends AppCompatActivity {
                 .setTitle("Xóa lớp")
                 .setMessage("Xóa lớp \"" + cr.getName() + "\"? Sinh viên trong lớp sẽ bị mất liên kết.")
                 .setPositiveButton("Xóa", (d, w) -> {
-                    dao.delete(cr.getId());
-                    loadClasses("");
-                    Toast.makeText(this, "Đã xóa", Toast.LENGTH_SHORT).show();
+                    try {
+                        dao.delete(cr.getId());
+                        Log.d(TAG, "Xóa lớp id=" + cr.getId() + " name=" + cr.getName());
+                        loadClasses("");
+                        Toast.makeText(this, "Đã xóa lớp " + cr.getName(), Toast.LENGTH_SHORT).show();
+                    } catch (Exception e) {
+                        String err = "Lỗi xóa lớp: " + e.getMessage();
+                        Log.e(TAG, err, e);
+                        Toast.makeText(this, err, Toast.LENGTH_LONG).show();
+                    }
                 })
                 .setNegativeButton("Hủy", null).show();
     }

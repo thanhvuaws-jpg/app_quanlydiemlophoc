@@ -115,7 +115,7 @@ public class RegisterActivity extends AppCompatActivity {
                 "Lấy fullName, username, password, email, phone từ form đăng ký.",
                 "Tất cả điều kiện validate đã đạt: username không trùng, password hợp lệ, email/phone hợp lệ nếu có nhập.",
                 "Tạo object User và gọi UserDAO.register(user). SQLite insert vào bảng users.",
-                "Dữ liệu được lưu vào SQLite database class_manager.db, bảng users. Mật khẩu trong demo lưu dạng text để sinh viên dễ quan sát; app thực tế cần mã hóa/hash.",
+                "Dữ liệu được lưu vào SQLite database class_manager.db, bảng users. Mật khẩu được hash SHA-256 trước khi lưu — không thể đọc ngược lại plaintext.",
                 "Tài khoản được tạo. Người dùng quay lại Login và đăng nhập bằng tài khoản vừa đăng ký."
         ));
     }
