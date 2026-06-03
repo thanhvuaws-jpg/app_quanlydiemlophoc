@@ -18,7 +18,7 @@ import vn.edu.vaa.classmanagerdemo.activities.TodoActivity;
 
 public class NavigationHelper {
     private static long lastNavClickTime = 0;
-    private static final long NAV_DEBOUNCE_MS = 600;
+    private static final long NAV_DEBOUNCE_MS = 300;
 
     public static void setupBottomNavigation(AppCompatActivity activity, int currentTabId) {
         BottomNavigationView bottomNavigation = activity.findViewById(R.id.bottomNavigation);
@@ -35,17 +35,29 @@ public class NavigationHelper {
             if (itemId == currentTabId) return true;
 
             Intent intent = null;
-            if (itemId == R.id.nav_home)     intent = new Intent(activity, MainActivity.class);
-            else if (itemId == R.id.nav_students) intent = new Intent(activity, StudentActivity.class);
-            else if (itemId == R.id.nav_todo)    intent = new Intent(activity, TodoActivity.class);
-            else if (itemId == R.id.nav_logs)    intent = new Intent(activity, NoteLogActivity.class);
-            else if (itemId == R.id.nav_settings) intent = new Intent(activity, SettingsActivity.class);
+            if (itemId == R.id.nav_home) {
+                intent = new Intent(activity, MainActivity.class);
+            } else if (itemId == R.id.nav_students) {
+                intent = new Intent(activity, StudentActivity.class);
+            } else if (itemId == R.id.nav_todo) {
+                intent = new Intent(activity, TodoActivity.class);
+            } else if (itemId == R.id.nav_logs) {
+                intent = new Intent(activity, NoteLogActivity.class);
+            } else if (itemId == R.id.nav_settings) {
+                intent = new Intent(activity, SettingsActivity.class);
+            }
 
             if (intent != null) {
+                // singleTask + REORDER_TO_FRONT: tái sử dụng instance có sẵn, không tạo mới
                 intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 activity.startActivity(intent);
-                // Bottom nav tabs: fade mượt thay vì bặt đột ngột
-                applyFadeTransition(activity);
+                // Tắt hoàn toàn animation cả 2 chiều (enter + exit)
+                if (Build.VERSION.SDK_INT >= 34) {
+                    activity.overrideActivityTransition(Activity.OVERRIDE_TRANSITION_OPEN, 0, 0);
+                    activity.overrideActivityTransition(Activity.OVERRIDE_TRANSITION_CLOSE, 0, 0);
+                } else {
+                    activity.overridePendingTransition(0, 0);
+                }
                 return true;
             }
             return false;
@@ -65,16 +77,6 @@ public class NavigationHelper {
     }
 
     // ── Private helpers ───────────────────────────────────────────────────
-
-    private static void applyFadeTransition(Activity activity) {
-        if (Build.VERSION.SDK_INT >= 34) {
-            activity.overrideActivityTransition(
-                    Activity.OVERRIDE_TRANSITION_OPEN,
-                    R.anim.fade_in, R.anim.fade_out);
-        } else {
-            activity.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-        }
-    }
 
     private static void applySlideInTransition(Activity activity) {
         if (Build.VERSION.SDK_INT >= 34) {

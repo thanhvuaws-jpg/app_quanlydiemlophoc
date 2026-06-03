@@ -27,21 +27,26 @@
         <activity android:name=".activities.ImportExportActivity" />
         <activity
             android:name=".activities.NoteLogActivity"
+            android:launchMode="singleTask"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".activities.TodoActivity"
+            android:launchMode="singleTask"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".activities.StudentActivity"
             android:label="StudentActivity"
+            android:launchMode="singleTask"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".activities.SettingsActivity"
+            android:launchMode="singleTask"
             android:windowSoftInputMode="adjustResize" />
         <activity android:name=".activities.RegisterActivity" />
         <activity
             android:name=".activities.MainActivity"
+            android:launchMode="singleTask"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".activities.LoginActivity"
