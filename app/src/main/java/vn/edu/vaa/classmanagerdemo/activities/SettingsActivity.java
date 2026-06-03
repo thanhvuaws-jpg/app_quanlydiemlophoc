@@ -2,10 +2,9 @@ package vn.edu.vaa.classmanagerdemo.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.Spinner;
 import com.google.android.material.switchmaterial.SwitchMaterial;
+import com.google.android.material.textfield.TextInputEditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,7 +20,7 @@ import vn.edu.vaa.classmanagerdemo.utils.NavigationHelper;
 
 public class SettingsActivity extends AppCompatActivity {
     private SwitchMaterial swDarkMode;
-    private Spinner spLanguage;
+    private TextInputEditText spLanguage;
     private TextView txtAccountInfo, txtResult, txtExplanation;
     private AppPreferenceManager prefs;
     private ActionLogger logger;
@@ -59,11 +58,19 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     private void initSpinner() {
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_item,
-                new String[]{"vi", "en"});
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spLanguage.setAdapter(adapter);
+        String[] langs = {"vi", "en"};
+        android.widget.ArrayAdapter<String> adapter = new android.widget.ArrayAdapter<>(
+                this, android.R.layout.simple_dropdown_item_1line, langs);
+        spLanguage.setOnClickListener(v -> {
+            android.widget.ListPopupWindow popup = new android.widget.ListPopupWindow(this);
+            popup.setAdapter(adapter);
+            popup.setAnchorView(spLanguage);
+            popup.setOnItemClickListener((parent, view, pos, id) -> {
+                spLanguage.setText(langs[pos]);
+                popup.dismiss();
+            });
+            popup.show();
+        });
     }
 
     private void initListeners() {
@@ -82,12 +89,13 @@ public class SettingsActivity extends AppCompatActivity {
                 "SĐT: " + prefs.getPhone() + "\n" +
                 "Giữ đăng nhập: " + (prefs.isRememberLogin() ? "Có" : "Không"));
         swDarkMode.setChecked(prefs.isDarkMode());
-        spLanguage.setSelection("en".equals(prefs.getLanguage()) ? 1 : 0);
+        spLanguage.setText(prefs.getLanguage());
     }
 
     private void handleSavePrefs() {
         boolean darkMode = swDarkMode.isChecked();
-        String language = spLanguage.getSelectedItem().toString();
+        String language = spLanguage.getText() != null ? spLanguage.getText().toString().trim() : "vi";
+        if (language.isEmpty()) language = "vi";
         prefs.saveAppSettings(darkMode, language);
         
         // Apply dark mode immediately

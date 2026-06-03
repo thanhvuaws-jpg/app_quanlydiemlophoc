@@ -39,6 +39,9 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.ViewHold
         Student s = students.get(position);
         holder.tvName.setText(s.getName());
         holder.tvInfo.setText("Lớp: " + s.getClassName() + " | Email: " + s.getEmail() + " | SĐT: " + s.getPhone());
+        if (holder.tvInitial != null && s.getName() != null && !s.getName().isEmpty()) {
+            holder.tvInitial.setText(String.valueOf(s.getName().charAt(0)).toUpperCase());
+        }
         holder.itemView.setOnClickListener(v -> {
             int pos = holder.getBindingAdapterPosition();
             if (pos != RecyclerView.NO_POSITION) listener.onStudentClick(students.get(pos), pos);
@@ -54,11 +57,12 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.ViewHold
     public int getItemCount() { return students.size(); }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tvName, tvInfo;
+        TextView tvName, tvInfo, tvInitial;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             tvName = itemView.findViewById(R.id.tvName);
             tvInfo = itemView.findViewById(R.id.tvInfo);
+            tvInitial = itemView.findViewById(R.id.tvStudentInitial);
         }
     }
 }

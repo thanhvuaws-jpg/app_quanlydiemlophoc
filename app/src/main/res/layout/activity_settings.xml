@@ -96,11 +96,19 @@
                             android:textColor="@color/text_primary"
                             android:layout_marginBottom="8dp" />
 
-                        <Spinner
-                            android:id="@+id/spLanguage"
+                        <com.google.android.material.textfield.TextInputLayout
+                            style="@style/Widget.App.TextInputLayout"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="12dp" />
+                            android:hint="Ngôn ngữ">
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/spLanguage"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:inputType="none"
+                                android:focusable="false"
+                                android:textColor="@color/text_primary" />
+                        </com.google.android.material.textfield.TextInputLayout>
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnSavePrefs"

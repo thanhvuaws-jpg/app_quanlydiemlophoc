@@ -66,23 +66,36 @@
                         android:textStyle="bold"
                         android:layout_marginBottom="12dp" />
 
-                    <EditText
-                        android:id="@+id/edtLoginUsername"
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.App.TextInputLayout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="Tên đăng nhập"
-                        android:inputType="text"
-                        android:singleLine="true"
-                        android:layout_marginBottom="8dp" />
+                        app:startIconDrawable="@android:drawable/ic_menu_myplaces">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edtLoginUsername"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="text"
+                            android:singleLine="true"
+                            android:textColor="@color/text_primary" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
-                    <EditText
-                        android:id="@+id/edtLoginPassword"
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.App.TextInputLayout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="Mật khẩu"
-                        android:inputType="textPassword"
-                        android:singleLine="true"
-                        android:layout_marginBottom="8dp" />
+                        app:endIconMode="password_toggle"
+                        app:startIconDrawable="@android:drawable/ic_lock_lock">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edtLoginPassword"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="textPassword"
+                            android:singleLine="true"
+                            android:textColor="@color/text_primary" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
                     <CheckBox
                         android:id="@+id/cbRememberLogin"

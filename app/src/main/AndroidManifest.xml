@@ -25,15 +25,24 @@
         <activity android:name=".activities.GradeActivity" />
         <activity android:name=".activities.ImportStudentActivity" />
         <activity android:name=".activities.ImportExportActivity" />
-        <activity android:name=".activities.NoteLogActivity" />
-        <activity android:name=".activities.TodoActivity" />
+        <activity
+            android:name=".activities.NoteLogActivity"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".activities.TodoActivity"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".activities.StudentActivity"
             android:label="StudentActivity"
-            android:exported="false" />
-        <activity android:name=".activities.SettingsActivity" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".activities.SettingsActivity"
+            android:windowSoftInputMode="adjustResize" />
         <activity android:name=".activities.RegisterActivity" />
-        <activity android:name=".activities.MainActivity" />
+        <activity
+            android:name=".activities.MainActivity"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".activities.LoginActivity"
             android:exported="true">

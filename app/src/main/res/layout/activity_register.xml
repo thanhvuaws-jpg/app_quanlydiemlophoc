@@ -57,57 +57,97 @@
                     android:orientation="vertical"
                     android:padding="16dp">
 
-                    <EditText
-                        android:id="@+id/edtRegisterFullName"
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.App.TextInputLayout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="Họ tên"
-                        android:singleLine="true"
-                        android:layout_marginBottom="8dp" />
+                        app:startIconDrawable="@android:drawable/ic_menu_myplaces">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edtRegisterFullName"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="textPersonName"
+                            android:singleLine="true"
+                            android:textColor="@color/text_primary" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
-                    <EditText
-                        android:id="@+id/edtRegisterUsername"
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.App.TextInputLayout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="Tên đăng nhập"
-                        android:singleLine="true"
-                        android:layout_marginBottom="8dp" />
+                        app:startIconDrawable="@android:drawable/ic_menu_myplaces">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edtRegisterUsername"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="text"
+                            android:singleLine="true"
+                            android:textColor="@color/text_primary" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
-                    <EditText
-                        android:id="@+id/edtRegisterPassword"
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.App.TextInputLayout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="Mật khẩu"
-                        android:inputType="textPassword"
-                        android:singleLine="true"
-                        android:layout_marginBottom="8dp" />
+                        app:endIconMode="password_toggle"
+                        app:startIconDrawable="@android:drawable/ic_lock_lock">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edtRegisterPassword"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="textPassword"
+                            android:singleLine="true"
+                            android:textColor="@color/text_primary" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
-                    <EditText
-                        android:id="@+id/edtRegisterConfirmPassword"
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.App.TextInputLayout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="Nhập lại mật khẩu"
-                        android:inputType="textPassword"
-                        android:singleLine="true"
-                        android:layout_marginBottom="8dp" />
+                        app:endIconMode="password_toggle"
+                        app:startIconDrawable="@android:drawable/ic_lock_lock">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edtRegisterConfirmPassword"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="textPassword"
+                            android:singleLine="true"
+                            android:textColor="@color/text_primary" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
-                    <EditText
-                        android:id="@+id/edtRegisterEmail"
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.App.TextInputLayout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="Email"
-                        android:inputType="textEmailAddress"
-                        android:singleLine="true"
-                        android:layout_marginBottom="8dp" />
+                        app:startIconDrawable="@android:drawable/sym_action_email">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edtRegisterEmail"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="textEmailAddress"
+                            android:singleLine="true"
+                            android:textColor="@color/text_primary" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
-                    <EditText
-                        android:id="@+id/edtRegisterPhone"
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.App.TextInputLayout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="Số điện thoại"
-                        android:inputType="phone"
-                        android:singleLine="true"
-                        android:layout_marginBottom="12dp" />
+                        app:startIconDrawable="@android:drawable/stat_sys_phone_call">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edtRegisterPhone"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="phone"
+                            android:singleLine="true"
+                            android:textColor="@color/text_primary" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnRegisterAccount"

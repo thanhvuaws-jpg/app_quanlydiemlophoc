@@ -2,11 +2,13 @@ package vn.edu.vaa.classmanagerdemo.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -46,6 +48,9 @@ public class ImportExportActivity extends AppCompatActivity {
         }
         
         setContentView(R.layout.activity_import_export);
+        Toolbar toolbar = findViewById(R.id.toolbarImportExport);
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         dao = new StudentDAO(this);
         logger = new ActionLogger(this);
         initViews();
@@ -171,6 +176,12 @@ public class ImportExportActivity extends AppCompatActivity {
         } catch (Exception e) {
             Toast.makeText(this, "Không đọc được CSV: " + e.getMessage(), Toast.LENGTH_LONG).show();
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) { finish(); return true; }
+        return super.onOptionsItemSelected(item);
     }
 
     private void loadStudentsFromDb() {

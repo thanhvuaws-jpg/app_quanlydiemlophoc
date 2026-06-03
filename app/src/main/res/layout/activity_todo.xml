@@ -148,8 +148,8 @@
                         <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/recyclerTodos"
                             android:layout_width="match_parent"
-                            android:layout_height="220dp"
-                            android:scrollbars="vertical"
+                            android:layout_height="wrap_content"
+                            android:nestedScrollingEnabled="false"
                             android:layout_marginBottom="12dp" />
 
                         <!-- Actions -->
