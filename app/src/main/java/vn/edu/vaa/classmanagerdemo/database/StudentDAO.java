@@ -14,7 +14,7 @@ public class StudentDAO {
     private final DatabaseHelper dbHelper;
 
     public StudentDAO(Context context) {
-        dbHelper = new DatabaseHelper(context);
+        dbHelper = DatabaseHelper.getInstance(context);
     }
 
     public long insert(Student student) {
@@ -24,9 +24,7 @@ public class StudentDAO {
         values.put(DatabaseHelper.COL_CLASS, student.getClassName());
         values.put(DatabaseHelper.COL_EMAIL, student.getEmail());
         values.put(DatabaseHelper.COL_PHONE, student.getPhone());
-        long id = db.insert(DatabaseHelper.TABLE_STUDENTS, null, values);
-        db.close();
-        return id;
+        return db.insert(DatabaseHelper.TABLE_STUDENTS, null, values);
     }
 
     public int update(Student student) {
@@ -38,20 +36,16 @@ public class StudentDAO {
         values.put(DatabaseHelper.COL_PHONE, student.getPhone());
         values.put(DatabaseHelper.COL_STUDENT_CODE, student.getStudentCode());
         values.put(DatabaseHelper.COL_CLASS_ID, student.getClassId());
-        int rows = db.update(DatabaseHelper.TABLE_STUDENTS, values,
+        return db.update(DatabaseHelper.TABLE_STUDENTS, values,
                 DatabaseHelper.COL_ID + "=?",
                 new String[]{String.valueOf(student.getId())});
-        db.close();
-        return rows;
     }
 
     public int delete(int id) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        int rows = db.delete(DatabaseHelper.TABLE_STUDENTS,
+        return db.delete(DatabaseHelper.TABLE_STUDENTS,
                 DatabaseHelper.COL_ID + "=?",
                 new String[]{String.valueOf(id)});
-        db.close();
-        return rows;
     }
 
     public List<Student> getAll() {
@@ -64,7 +58,9 @@ public class StudentDAO {
         String sql = "SELECT * FROM " + DatabaseHelper.TABLE_STUDENTS;
         String[] args = null;
         if (keyword != null && !keyword.trim().isEmpty()) {
-            sql += " WHERE " + DatabaseHelper.COL_NAME + " LIKE ? OR " + DatabaseHelper.COL_CLASS + " LIKE ? OR " + DatabaseHelper.COL_STUDENT_CODE + " LIKE ?";
+            sql += " WHERE " + DatabaseHelper.COL_NAME + " LIKE ? OR "
+                    + DatabaseHelper.COL_CLASS + " LIKE ? OR "
+                    + DatabaseHelper.COL_STUDENT_CODE + " LIKE ?";
             String key = "%" + keyword.trim() + "%";
             args = new String[]{key, key, key};
         }
@@ -74,7 +70,6 @@ public class StudentDAO {
             do { list.add(fromCursor(c)); } while (c.moveToNext());
         }
         c.close();
-        db.close();
         return list;
     }
 
@@ -87,9 +82,7 @@ public class StudentDAO {
         values.put(DatabaseHelper.COL_PHONE, student.getPhone());
         values.put(DatabaseHelper.COL_STUDENT_CODE, student.getStudentCode());
         values.put(DatabaseHelper.COL_CLASS_ID, student.getClassId());
-        long id = db.insert(DatabaseHelper.TABLE_STUDENTS, null, values);
-        db.close();
-        return id;
+        return db.insert(DatabaseHelper.TABLE_STUDENTS, null, values);
     }
 
     public List<Student> getByClassId(int classId) {
@@ -104,7 +97,6 @@ public class StudentDAO {
             do { list.add(fromCursor(c)); } while (c.moveToNext());
         }
         c.close();
-        db.close();
         return list;
     }
 
@@ -116,7 +108,6 @@ public class StudentDAO {
                 new String[]{name, className});
         boolean exists = c.moveToFirst();
         c.close();
-        db.close();
         return exists;
     }
 
@@ -128,7 +119,6 @@ public class StudentDAO {
                 new String[]{code});
         boolean exists = c.moveToFirst();
         c.close();
-        db.close();
         return exists;
     }
 

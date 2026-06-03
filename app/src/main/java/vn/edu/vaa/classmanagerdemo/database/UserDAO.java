@@ -15,7 +15,7 @@ public class UserDAO {
     private final DatabaseHelper dbHelper;
 
     public UserDAO(Context context) {
-        dbHelper = new DatabaseHelper(context);
+        dbHelper = DatabaseHelper.getInstance(context);
     }
 
     public long register(User user) {
@@ -26,9 +26,7 @@ public class UserDAO {
         values.put(DatabaseHelper.USER_PASSWORD, hashPassword(user.getPassword()));
         values.put(DatabaseHelper.USER_EMAIL, user.getEmail());
         values.put(DatabaseHelper.USER_PHONE, user.getPhone());
-        long id = db.insert(DatabaseHelper.TABLE_USERS, null, values);
-        db.close();
-        return id;
+        return db.insert(DatabaseHelper.TABLE_USERS, null, values);
     }
 
     public boolean usernameExists(String username) {
@@ -37,7 +35,6 @@ public class UserDAO {
                 + " WHERE " + DatabaseHelper.USER_USERNAME + "=?", new String[]{username.trim()});
         boolean exists = c.moveToFirst();
         c.close();
-        db.close();
         return exists;
     }
 
@@ -50,7 +47,6 @@ public class UserDAO {
         User user = null;
         if (c.moveToFirst()) user = fromCursor(c);
         c.close();
-        db.close();
         return user;
     }
 
@@ -61,7 +57,6 @@ public class UserDAO {
         User user = null;
         if (c.moveToFirst()) user = fromCursor(c);
         c.close();
-        db.close();
         return user;
     }
 
@@ -76,7 +71,6 @@ public class UserDAO {
         );
     }
 
-    // SHA-256 luôn có sẵn trên Android
     static String hashPassword(String password) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");

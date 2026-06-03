@@ -74,8 +74,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     SCR_VALUE + " REAL NOT NULL, " +
                     SCR_SEMESTER + " TEXT);";
 
-    public DatabaseHelper(Context context) {
-        super(context, DB_NAME, null, DB_VERSION);
+    private static DatabaseHelper instance;
+
+    public static synchronized DatabaseHelper getInstance(Context context) {
+        if (instance == null) {
+            instance = new DatabaseHelper(context.getApplicationContext());
+        }
+        return instance;
+    }
+
+    private DatabaseHelper(Context context) {
+        super(context.getApplicationContext(), DB_NAME, null, DB_VERSION);
     }
 
     @Override

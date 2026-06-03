@@ -14,7 +14,7 @@ public class ScoreDAO {
     private final DatabaseHelper dbHelper;
 
     public ScoreDAO(Context context) {
-        dbHelper = new DatabaseHelper(context);
+        dbHelper = DatabaseHelper.getInstance(context);
     }
 
     public long insert(Score score) {
@@ -24,9 +24,7 @@ public class ScoreDAO {
         v.put(DatabaseHelper.SCR_SUBJECT, score.getSubject());
         v.put(DatabaseHelper.SCR_VALUE, score.getScore());
         v.put(DatabaseHelper.SCR_SEMESTER, score.getSemester());
-        long id = db.insert(DatabaseHelper.TABLE_SCORES, null, v);
-        db.close();
-        return id;
+        return db.insert(DatabaseHelper.TABLE_SCORES, null, v);
     }
 
     public int update(Score score) {
@@ -35,18 +33,14 @@ public class ScoreDAO {
         v.put(DatabaseHelper.SCR_SUBJECT, score.getSubject());
         v.put(DatabaseHelper.SCR_VALUE, score.getScore());
         v.put(DatabaseHelper.SCR_SEMESTER, score.getSemester());
-        int rows = db.update(DatabaseHelper.TABLE_SCORES, v,
+        return db.update(DatabaseHelper.TABLE_SCORES, v,
                 DatabaseHelper.SCR_ID + "=?", new String[]{String.valueOf(score.getId())});
-        db.close();
-        return rows;
     }
 
     public int deleteById(int id) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        int rows = db.delete(DatabaseHelper.TABLE_SCORES,
+        return db.delete(DatabaseHelper.TABLE_SCORES,
                 DatabaseHelper.SCR_ID + "=?", new String[]{String.valueOf(id)});
-        db.close();
-        return rows;
     }
 
     public List<Score> getByStudentId(int studentId) {
@@ -63,7 +57,6 @@ public class ScoreDAO {
             do { list.add(fromCursor(c)); } while (c.moveToNext());
         }
         c.close();
-        db.close();
         return list;
     }
 
@@ -81,7 +74,6 @@ public class ScoreDAO {
             do { list.add(fromCursor(c)); } while (c.moveToNext());
         }
         c.close();
-        db.close();
         return list;
     }
 
@@ -94,7 +86,6 @@ public class ScoreDAO {
         float avg = 0f;
         if (c.moveToFirst() && !c.isNull(0)) avg = c.getFloat(0);
         c.close();
-        db.close();
         return avg;
     }
 
@@ -104,7 +95,6 @@ public class ScoreDAO {
         int count = 0;
         if (c.moveToFirst()) count = c.getInt(0);
         c.close();
-        db.close();
         return count;
     }
 

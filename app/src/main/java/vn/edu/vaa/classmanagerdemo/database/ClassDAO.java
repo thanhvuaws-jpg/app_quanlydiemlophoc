@@ -14,7 +14,7 @@ public class ClassDAO {
     private final DatabaseHelper dbHelper;
 
     public ClassDAO(Context context) {
-        dbHelper = new DatabaseHelper(context);
+        dbHelper = DatabaseHelper.getInstance(context);
     }
 
     public long insert(ClassRoom classRoom) {
@@ -22,9 +22,7 @@ public class ClassDAO {
         ContentValues v = new ContentValues();
         v.put(DatabaseHelper.CLS_NAME, classRoom.getName());
         v.put(DatabaseHelper.CLS_YEAR, classRoom.getSchoolYear());
-        long id = db.insert(DatabaseHelper.TABLE_CLASSES, null, v);
-        db.close();
-        return id;
+        return db.insert(DatabaseHelper.TABLE_CLASSES, null, v);
     }
 
     public int update(ClassRoom classRoom) {
@@ -32,23 +30,18 @@ public class ClassDAO {
         ContentValues v = new ContentValues();
         v.put(DatabaseHelper.CLS_NAME, classRoom.getName());
         v.put(DatabaseHelper.CLS_YEAR, classRoom.getSchoolYear());
-        int rows = db.update(DatabaseHelper.TABLE_CLASSES, v,
+        return db.update(DatabaseHelper.TABLE_CLASSES, v,
                 DatabaseHelper.CLS_ID + "=?", new String[]{String.valueOf(classRoom.getId())});
-        db.close();
-        return rows;
     }
 
     public int delete(int id) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        // Reset class_id về 0 cho sinh viên thuộc lớp này trước khi xóa
         ContentValues resetValues = new ContentValues();
         resetValues.put(DatabaseHelper.COL_CLASS_ID, 0);
         db.update(DatabaseHelper.TABLE_STUDENTS, resetValues,
                 DatabaseHelper.COL_CLASS_ID + "=?", new String[]{String.valueOf(id)});
-        int rows = db.delete(DatabaseHelper.TABLE_CLASSES,
+        return db.delete(DatabaseHelper.TABLE_CLASSES,
                 DatabaseHelper.CLS_ID + "=?", new String[]{String.valueOf(id)});
-        db.close();
-        return rows;
     }
 
     public List<ClassRoom> getAll() {
@@ -67,7 +60,6 @@ public class ClassDAO {
             } while (c.moveToNext());
         }
         c.close();
-        db.close();
         return list;
     }
 
@@ -79,7 +71,6 @@ public class ClassDAO {
         ClassRoom cr = null;
         if (c.moveToFirst()) cr = fromCursor(c);
         c.close();
-        db.close();
         return cr;
     }
 
@@ -91,7 +82,6 @@ public class ClassDAO {
         ClassRoom cr = null;
         if (c.moveToFirst()) cr = fromCursor(c);
         c.close();
-        db.close();
         return cr;
     }
 
@@ -112,7 +102,6 @@ public class ClassDAO {
         int count = 0;
         if (c.moveToFirst()) count = c.getInt(0);
         c.close();
-        db.close();
         return count;
     }
 
