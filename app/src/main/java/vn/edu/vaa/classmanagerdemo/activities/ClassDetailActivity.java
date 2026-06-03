@@ -24,6 +24,7 @@ import vn.edu.vaa.classmanagerdemo.database.StudentDAO;
 import vn.edu.vaa.classmanagerdemo.models.ClassRoom;
 import vn.edu.vaa.classmanagerdemo.models.Score;
 import vn.edu.vaa.classmanagerdemo.models.Student;
+import vn.edu.vaa.classmanagerdemo.utils.NavigationHelper;
 
 public class ClassDetailActivity extends AppCompatActivity {
 
@@ -70,7 +71,7 @@ public class ClassDetailActivity extends AppCompatActivity {
                 i.putExtra("studentId", s.getId());
                 i.putExtra("studentName", s.getName());
                 i.putExtra("classId", classId);
-                startActivity(i);
+                NavigationHelper.navigateTo(ClassDetailActivity.this, i);
             }
             @Override public void onStudentLongClick(Student s, int pos) {}
         });
@@ -86,7 +87,7 @@ public class ClassDetailActivity extends AppCompatActivity {
         fab.setOnClickListener(v -> {
             Intent i = new Intent(this, ImportStudentActivity.class);
             i.putExtra("classId", classId);
-            startActivity(i);
+            NavigationHelper.navigateTo(this, i);
         });
 
         loadData();
@@ -123,7 +124,10 @@ public class ClassDetailActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) { finish(); return true; }
+        if (item.getItemId() == android.R.id.home) {
+            NavigationHelper.finishWithSlide(this);
+            return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 }

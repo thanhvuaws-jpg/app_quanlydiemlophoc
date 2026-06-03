@@ -29,6 +29,7 @@ import vn.edu.vaa.classmanagerdemo.models.ClassRoom;
 import vn.edu.vaa.classmanagerdemo.storage.AppPreferenceManager;
 import vn.edu.vaa.classmanagerdemo.utils.DebounceClickListener;
 import vn.edu.vaa.classmanagerdemo.utils.LoadingHelper;
+import vn.edu.vaa.classmanagerdemo.utils.NavigationHelper;
 
 public class ClassListActivity extends AppCompatActivity {
     private static final String TAG = "ClassListActivity";
@@ -59,7 +60,7 @@ public class ClassListActivity extends AppCompatActivity {
                 Intent i = new Intent(ClassListActivity.this, ClassDetailActivity.class);
                 i.putExtra("classId", cr.getId());
                 i.putExtra("className", cr.getName());
-                startActivity(i);
+                NavigationHelper.navigateTo(ClassListActivity.this, i);
             }
             @Override
             public void onClassLongClick(ClassRoom cr) {
@@ -183,7 +184,10 @@ public class ClassListActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) { finish(); return true; }
+        if (item.getItemId() == android.R.id.home) {
+            NavigationHelper.finishWithSlide(this);
+            return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 

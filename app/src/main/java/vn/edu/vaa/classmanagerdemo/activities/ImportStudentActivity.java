@@ -28,6 +28,7 @@ import vn.edu.vaa.classmanagerdemo.storage.AppPreferenceManager;
 import vn.edu.vaa.classmanagerdemo.storage.ExcelImporter;
 import vn.edu.vaa.classmanagerdemo.utils.DebounceClickListener;
 import vn.edu.vaa.classmanagerdemo.utils.LoadingHelper;
+import vn.edu.vaa.classmanagerdemo.utils.NavigationHelper;
 
 public class ImportStudentActivity extends AppCompatActivity {
     private static final String TAG = "ImportStudentActivity";
@@ -217,7 +218,10 @@ public class ImportStudentActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) { finish(); return true; }
+        if (item.getItemId() == android.R.id.home) {
+            NavigationHelper.finishWithSlide(this);
+            return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 

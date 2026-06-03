@@ -25,6 +25,7 @@ import vn.edu.vaa.classmanagerdemo.storage.AppPreferenceManager;
 import vn.edu.vaa.classmanagerdemo.storage.CsvExporter;
 import vn.edu.vaa.classmanagerdemo.storage.XmlStudentParser;
 import vn.edu.vaa.classmanagerdemo.utils.ExplanationBuilder;
+import vn.edu.vaa.classmanagerdemo.utils.NavigationHelper;
 
 public class ImportExportActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
@@ -180,7 +181,10 @@ public class ImportExportActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) { finish(); return true; }
+        if (item.getItemId() == android.R.id.home) {
+            NavigationHelper.finishWithSlide(this);
+            return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 
