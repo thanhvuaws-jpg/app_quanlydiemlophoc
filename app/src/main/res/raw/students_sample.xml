@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<students>
+    <student>
+        <id>1</id>
+        <name>Nguyễn Văn A</name>
+        <className>21DHT01</className>
+        <email>a@vaa.edu.vn</email>
+        <phone>0901234567</phone>
+    </student>
+    <student>
+        <id>2</id>
+        <name>Trần Thị B</name>
+        <className>21DHT01</className>
+        <email>b@vaa.edu.vn</email>
+        <phone>0912345678</phone>
+    </student>
+    <student>
+        <id>3</id>
+        <name>Lê Văn C</name>
+        <className>21DHT02</className>
+        <email>c@vaa.edu.vn</email>
+        <phone>0987654321</phone>
+    </student>
+    <student>
+        <id>4</id>
+        <name>Phan Thanh Bình</name>
+        <className>21DHT02</className>
+        <email>binhpt@vaa.edu.vn</email>
+        <phone>0933445566</phone>
+    </student>
+    <student>
+        <id>5</id>
+        <name>Vũ Hoàng Nam</name>
+        <className>21DHT01</className>
+        <email>namvh@vaa.edu.vn</email>
+        <phone>0944556677</phone>
+    </student>
+    <student>
+        <id>6</id>
+        <name>Đặng Thị Mai</name>
+        <className>21DHT03</className>
+        <email>maidt@vaa.edu.vn</email>
+        <phone>0955667788</phone>
+    </student>
+    <student>
+        <id>7</id>
+        <name>Bùi Minh Tuấn</name>
+        <className>21DHT03</className>
+        <email>tuanbm@vaa.edu.vn</email>
+        <phone>0966778899</phone>
+    </student>
+    <student>
+        <id>8</id>
+        <name>Ngô Quốc Bảo</name>
+        <className>21DHT02</className>
+        <email>baonq@vaa.edu.vn</email>
+        <phone>0977889900</phone>
+    </student>
+    <student>
+        <id>9</id>
+        <name>Đỗ Hồng Nhung</name>
+        <className>21DHT01</className>
+        <email>nhungdh@vaa.edu.vn</email>
+        <phone>0988990011</phone>
+    </student>
+    <student>
+        <id>10</id>
+        <name>Hoàng Văn Khánh</name>
+        <className>21DHT03</className>
+        <email>khanhhv@vaa.edu.vn</email>
+        <phone>0999001122</phone>
+    </student>
+</students>

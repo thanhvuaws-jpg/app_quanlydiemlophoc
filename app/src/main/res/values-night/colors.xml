@@ -1,0 +1,18 @@
+<resources>
+    <!-- Premium Indigo/Teal Material Palette for Dark Mode -->
+    <color name="primary">#6366F1</color> <!-- Indigo 500 -->
+    <color name="primary_dark">#4F46E5</color> <!-- Indigo 600 -->
+    <color name="primary_light">#1E1B4B</color> <!-- Dark Indigo Tint (Indigo 950) -->
+    <color name="accent">#22D3EE</color> <!-- Teal 400 -->
+    <color name="bg_light">#0F172A</color> <!-- Slate 900 (Dark Background) -->
+    <color name="card_light">#1E293B</color> <!-- Slate 800 (Dark Card Surface) -->
+    <color name="text_primary">#F8FAFC</color> <!-- Slate 50 (White Text) -->
+    <color name="text_secondary">#94A3B8</color> <!-- Slate 400 (Muted Slate Text) -->
+    <color name="success">#34D399</color> <!-- Emerald 400 -->
+    <color name="danger">#F87171</color> <!-- Red 400 -->
+    
+    <!-- Explanation Card Colors in Dark Mode -->
+    <color name="explanation_bg">#1E1B4B</color> <!-- Indigo 950 -->
+    <color name="explanation_stroke">#312E81</color> <!-- Indigo 900 -->
+    <color name="explanation_text">#FCD34D</color> <!-- Amber 300 -->
+</resources>

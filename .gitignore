@@ -1,0 +1,32 @@
+# Built artifacts
+*.apk
+*.aar
+*.ap_
+*.aab
+build/
+app/build/
+
+# Gradle
+.gradle/
+gradle-app.setting
+!gradle-wrapper.jar
+!gradle-wrapper.properties
+local.properties
+
+# IntelliJ / Android Studio
+*.iml
+*.iws
+*.ipr
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/dictionaries
+.idea/caches
+.idea/shelf
+
+# DB files (runtime data)
+*.db
+*.db-journal
+
+# OS
+.DS_Store
+Thumbs.db
