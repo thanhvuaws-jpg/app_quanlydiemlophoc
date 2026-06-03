@@ -1,7 +1,9 @@
 package vn.edu.vaa.classmanagerdemo.activities;
 
 import android.content.Intent;
+import android.app.DatePickerDialog;
 import android.os.Bundle;
+import java.util.Calendar;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -132,6 +134,15 @@ public class TodoActivity extends AppCompatActivity {
         btnAdd.setOnClickListener(v -> handleAddTodo());
         btnLoad.setOnClickListener(v -> handleLoadJson());
         btnDelete.setOnClickListener(v -> handleDeleteJson());
+        // DatePicker cho field hạn nộp
+        edtDeadline.setFocusable(false);
+        edtDeadline.setClickable(true);
+        edtDeadline.setOnClickListener(v -> {
+            Calendar cal = Calendar.getInstance();
+            new DatePickerDialog(this, (view, year, month, day) -> {
+                edtDeadline.setText(String.format("%02d/%02d/%d", day, month + 1, year));
+            }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH)).show();
+        });
     }
 
     private void handleAddTodo() {

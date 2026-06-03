@@ -199,22 +199,21 @@
                             android:textStyle="bold"
                             android:layout_marginBottom="12dp" />
 
-                        <!-- Outlined SearchView Container -->
-                        <LinearLayout
+                        <com.google.android.material.textfield.TextInputLayout
+                            style="@style/Widget.App.TextInputLayout"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:background="@drawable/bg_card"
-                            android:padding="2dp"
-                            android:layout_marginBottom="12dp">
-
-                            <SearchView
-                                android:id="@+id/searchView"
+                            android:hint="Tìm theo tên, lớp hoặc MSSV..."
+                            android:layout_marginBottom="12dp"
+                            app:startIconDrawable="@android:drawable/ic_menu_search">
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/edtSearch"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:queryHint="Tìm theo tên hoặc lớp..."
-                                android:iconifiedByDefault="false"
-                                android:background="@android:color/transparent" />
-                        </LinearLayout>
+                                android:inputType="text"
+                                android:imeOptions="actionSearch"
+                                android:textColor="@color/text_primary" />
+                        </com.google.android.material.textfield.TextInputLayout>
 
                         <!-- RecyclerView list -->
                         <androidx.recyclerview.widget.RecyclerView

@@ -30,6 +30,7 @@ import vn.edu.vaa.classmanagerdemo.utils.NavigationHelper;
 public class ImportExportActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private TextView txtCsvContent, txtExplanation;
+    private android.widget.TextView tvEmptyStudents;
     private StudentDAO dao;
     private ActionLogger logger;
     private final List<Student> students = new ArrayList<>();
@@ -69,6 +70,7 @@ public class ImportExportActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerImportStudents);
         txtCsvContent = findViewById(R.id.txtCsvContent);
         txtExplanation = findViewById(R.id.txtExplanation);
+        tvEmptyStudents = findViewById(R.id.tvEmptyStudents);
     }
 
     private void initRecyclerView() {
@@ -192,5 +194,9 @@ public class ImportExportActivity extends AppCompatActivity {
         students.clear();
         students.addAll(dao.getAll());
         adapter.notifyDataSetChanged();
+        if (tvEmptyStudents != null) {
+            tvEmptyStudents.setVisibility(students.isEmpty()
+                    ? android.view.View.VISIBLE : android.view.View.GONE);
+        }
     }
 }

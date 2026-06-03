@@ -2,11 +2,13 @@ package vn.edu.vaa.classmanagerdemo.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.google.android.material.textfield.TextInputEditText;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -113,14 +115,17 @@ public class StudentActivity extends AppCompatActivity {
         Button btnAdd = findViewById(R.id.btnAdd);
         Button btnUpdate = findViewById(R.id.btnUpdate);
         Button btnClear = findViewById(R.id.btnClear);
-        SearchView searchView = findViewById(R.id.searchView);
+        TextInputEditText edtSearch = findViewById(R.id.edtSearch);
 
         btnAdd.setOnClickListener(v -> handleAddStudent());
         btnUpdate.setOnClickListener(v -> handleUpdateStudent());
         btnClear.setOnClickListener(v -> clearForm());
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override public boolean onQueryTextSubmit(String query) { loadStudents(query); return true; }
-            @Override public boolean onQueryTextChange(String newText) { loadStudents(newText); return true; }
+        edtSearch.addTextChangedListener(new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
+                loadStudents(s.toString());
+            }
+            @Override public void afterTextChanged(Editable s) {}
         });
     }
 
@@ -161,6 +166,7 @@ public class StudentActivity extends AppCompatActivity {
         logger.log("Insert Student: " + s.getName());
         loadStudents("");
         clearFormOnly();
+        recyclerView.post(() -> recyclerView.smoothScrollToPosition(0));
         Toast.makeText(this, id == -1 ? "Thêm thất bại" : "Thêm thành công", Toast.LENGTH_SHORT).show();
         txtResult.setText("Insert SQLite trả về id=" + id);
         txtExplanation.setText(ExplanationBuilder.build(

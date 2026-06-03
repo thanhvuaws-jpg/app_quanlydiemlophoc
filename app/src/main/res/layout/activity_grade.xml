@@ -178,7 +178,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Điểm đã nhập  (giữ để xóa)"
+                android:text="Điểm đã nhập  •  nhấn giữ để xóa"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 android:textColor="@color/text_primary"

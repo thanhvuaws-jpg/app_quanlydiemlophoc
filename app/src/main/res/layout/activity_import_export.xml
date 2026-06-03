@@ -143,6 +143,17 @@
                         android:nestedScrollingEnabled="false"
                         android:scrollbars="vertical" />
 
+                    <TextView
+                        android:id="@+id/tvEmptyStudents"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Chưa có sinh viên nào. Nhấn Import XML hoặc import file để thêm."
+                        android:textColor="@color/text_secondary"
+                        android:textSize="13sp"
+                        android:gravity="center"
+                        android:padding="16dp"
+                        android:visibility="gone" />
+
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 

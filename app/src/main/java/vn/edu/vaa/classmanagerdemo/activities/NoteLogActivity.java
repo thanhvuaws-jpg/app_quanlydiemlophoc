@@ -45,6 +45,7 @@ public class NoteLogActivity extends AppCompatActivity {
                 "- MODE_APPEND: nối thêm actions.log.\n" +
                 "- UTF-8: tránh lỗi tiếng Việt.\n\n" +
                 "Hãy ghi ghi chú, đọc lại, sau đó ghi log và đọc toàn bộ log.");
+        handleReadLog();
         NavigationHelper.setupBottomNavigation(this, R.id.nav_logs);
     }
 

@@ -83,12 +83,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadStats() {
-        int classCount = classDAO.getAll().size();
-        int studentCount = studentDAO.getAll().size();
-        int scoreCount = scoreDAO.getTotalCount();
-        tvStatClasses.setText(String.valueOf(classCount));
-        tvStatStudents.setText(String.valueOf(studentCount));
-        tvStatScores.setText(String.valueOf(scoreCount));
+        new Thread(() -> {
+            int classCount = classDAO.getAll().size();
+            int studentCount = studentDAO.getAll().size();
+            int scoreCount = scoreDAO.getTotalCount();
+            runOnUiThread(() -> {
+                tvStatClasses.setText(String.valueOf(classCount));
+                tvStatStudents.setText(String.valueOf(studentCount));
+                tvStatScores.setText(String.valueOf(scoreCount));
+            });
+        }).start();
     }
 
     private void confirmLogout() {

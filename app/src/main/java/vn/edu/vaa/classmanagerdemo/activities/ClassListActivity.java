@@ -91,26 +91,36 @@ public class ClassListActivity extends AppCompatActivity {
     }
 
     private void loadClasses(String keyword) {
-        try {
-            loading.show(this, "Đang tải danh sách lớp...");
-            List<ClassRoom> all = dao.getAll();
-            classes.clear();
-            for (ClassRoom cr : all) {
-                if (keyword.isEmpty() || cr.getName().toLowerCase().contains(keyword.toLowerCase())) {
-                    classes.add(cr);
+        loading.show(this, "Đang tải danh sách lớp...");
+        new Thread(() -> {
+            try {
+                List<ClassRoom> all = dao.getAll();
+                List<ClassRoom> filtered = new java.util.ArrayList<>();
+                for (ClassRoom cr : all) {
+                    if (keyword.isEmpty() || cr.getName().toLowerCase().contains(keyword.toLowerCase())) {
+                        filtered.add(cr);
+                    }
                 }
+                int total = 0;
+                for (ClassRoom cr : all) total += cr.getStudentCount();
+                final int finalTotal = total;
+                final int allSize = all.size();
+                runOnUiThread(() -> {
+                    loading.dismiss();
+                    classes.clear();
+                    classes.addAll(filtered);
+                    adapter.notifyDataSetChanged();
+                    tvStats.setText(allSize + " lớp  •  " + finalTotal + " sinh viên");
+                });
+            } catch (Exception e) {
+                String err = "Lỗi tải danh sách lớp: " + e.getMessage();
+                Log.e(TAG, err, e);
+                runOnUiThread(() -> {
+                    loading.dismiss();
+                    Toast.makeText(this, err, Toast.LENGTH_LONG).show();
+                });
             }
-            adapter.notifyDataSetChanged();
-            int total = 0;
-            for (ClassRoom cr : all) total += cr.getStudentCount();
-            tvStats.setText(all.size() + " lớp  •  " + total + " sinh viên");
-        } catch (Exception e) {
-            String err = "Lỗi tải danh sách lớp: " + e.getMessage();
-            Log.e(TAG, err, e);
-            Toast.makeText(this, err, Toast.LENGTH_LONG).show();
-        } finally {
-            loading.dismiss();
-        }
+        }).start();
     }
 
     private void showAddDialog(ClassRoom existing) {
