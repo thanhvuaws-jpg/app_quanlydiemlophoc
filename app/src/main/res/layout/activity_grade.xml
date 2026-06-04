@@ -22,6 +22,15 @@
                 app:title="Bảng điểm cá nhân"
                 app:titleTextColor="#FFFFFF"
                 app:navigationIconTint="#FFFFFF" />
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/tabLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:tabBackground="@color/primary"
+                app:tabTextColor="#A5B4FC"
+                app:tabSelectedTextColor="#FFFFFF"
+                app:tabIndicatorColor="#FFFFFF"
+                app:tabMode="fixed" />
         </com.google.android.material.appbar.AppBarLayout>
 
         <androidx.core.widget.NestedScrollView
@@ -35,95 +44,261 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
-
-
-                <!-- Stats Card -->
-                <com.google.android.material.card.MaterialCardView
+                <!-- TAB 1: SUBJECT GRADES LAYOUT -->
+                <LinearLayout
+                    android:id="@+id/layoutTabSubjects"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    app:cardCornerRadius="14dp"
-                    app:cardElevation="2dp"
-                    app:cardBackgroundColor="@color/primary_light"
-                    app:strokeWidth="0dp">
-                    <LinearLayout
+                    android:orientation="vertical">
+
+                    <!-- Stats Card -->
+                    <com.google.android.material.card.MaterialCardView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:padding="14dp"
-                        android:gravity="center_vertical">
-                        <TextView
-                            android:id="@+id/tvScoreCount"
-                            android:layout_width="0dp"
+                        android:layout_marginBottom="16dp"
+                        app:cardCornerRadius="14dp"
+                        app:cardElevation="2dp"
+                        app:cardBackgroundColor="@color/primary_light"
+                        app:strokeWidth="0dp">
+                        <LinearLayout
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="0 môn học"
-                            android:textSize="13sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/primary" />
-                        <TextView
-                            android:id="@+id/tvScoreAverage"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="GPA: --"
-                            android:textSize="15sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/primary" />
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
+                            android:orientation="horizontal"
+                            android:padding="14dp"
+                            android:gravity="center_vertical">
+                            <TextView
+                                android:id="@+id/tvScoreCount"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="0 môn học"
+                                android:textSize="13sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/primary" />
+                            <TextView
+                                android:id="@+id/tvScoreAverage"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="GPA: --"
+                                android:textSize="15sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/primary" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
 
-                <!-- Bộ lọc Học kỳ -->
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    app:cardCornerRadius="14dp"
-                    app:cardElevation="2dp"
-                    app:strokeColor="#E2E8F0"
-                    app:strokeWidth="1dp">
-
-                    <LinearLayout
+                    <!-- Bộ lọc Học kỳ -->
+                    <com.google.android.material.card.MaterialCardView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:padding="12dp"
-                        android:gravity="center_vertical">
+                        android:layout_marginBottom="16dp"
+                        app:cardCornerRadius="14dp"
+                        app:cardElevation="2dp"
+                        app:strokeColor="#E2E8F0"
+                        app:strokeWidth="1dp">
 
-                        <TextView
-                            android:layout_width="wrap_content"
+                        <LinearLayout
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Lọc Học kỳ:"
-                            android:textSize="13sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/text_secondary"
-                            android:layout_marginEnd="8dp" />
+                            android:orientation="horizontal"
+                            android:padding="12dp"
+                            android:gravity="center_vertical">
 
-                        <Spinner
-                            android:id="@+id/spFilterSemester"
-                            android:layout_width="0dp"
-                            android:layout_height="40dp"
-                            android:layout_weight="1"
-                            android:background="@android:drawable/btn_dropdown"
-                            android:spinnerMode="dropdown" />
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Lọc Học kỳ:"
+                                android:textSize="13sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/text_secondary"
+                                android:layout_marginEnd="8dp" />
 
-                <!-- Danh sách môn học -->
-                <TextView
+                            <Spinner
+                                android:id="@+id/spFilterSemester"
+                                android:layout_width="0dp"
+                                android:layout_height="40dp"
+                                android:layout_weight="1"
+                                android:background="@android:drawable/btn_dropdown"
+                                android:spinnerMode="dropdown" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- Danh sách môn học -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Danh sách môn học (Nhấn giữ để xóa)"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_primary"
+                        android:layout_marginBottom="8dp" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recyclerScores"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:nestedScrollingEnabled="false"
+                        android:paddingBottom="16dp" />
+
+                </LinearLayout>
+
+                <!-- TAB 2: SEMESTER STATISTICS LAYOUT -->
+                <LinearLayout
+                    android:id="@+id/layoutTabSemesterStats"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Danh sách môn học (Nhấn giữ để xóa)"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/text_primary"
-                    android:layout_marginBottom="8dp" />
+                    android:orientation="vertical"
+                    android:visibility="gone">
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recyclerScores"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:nestedScrollingEnabled="false"
-                    android:paddingBottom="16dp" />
+                    <!-- Cumulative Stats Card -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
+                        app:cardCornerRadius="14dp"
+                        app:cardElevation="3dp"
+                        app:cardBackgroundColor="@color/primary"
+                        app:strokeWidth="0dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="20dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="TỔNG KẾT TÍCH LŨY TOÀN BỘ"
+                                android:textColor="#C7D2FE"
+                                android:textSize="11sp"
+                                android:textStyle="bold"
+                                android:layout_marginBottom="12dp" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:weightSum="3"
+                                android:gravity="center_vertical">
+
+                                <!-- GPA Scale 10 -->
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:orientation="vertical">
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Tích lũy (10)"
+                                        android:textColor="#C7D2FE"
+                                        android:textSize="10sp" />
+                                    <TextView
+                                        android:id="@+id/tvCumulativeGpa10"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="--"
+                                        android:textColor="#FFFFFF"
+                                        android:textSize="20sp"
+                                        android:textStyle="bold"
+                                        android:layout_marginTop="2dp" />
+                                </LinearLayout>
+
+                                <!-- GPA Scale 4 -->
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:orientation="vertical">
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Tích lũy (4)"
+                                        android:textColor="#C7D2FE"
+                                        android:textSize="10sp" />
+                                    <TextView
+                                        android:id="@+id/tvCumulativeGpa4"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="--"
+                                        android:textColor="#FFFFFF"
+                                        android:textSize="20sp"
+                                        android:textStyle="bold"
+                                        android:layout_marginTop="2dp" />
+                                </LinearLayout>
+
+                                <!-- Credits -->
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:orientation="vertical">
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Tín chỉ tích lũy"
+                                        android:textColor="#C7D2FE"
+                                        android:textSize="10sp" />
+                                    <TextView
+                                        android:id="@+id/tvCumulativeCredits"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="--"
+                                        android:textColor="#FFFFFF"
+                                        android:textSize="20sp"
+                                        android:textStyle="bold"
+                                        android:layout_marginTop="2dp" />
+                                </LinearLayout>
+
+                            </LinearLayout>
+
+                            <!-- Academic Standing Classification -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:layout_marginTop="16dp"
+                                android:gravity="center_vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Xếp loại học lực:"
+                                    android:textColor="#C7D2FE"
+                                    android:textSize="12sp"
+                                    android:layout_marginEnd="6dp" />
+
+                                <TextView
+                                    android:id="@+id/tvCumulativeClassification"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Chưa xếp loại"
+                                    android:textColor="#FFFFFF"
+                                    android:textSize="13sp"
+                                    android:textStyle="bold" />
+                            </LinearLayout>
+
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- Summaries Header -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Thống kê theo từng Học kỳ"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_primary"
+                        android:layout_marginBottom="8dp" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recyclerSemesterSummaries"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:nestedScrollingEnabled="false"
+                        android:paddingBottom="16dp" />
+
+                </LinearLayout>
 
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>

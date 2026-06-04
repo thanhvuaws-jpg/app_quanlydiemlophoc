@@ -4,8 +4,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -14,6 +16,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -24,6 +27,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.TreeMap;
 
 import vn.edu.vaa.classmanagerdemo.R;
 import vn.edu.vaa.classmanagerdemo.adapters.ScoreAdapter;
@@ -33,6 +38,7 @@ import vn.edu.vaa.classmanagerdemo.storage.AppPreferenceManager;
 import vn.edu.vaa.classmanagerdemo.utils.DebounceClickListener;
 import vn.edu.vaa.classmanagerdemo.utils.NavigationHelper;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.tabs.TabLayout;
 
 public class GradeActivity extends AppCompatActivity {
 
@@ -42,6 +48,14 @@ public class GradeActivity extends AppCompatActivity {
     private TextView tvAverage, tvScoreCount;
     private Spinner spFilterSemester;
     private RecyclerView recyclerScores;
+
+    // Tab view components
+    private TabLayout tabLayout;
+    private View layoutTabSubjects, layoutTabSemesterStats;
+    private TextView tvCumulativeGpa10, tvCumulativeGpa4, tvCumulativeCredits, tvCumulativeClassification;
+    private RecyclerView recyclerSemesterSummaries;
+    private SemesterSummaryAdapter semesterSummaryAdapter;
+    private final List<SemesterSummary> semesterSummaryList = new ArrayList<>();
 
     private final List<Score> fullScoreList = new ArrayList<>();
     private final List<Score> scoreList = new ArrayList<>();
@@ -70,9 +84,15 @@ public class GradeActivity extends AppCompatActivity {
         scoreAdapter = new ScoreAdapter(scoreList, (score, position) -> confirmDeleteScore(score, position));
         recyclerScores.setLayoutManager(new LinearLayoutManager(this));
         recyclerScores.setAdapter(scoreAdapter);
+
+        // Setup Semester Summaries RecyclerView
+        semesterSummaryAdapter = new SemesterSummaryAdapter(semesterSummaryList);
+        recyclerSemesterSummaries.setLayoutManager(new LinearLayoutManager(this));
+        recyclerSemesterSummaries.setAdapter(semesterSummaryAdapter);
  
         loadScoresForStudent(currentStudentId);
         setupFilterSpinnerListener();
+        setupTabLayout();
  
         findViewById(R.id.fabAddScore).setOnClickListener(v -> showAddScoreDialog());
     }
@@ -82,6 +102,16 @@ public class GradeActivity extends AppCompatActivity {
         tvScoreCount     = findViewById(R.id.tvScoreCount);
         spFilterSemester = findViewById(R.id.spFilterSemester);
         recyclerScores   = findViewById(R.id.recyclerScores);
+
+        tabLayout        = findViewById(R.id.tabLayout);
+        layoutTabSubjects = findViewById(R.id.layoutTabSubjects);
+        layoutTabSemesterStats = findViewById(R.id.layoutTabSemesterStats);
+
+        tvCumulativeGpa10 = findViewById(R.id.tvCumulativeGpa10);
+        tvCumulativeGpa4 = findViewById(R.id.tvCumulativeGpa4);
+        tvCumulativeCredits = findViewById(R.id.tvCumulativeCredits);
+        tvCumulativeClassification = findViewById(R.id.tvCumulativeClassification);
+        recyclerSemesterSummaries = findViewById(R.id.recyclerSemesterSummaries);
     }
 
     private void loadScoresForStudent(int studentId) {
@@ -119,6 +149,7 @@ public class GradeActivity extends AppCompatActivity {
         }
 
         applySemesterFilter();
+        calculateAndShowSemesterStats();
     }
 
     private void setupFilterSpinnerListener() {
@@ -180,24 +211,32 @@ public class GradeActivity extends AppCompatActivity {
         EditText dialogEdtScoreCK = view.findViewById(R.id.edtScoreCK);
         EditText dialogEdtWeightCK = view.findViewById(R.id.edtWeightCK);
 
-        // Set up semesters dropdown
-        String[] semesters = {
-                "HK1 2024-2025", "HK2 2024-2025", "HK3 2024-2025",
-                "HK1 2025-2026", "HK2 2025-2026", "HK3 2025-2026"
-        };
+        // Suggest already used semesters
+        List<String> suggestions = new ArrayList<>();
+        for (Score s : fullScoreList) {
+            String sem = s.getSemester();
+            if (sem != null && !sem.trim().isEmpty() && !suggestions.contains(sem)) {
+                suggestions.add(sem);
+            }
+        }
+        // Fallback options if suggestion list is empty
+        if (suggestions.isEmpty()) {
+            suggestions.add("HK1 2024-2025");
+            suggestions.add("HK2 2024-2025");
+            suggestions.add("HK3 2024-2025");
+            suggestions.add("HK1 2025-2026");
+            suggestions.add("HK2 2025-2026");
+        }
         ArrayAdapter<String> semAdapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_dropdown_item_1line, semesters);
+                android.R.layout.simple_dropdown_item_1line, suggestions);
         dialogActvSemester.setAdapter(semAdapter);
 
         // Default to selected semester filter if not "Tất cả học kỳ"
-        String defaultSemester = semesters[0];
+        String defaultSemester = "HK1 2024-2025";
         if (selectedFilterSemester != null && !selectedFilterSemester.equals("Tất cả học kỳ")) {
-            for (String sem : semesters) {
-                if (sem.equals(selectedFilterSemester)) {
-                    defaultSemester = sem;
-                    break;
-                }
-            }
+            defaultSemester = selectedFilterSemester;
+        } else if (!suggestions.isEmpty()) {
+            defaultSemester = suggestions.get(0);
         }
         dialogActvSemester.setText(defaultSemester, false);
 
@@ -276,7 +315,11 @@ public class GradeActivity extends AppCompatActivity {
                         return;
                     }
 
-                    String semester = dialogActvSemester.getText() != null ? dialogActvSemester.getText().toString() : "";
+                    String semester = dialogActvSemester.getText() != null ? dialogActvSemester.getText().toString().trim() : "";
+                    if (semester.isEmpty()) {
+                        dialogActvSemester.setError("Vui lòng nhập học kỳ");
+                        return;
+                    }
                     Score score = new Score(currentStudentId, subject, credits, scoreQT, weightQT, scoreCK, weightCK, semester);
                     scoreDAO.insert(score);
 
@@ -320,5 +363,212 @@ public class GradeActivity extends AppCompatActivity {
         startActivity(new Intent(this, LoginActivity.class)
                 .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
         finish();
+    }
+
+    private void setupTabLayout() {
+        tabLayout.addTab(tabLayout.newTab().setText("Môn học"));
+        tabLayout.addTab(tabLayout.newTab().setText("Tổng kết"));
+
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                if (tab.getPosition() == 0) {
+                    layoutTabSubjects.setVisibility(View.VISIBLE);
+                    layoutTabSemesterStats.setVisibility(View.GONE);
+                    findViewById(R.id.fabAddScore).setVisibility(View.VISIBLE);
+                } else {
+                    layoutTabSubjects.setVisibility(View.GONE);
+                    layoutTabSemesterStats.setVisibility(View.VISIBLE);
+                    findViewById(R.id.fabAddScore).setVisibility(View.GONE);
+                    calculateAndShowSemesterStats();
+                }
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {}
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {}
+        });
+    }
+
+    private void calculateAndShowSemesterStats() {
+        semesterSummaryList.clear();
+        if (fullScoreList.isEmpty()) {
+            tvCumulativeGpa10.setText("--");
+            tvCumulativeGpa4.setText("--");
+            tvCumulativeCredits.setText("0 TC");
+            tvCumulativeClassification.setText("Chưa xếp loại");
+            tvCumulativeClassification.setTextColor(getResources().getColor(R.color.text_secondary));
+            semesterSummaryAdapter.notifyDataSetChanged();
+            return;
+        }
+
+        // Group scores by semester using TreeMap for natural sort
+        Map<String, List<Score>> groups = new TreeMap<>();
+        int totalCumulativeCredits = 0;
+        float weightedCumulativeGpa10 = 0f;
+        float weightedCumulativeGpa4 = 0f;
+
+        for (Score score : fullScoreList) {
+            String sem = score.getSemester();
+            if (sem == null || sem.trim().isEmpty()) {
+                sem = "Chưa phân loại";
+            }
+            if (!groups.containsKey(sem)) {
+                groups.put(sem, new ArrayList<>());
+            }
+            groups.get(sem).add(score);
+
+            totalCumulativeCredits += score.getCredits();
+            weightedCumulativeGpa10 += score.getScore() * score.getCredits();
+            weightedCumulativeGpa4 += score.getGrade4() * score.getCredits();
+        }
+
+        // Calculate semester stats
+        for (Map.Entry<String, List<Score>> entry : groups.entrySet()) {
+            String semName = entry.getKey();
+            List<Score> scores = entry.getValue();
+
+            int semCredits = 0;
+            float semWeightedGpa10 = 0f;
+            float semWeightedGpa4 = 0f;
+
+            for (Score s : scores) {
+                semCredits += s.getCredits();
+                semWeightedGpa10 += s.getScore() * s.getCredits();
+                semWeightedGpa4 += s.getGrade4() * s.getCredits();
+            }
+
+            float semGpa10 = semCredits > 0 ? (semWeightedGpa10 / semCredits) : 0f;
+            float semGpa4 = semCredits > 0 ? (semWeightedGpa4 / semCredits) : 0f;
+
+            semesterSummaryList.add(new SemesterSummary(semName, semGpa10, semGpa4, semCredits, scores.size()));
+        }
+
+        // Overall stats
+        float overallGpa10 = totalCumulativeCredits > 0 ? (weightedCumulativeGpa10 / totalCumulativeCredits) : 0f;
+        float overallGpa4 = totalCumulativeCredits > 0 ? (weightedCumulativeGpa4 / totalCumulativeCredits) : 0f;
+
+        tvCumulativeGpa10.setText(String.format(Locale.US, "%.2f", overallGpa10));
+        tvCumulativeGpa4.setText(String.format(Locale.US, "%.2f", overallGpa4));
+        tvCumulativeCredits.setText(totalCumulativeCredits + " TC");
+
+        // Determine cumulative classification
+        String classification;
+        int colorRes;
+        if (overallGpa4 >= 3.6f) {
+            classification = "Xuất sắc";
+            colorRes = R.color.grade_gioi;
+        } else if (overallGpa4 >= 3.2f) {
+            classification = "Giỏi";
+            colorRes = R.color.grade_gioi;
+        } else if (overallGpa4 >= 2.5f) {
+            classification = "Khá";
+            colorRes = R.color.grade_kha;
+        } else if (overallGpa4 >= 2.0f) {
+            classification = "Trung bình";
+            colorRes = R.color.grade_tb;
+        } else if (overallGpa4 >= 1.0f) {
+            classification = "Yếu";
+            colorRes = R.color.grade_yeu;
+        } else {
+            classification = "Kém";
+            colorRes = R.color.grade_kem;
+        }
+        tvCumulativeClassification.setText(classification);
+        tvCumulativeClassification.setTextColor(getResources().getColor(colorRes));
+
+        semesterSummaryAdapter.notifyDataSetChanged();
+    }
+
+    private static class SemesterSummary {
+        private final String semesterName;
+        private final float gpa10;
+        private final float gpa4;
+        private final int totalCredits;
+        private final int subjectCount;
+
+        public SemesterSummary(String semesterName, float gpa10, float gpa4, int totalCredits, int subjectCount) {
+            this.semesterName = semesterName;
+            this.gpa10 = gpa10;
+            this.gpa4 = gpa4;
+            this.totalCredits = totalCredits;
+            this.subjectCount = subjectCount;
+        }
+
+        public String getSemesterName() { return semesterName; }
+        public float getGpa10() { return gpa10; }
+        public float getGpa4() { return gpa4; }
+        public int getTotalCredits() { return totalCredits; }
+        public int getSubjectCount() { return subjectCount; }
+    }
+
+    private static class SemesterSummaryAdapter extends RecyclerView.Adapter<SemesterSummaryAdapter.ViewHolder> {
+        private final List<SemesterSummary> summaries;
+
+        public SemesterSummaryAdapter(List<SemesterSummary> summaries) {
+            this.summaries = summaries;
+        }
+
+        @NonNull
+        @Override
+        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_semester_summary, parent, false);
+            return new ViewHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+            SemesterSummary summary = summaries.get(position);
+            holder.tvSemName.setText(summary.getSemesterName());
+            holder.tvSemGpa10.setText(String.format(Locale.US, "%.2f", summary.getGpa10()));
+            holder.tvSemGpa4.setText(String.format(Locale.US, "%.2f", summary.getGpa4()));
+            holder.tvSemCredits.setText(summary.getTotalCredits() + " TC (" + summary.getSubjectCount() + " môn)");
+
+            // Determine classification
+            float gpa4 = summary.getGpa4();
+            String classification;
+            int colorRes;
+            if (gpa4 >= 3.6f) {
+                classification = "Xuất sắc";
+                colorRes = R.color.grade_gioi;
+            } else if (gpa4 >= 3.2f) {
+                classification = "Giỏi";
+                colorRes = R.color.grade_gioi;
+            } else if (gpa4 >= 2.5f) {
+                classification = "Khá";
+                colorRes = R.color.grade_kha;
+            } else if (gpa4 >= 2.0f) {
+                classification = "Trung bình";
+                colorRes = R.color.grade_tb;
+            } else if (gpa4 >= 1.0f) {
+                classification = "Yếu";
+                colorRes = R.color.grade_yeu;
+            } else {
+                classification = "Kém";
+                colorRes = R.color.grade_kem;
+            }
+            holder.tvSemClassification.setText(classification);
+            holder.tvSemClassification.setTextColor(holder.itemView.getContext().getResources().getColor(colorRes));
+        }
+
+        @Override
+        public int getItemCount() {
+            return summaries.size();
+        }
+
+        static class ViewHolder extends RecyclerView.ViewHolder {
+            TextView tvSemName, tvSemClassification, tvSemGpa10, tvSemGpa4, tvSemCredits;
+
+            public ViewHolder(@NonNull View itemView) {
+                super(itemView);
+                tvSemName = itemView.findViewById(R.id.tvSemName);
+                tvSemClassification = itemView.findViewById(R.id.tvSemClassification);
+                tvSemGpa10 = itemView.findViewById(R.id.tvSemGpa10);
+                tvSemGpa4 = itemView.findViewById(R.id.tvSemGpa4);
+                tvSemCredits = itemView.findViewById(R.id.tvSemCredits);
+            }
+        }
     }
 }
