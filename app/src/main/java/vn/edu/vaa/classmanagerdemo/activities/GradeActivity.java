@@ -67,11 +67,12 @@ public class GradeActivity extends BaseActivity {
     private final List<Score> scoreList = new ArrayList<>();
     private ScoreAdapter scoreAdapter;
     private int currentStudentId = -1;
-    private String selectedFilterSemester = getString(R.string.all_semesters);
+    private String selectedFilterSemester;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        selectedFilterSemester = getString(R.string.all_semesters);
         prefs = new AppPreferenceManager(this);
         if (!prefs.isLoggedIn()) { goLogin(); return; }
         setContentView(R.layout.activity_grade);
