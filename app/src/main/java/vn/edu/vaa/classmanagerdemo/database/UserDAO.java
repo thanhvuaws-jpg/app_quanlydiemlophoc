@@ -26,7 +26,7 @@ public class UserDAO {
         values.put(DatabaseHelper.USER_PASSWORD, hashPassword(user.getPassword()));
         values.put(DatabaseHelper.USER_EMAIL, user.getEmail());
         values.put(DatabaseHelper.USER_PHONE, user.getPhone());
-        values.put(DatabaseHelper.USER_TRAINING_POINTS, user.getTrainingPoints());
+        // values.put(DatabaseHelper.USER_TRAINING_POINTS, user.getTrainingPoints());
         return db.insert(DatabaseHelper.TABLE_USERS, null, values);
     }
 
@@ -62,11 +62,8 @@ public class UserDAO {
     }
 
     public int updateTrainingPoints(int userId, int points) {
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(DatabaseHelper.USER_TRAINING_POINTS, points);
-        return db.update(DatabaseHelper.TABLE_USERS, values,
-                DatabaseHelper.USER_ID + "=?", new String[]{String.valueOf(userId)});
+        // Training points are no longer stored in the new teacher DB schema
+        return 0;
     }
 
     private User fromCursor(Cursor c) {
@@ -77,7 +74,7 @@ public class UserDAO {
                 c.getString(c.getColumnIndexOrThrow(DatabaseHelper.USER_PASSWORD)),
                 c.getString(c.getColumnIndexOrThrow(DatabaseHelper.USER_EMAIL)),
                 c.getString(c.getColumnIndexOrThrow(DatabaseHelper.USER_PHONE)),
-                c.getInt(c.getColumnIndexOrThrow(DatabaseHelper.USER_TRAINING_POINTS))
+                80 // Default training points as column removed
         );
     }
 

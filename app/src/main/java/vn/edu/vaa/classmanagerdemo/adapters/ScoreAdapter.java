@@ -1,7 +1,6 @@
 package vn.edu.vaa.classmanagerdemo.adapters;
 
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,8 +8,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.google.android.material.card.MaterialCardView;
 
 import java.util.List;
 import java.util.Locale;
@@ -26,11 +23,11 @@ public class ScoreAdapter extends RecyclerView.Adapter<ScoreAdapter.ViewHolder> 
     }
 
     private final List<Score> list;
-    private final OnScoreEditListener listener;
+    private final OnScoreEditListener editListener;
 
-    public ScoreAdapter(List<Score> list, OnScoreEditListener listener) {
+    public ScoreAdapter(List<Score> list, OnScoreEditListener editListener) {
         this.list = list;
-        this.listener = listener;
+        this.editListener = editListener;
     }
 
     @NonNull
@@ -42,69 +39,53 @@ public class ScoreAdapter extends RecyclerView.Adapter<ScoreAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder h, int position) {
-        Score s = list.get(position);
-        String color = s.getGradeColor();
-        int parsedColor = Color.parseColor(color);
+        Score score = list.get(position);
 
-        h.tvScore.setText(String.format(Locale.US, "%.1f", s.getScore()));
-        h.tvScore.setTextColor(parsedColor);
-        h.scoreCircle.setStrokeColor(parsedColor);
+        h.tvSemester.setText(score.getSemester());
+        h.tvScoreQT.setText(String.format(Locale.US, "QT (%.0f%%): %.1f", (float)score.getWeightQT(), score.getScoreQT()));
+        h.tvScoreGK.setText(String.format(Locale.US, "GK (%.0f%%): %.1f", (float)score.getWeightGK(), score.getScoreGK()));
+        h.tvScoreCK.setText(String.format(Locale.US, "CK (%.0f%%): %.1f", (float)score.getWeightCK(), score.getScoreCK()));
 
-        // Repurpose tvStudent to show breakdown: QT, CK, weights
-        h.tvStudent.setVisibility(View.VISIBLE);
-        h.tvStudent.setText(String.format(Locale.getDefault(),
-                "QT: %.1f (%d%%)  •  CK: %.1f (%d%%)",
-                s.getScoreQT(), s.getWeightQT(), s.getScoreCK(), s.getWeightCK()));
-        h.tvStudent.setTextSize(11f);
-        h.tvStudent.setTypeface(Typeface.DEFAULT);
-        h.tvStudent.setTextColor(Color.parseColor("#64748B"));
-
-        h.tvSubject.setText(s.getSubject());
-        h.tvSubject.setTextSize(14f);
-        h.tvSubject.setTypeface(Typeface.DEFAULT_BOLD);
-
-        h.tvSemester.setText(s.getSemester() != null ? s.getSemester() : "");
-
-        if (h.tvCredits != null) {
-            h.tvCredits.setText(s.getCredits() + " tín chỉ");
+        float finalScore = score.getScore();
+        h.tvFinalScore.setText(String.format(Locale.US, "%.1f", finalScore));
+        h.tvGradeLetter.setText(score.getGradeLetter());
+        
+        try {
+            h.tvFinalScore.setTextColor(Color.parseColor(score.getGradeColor()));
+            h.tvGradeLetter.setTextColor(Color.parseColor(score.getGradeColor()));
+        } catch (IllegalArgumentException e) {
+            h.tvFinalScore.setTextColor(Color.BLACK);
+            h.tvGradeLetter.setTextColor(Color.BLACK);
         }
 
-        h.tvGrade.setText(String.format(Locale.US, "%s (%.1f)", s.getGradeLetter(), s.getGrade4()));
-        h.tvGrade.setBackgroundColor(Color.parseColor(color + "1A")); // 10% opacity
-        h.tvGrade.setTextColor(parsedColor);
-
         h.itemView.setOnClickListener(v -> {
-            int pos = h.getBindingAdapterPosition();
-            if (listener != null && pos != RecyclerView.NO_POSITION) {
-                listener.onEdit(list.get(pos), pos);
-            }
-        });
-
-        h.itemView.setOnLongClickListener(v -> {
-            int pos = h.getBindingAdapterPosition();
-            if (listener != null && pos != RecyclerView.NO_POSITION) {
-                listener.onDelete(list.get(pos), pos);
-            }
-            return true;
+            new androidx.appcompat.app.AlertDialog.Builder(v.getContext())
+                .setTitle("Tùy chọn điểm")
+                .setItems(new String[]{"Chỉnh sửa", "Xóa"}, (d, which) -> {
+                    if (which == 0) editListener.onEdit(score, position);
+                    else editListener.onDelete(score, position);
+                }).show();
         });
     }
 
     @Override
-    public int getItemCount() { return list.size(); }
+    public int getItemCount() {
+        return list.size();
+    }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
-        MaterialCardView scoreCircle;
-        TextView tvScore, tvStudent, tvSubject, tvSemester, tvGrade, tvCredits;
+        TextView tvSemester;
+        TextView tvScoreQT, tvScoreGK, tvScoreCK;
+        TextView tvFinalScore, tvGradeLetter;
 
         ViewHolder(View v) {
             super(v);
-            scoreCircle = v.findViewById(R.id.cardScoreCircle);
-            tvScore = v.findViewById(R.id.tvScoreValue);
-            tvStudent = v.findViewById(R.id.tvScoreStudent);
-            tvSubject = v.findViewById(R.id.tvScoreSubject);
-            tvSemester = v.findViewById(R.id.tvScoreSemester);
-            tvGrade = v.findViewById(R.id.tvScoreGrade);
-            tvCredits = v.findViewById(R.id.tvScoreCredits);
+            tvSemester = v.findViewById(R.id.tvSemester);
+            tvScoreQT = v.findViewById(R.id.tvScoreQT);
+            tvScoreGK = v.findViewById(R.id.tvScoreGK);
+            tvScoreCK = v.findViewById(R.id.tvScoreCK);
+            tvFinalScore = v.findViewById(R.id.tvFinalScore);
+            tvGradeLetter = v.findViewById(R.id.tvGradeLetter);
         }
     }
 }

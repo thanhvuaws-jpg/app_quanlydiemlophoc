@@ -20,20 +20,22 @@ public class ClassAdapter extends RecyclerView.Adapter<ClassAdapter.ViewHolder> 
     public interface OnClassClickListener {
         void onClick(SchoolClass cls);
     }
-    public interface OnClassLongClickListener {
+    public interface OnClassEditListener {
         void onEdit(SchoolClass cls);
+    }
+    public interface OnClassDeleteListener {
         void onDelete(SchoolClass cls);
     }
 
     private final List<SchoolClass> list;
     private final OnClassClickListener clickListener;
-    private final OnClassLongClickListener editListener;
-    private final OnClassLongClickListener deleteListener;
+    private final OnClassEditListener editListener;
+    private final OnClassDeleteListener deleteListener;
 
     public ClassAdapter(List<SchoolClass> list,
                         OnClassClickListener clickListener,
-                        OnClassLongClickListener editListener,
-                        OnClassLongClickListener deleteListener) {
+                        OnClassEditListener editListener,
+                        OnClassDeleteListener deleteListener) {
         this.list = list;
         this.clickListener = clickListener;
         this.editListener = editListener;

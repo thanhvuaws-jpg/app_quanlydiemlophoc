@@ -11,7 +11,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import vn.edu.vaa.classmanagerdemo.R;
 import vn.edu.vaa.classmanagerdemo.activities.MainActivity;
-import vn.edu.vaa.classmanagerdemo.activities.GradeActivity;
+import vn.edu.vaa.classmanagerdemo.activities.ClassListActivity;
 import vn.edu.vaa.classmanagerdemo.activities.SettingsActivity;
 
 public class NavigationHelper {
@@ -36,7 +36,7 @@ public class NavigationHelper {
             if (itemId == R.id.nav_home) {
                 intent = new Intent(activity, MainActivity.class);
             } else if (itemId == R.id.nav_grades) {
-                intent = new Intent(activity, GradeActivity.class);
+                intent = new Intent(activity, ClassListActivity.class);
             } else if (itemId == R.id.nav_settings) {
                 intent = new Intent(activity, SettingsActivity.class);
             }

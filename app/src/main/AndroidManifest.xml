@@ -20,7 +20,7 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <activity android:name=".activities.GradeActivity" />
+
         <activity android:name=".activities.ClassListActivity"
             android:launchMode="singleTask" />
         <activity android:name=".activities.StudentListActivity" />
