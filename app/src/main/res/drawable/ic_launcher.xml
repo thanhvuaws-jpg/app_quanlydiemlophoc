@@ -1,5 +1,13 @@
-<vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="48dp" android:height="48dp" android:viewportWidth="48" android:viewportHeight="48">
-    <path android:fillColor="#0B5CAD" android:pathData="M6,6h36v36h-36z"/>
-    <path android:fillColor="#FFFFFF" android:pathData="M12,14h24v4h-24zM12,22h24v4h-24zM12,30h16v4h-16z"/>
-</vector>
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Nền trắng -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#FFFFFF" />
+        </shape>
+    </item>
+    <!-- Logo ở giữa -->
+    <item
+        android:drawable="@drawable/vaa_logo"
+        android:gravity="center" />
+</layer-list>

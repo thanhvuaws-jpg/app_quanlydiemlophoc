@@ -2,9 +2,13 @@ package vn.edu.vaa.classmanagerdemo.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
+import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -17,251 +21,290 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 import vn.edu.vaa.classmanagerdemo.R;
 import vn.edu.vaa.classmanagerdemo.adapters.ScoreAdapter;
-import vn.edu.vaa.classmanagerdemo.database.ClassDAO;
 import vn.edu.vaa.classmanagerdemo.database.ScoreDAO;
-import vn.edu.vaa.classmanagerdemo.database.StudentDAO;
-import vn.edu.vaa.classmanagerdemo.models.ClassRoom;
 import vn.edu.vaa.classmanagerdemo.models.Score;
-import vn.edu.vaa.classmanagerdemo.models.Student;
-import android.util.Log;
 import vn.edu.vaa.classmanagerdemo.storage.AppPreferenceManager;
 import vn.edu.vaa.classmanagerdemo.utils.DebounceClickListener;
-import vn.edu.vaa.classmanagerdemo.utils.LoadingHelper;
 import vn.edu.vaa.classmanagerdemo.utils.NavigationHelper;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 public class GradeActivity extends AppCompatActivity {
 
-    private ClassDAO classDAO;
-    private StudentDAO studentDAO;
     private ScoreDAO scoreDAO;
+    private AppPreferenceManager prefs;
 
-    private Spinner spinnerClass, spinnerStudent, spinnerSemester;
-    private EditText edtSubject, edtScoreValue;
     private TextView tvAverage, tvScoreCount;
+    private Spinner spFilterSemester;
     private RecyclerView recyclerScores;
 
-    private static final String TAG = "GradeActivity";
-    private final LoadingHelper loading = new LoadingHelper();
-    private List<ClassRoom> classList = new ArrayList<>();
-    private List<Student> studentList = new ArrayList<>();
+    private final List<Score> fullScoreList = new ArrayList<>();
     private final List<Score> scoreList = new ArrayList<>();
     private ScoreAdapter scoreAdapter;
-
-    private int preselectedStudentId = -1;
-    private int preselectedClassId = -1;
+    private int currentStudentId = -1;
+    private String selectedFilterSemester = "Tất cả học kỳ";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (!new AppPreferenceManager(this).isLoggedIn()) { goLogin(); return; }
+        prefs = new AppPreferenceManager(this);
+        if (!prefs.isLoggedIn()) { goLogin(); return; }
         setContentView(R.layout.activity_grade);
 
         Toolbar toolbar = findViewById(R.id.toolbarGrade);
         setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 
-        preselectedStudentId = getIntent().getIntExtra("studentId", -1);
-        preselectedClassId = getIntent().getIntExtra("classId", -1);
-        String studentName = getIntent().getStringExtra("studentName");
-        if (getSupportActionBar() != null && studentName != null) {
-            getSupportActionBar().setTitle("Điểm: " + studentName);
-        }
+        NavigationHelper.setupBottomNavigation(this, R.id.nav_grades);
 
-        classDAO = new ClassDAO(this);
-        studentDAO = new StudentDAO(this);
         scoreDAO = new ScoreDAO(this);
+        currentStudentId = prefs.getCurrentUserId();
 
-        spinnerClass = findViewById(R.id.spinnerGradeClass);
-        spinnerStudent = findViewById(R.id.spinnerGradeStudent);
-        spinnerSemester = findViewById(R.id.spinnerSemester);
-        edtSubject = findViewById(R.id.edtSubject);
-        edtScoreValue = findViewById(R.id.edtScoreValue);
-        tvAverage = findViewById(R.id.tvScoreAverage);
-        tvScoreCount = findViewById(R.id.tvScoreCount);
-        recyclerScores = findViewById(R.id.recyclerScores);
-
+        initViews();
+        
         scoreAdapter = new ScoreAdapter(scoreList, (score, position) -> confirmDeleteScore(score, position));
         recyclerScores.setLayoutManager(new LinearLayoutManager(this));
         recyclerScores.setAdapter(scoreAdapter);
-
-        setupSemesters();
-        loadClasses();
-
-        Button btnSave = findViewById(R.id.btnSaveScore);
-        btnSave.setOnClickListener(DebounceClickListener.wrap(v -> handleSaveScore()));
+ 
+        loadScoresForStudent(currentStudentId);
+        setupFilterSpinnerListener();
+ 
+        findViewById(R.id.fabAddScore).setOnClickListener(v -> showAddScoreDialog());
     }
 
-    private void setupSemesters() {
-        String[] semesters = {"HK1 2024-2025", "HK2 2024-2025", "HK3 2024-2025",
-                "HK1 2025-2026", "HK2 2025-2026", "HK3 2025-2026"};
-        spinnerSemester.setAdapter(new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_item, semesters));
-    }
-
-    private void loadClasses() {
-        try {
-            loading.show(this, "Đang tải danh sách lớp...");
-            classList = classDAO.getAll();
-        } catch (Exception e) {
-            loading.dismiss();
-            String err = "Lỗi tải lớp: " + e.getMessage();
-            Log.e(TAG, err, e);
-            Toast.makeText(this, err, Toast.LENGTH_LONG).show();
-            return;
-        }
-        loading.dismiss();
-        if (classList.isEmpty()) {
-            Toast.makeText(this, "Chưa có lớp nào. Hãy tạo lớp trước.", Toast.LENGTH_LONG).show();
-            return;
-        }
-        ArrayAdapter<ClassRoom> adapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_item, classList);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerClass.setAdapter(adapter);
-
-        spinnerClass.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
-            @Override public void onItemSelected(android.widget.AdapterView<?> parent, android.view.View view, int pos, long id) {
-                loadStudentsForClass(classList.get(pos).getId());
-            }
-            @Override public void onNothingSelected(android.widget.AdapterView<?> parent) {}
-        });
-
-        // Pre-select class if coming from ClassDetail
-        if (preselectedClassId > 0) {
-            for (int i = 0; i < classList.size(); i++) {
-                if (classList.get(i).getId() == preselectedClassId) {
-                    spinnerClass.setSelection(i);
-                    break;
-                }
-            }
-        } else {
-            loadStudentsForClass(classList.get(0).getId());
-        }
-    }
-
-    private void loadStudentsForClass(int classId) {
-        studentList = studentDAO.getByClassId(classId);
-        if (studentList.isEmpty()) {
-            spinnerStudent.setAdapter(new ArrayAdapter<>(this,
-                    android.R.layout.simple_spinner_item, new String[]{"(Chưa có sinh viên)"}));
-            scoreList.clear();
-            scoreAdapter.notifyDataSetChanged();
-            updateStats(-1);
-            return;
-        }
-        ArrayAdapter<Student> adapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_item, studentList);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerStudent.setAdapter(adapter);
-
-        spinnerStudent.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
-            @Override public void onItemSelected(android.widget.AdapterView<?> parent, android.view.View view, int pos, long id) {
-                loadScoresForStudent(studentList.get(pos).getId());
-            }
-            @Override public void onNothingSelected(android.widget.AdapterView<?> parent) {}
-        });
-
-        // Tìm index của SV cần preselect
-        int targetIndex = 0;
-        if (preselectedStudentId > 0) {
-            for (int i = 0; i < studentList.size(); i++) {
-                if (studentList.get(i).getId() == preselectedStudentId) {
-                    targetIndex = i;
-                    break;
-                }
-            }
-        }
-        // Luôn gọi loadScoresForStudent trực tiếp — không phụ thuộc callback onItemSelected
-        spinnerStudent.setSelection(targetIndex);
-        loadScoresForStudent(studentList.get(targetIndex).getId());
+    private void initViews() {
+        tvAverage        = findViewById(R.id.tvScoreAverage);
+        tvScoreCount     = findViewById(R.id.tvScoreCount);
+        spFilterSemester = findViewById(R.id.spFilterSemester);
+        recyclerScores   = findViewById(R.id.recyclerScores);
     }
 
     private void loadScoresForStudent(int studentId) {
-        scoreList.clear();
-        scoreList.addAll(scoreDAO.getByStudentId(studentId));
-        scoreAdapter.notifyDataSetChanged();
-        updateStats(studentId);
-    }
-
-    private void updateStats(int studentId) {
-        if (studentId < 0) {
-            tvAverage.setText("ĐTB: --");
-            tvScoreCount.setText("0 môn");
-            return;
+        fullScoreList.clear();
+        fullScoreList.addAll(scoreDAO.getByStudentId(studentId));
+        
+        // Rebuild semester list for filter
+        List<String> semestersList = new ArrayList<>();
+        semestersList.add("Tất cả học kỳ");
+        for (Score s : fullScoreList) {
+            String sem = s.getSemester();
+            if (sem != null && !sem.trim().isEmpty() && !semestersList.contains(sem)) {
+                semestersList.add(sem);
+            }
         }
-        float avg = scoreDAO.getAverageByStudentId(studentId);
-        tvScoreCount.setText(scoreList.size() + " môn");
-        if (scoreList.isEmpty()) {
-            tvAverage.setText("ĐTB: chưa có điểm");
+        
+        // Sort semester list excluding "Tất cả học kỳ"
+        if (semestersList.size() > 2) {
+            List<String> subList = semestersList.subList(1, semestersList.size());
+            Collections.sort(subList);
+        }
+
+        ArrayAdapter<String> filterAdapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item, semestersList);
+        filterAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spFilterSemester.setAdapter(filterAdapter);
+
+        // Restore previous selection if possible
+        int prevPos = semestersList.indexOf(selectedFilterSemester);
+        if (prevPos >= 0) {
+            spFilterSemester.setSelection(prevPos);
         } else {
-            String grade = new Score(0, studentId, "", avg, "").getGradeLabel();
-            tvAverage.setText(String.format("ĐTB: %.2f  •  %s", avg, grade));
+            spFilterSemester.setSelection(0);
+            selectedFilterSemester = "Tất cả học kỳ";
+        }
+
+        applySemesterFilter();
+    }
+
+    private void setupFilterSpinnerListener() {
+        spFilterSemester.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                selectedFilterSemester = parent.getItemAtPosition(position).toString();
+                applySemesterFilter();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
+    }
+
+    private void applySemesterFilter() {
+        scoreList.clear();
+        if (selectedFilterSemester.equals("Tất cả học kỳ")) {
+            scoreList.addAll(fullScoreList);
+        } else {
+            for (Score s : fullScoreList) {
+                if (selectedFilterSemester.equals(s.getSemester())) {
+                    scoreList.add(s);
+                }
+            }
+        }
+        scoreAdapter.notifyDataSetChanged();
+        updateStats();
+    }
+
+    private void updateStats() {
+        int totalCredits = 0;
+        float weightedGpaSum = 0;
+        for (Score s : scoreList) {
+            totalCredits += s.getCredits();
+            weightedGpaSum += s.getGrade4() * s.getCredits();
+        }
+        float avgGpa = totalCredits > 0 ? (weightedGpaSum / totalCredits) : 0f;
+
+        String labelPrefix = selectedFilterSemester.equals("Tất cả học kỳ") ? "GPA tích lũy" : "GPA Học kỳ";
+        tvScoreCount.setText(scoreList.size() + " môn (" + totalCredits + " tín chỉ)");
+        if (scoreList.isEmpty()) {
+            tvAverage.setText(labelPrefix + ": --");
+        } else {
+            tvAverage.setText(String.format(Locale.US, labelPrefix + ": %.2f", avgGpa));
         }
     }
 
-    private void handleSaveScore() {
-        if (studentList.isEmpty()) {
-            Toast.makeText(this, "Hãy chọn sinh viên", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        String subject = edtSubject.getText().toString().trim();
-        String scoreStr = edtScoreValue.getText().toString().trim();
-        if (subject.isEmpty()) { edtSubject.setError("Nhập tên môn học"); return; }
-        if (scoreStr.isEmpty()) { edtScoreValue.setError("Nhập điểm"); return; }
-        float scoreVal;
-        try {
-            scoreVal = Float.parseFloat(scoreStr);
-        } catch (NumberFormatException e) { edtScoreValue.setError("Điểm không hợp lệ"); return; }
-        if (scoreVal < 0 || scoreVal > 10) { edtScoreValue.setError("Điểm từ 0 đến 10"); return; }
+    private void showAddScoreDialog() {
+        BottomSheetDialog dialog = new BottomSheetDialog(this, R.style.BottomSheetDialogTheme);
+        View view = getLayoutInflater().inflate(R.layout.dialog_add_grade, null);
+        dialog.setContentView(view);
 
-        int selectedPos = spinnerStudent.getSelectedItemPosition();
-        if (selectedPos < 0 || selectedPos >= studentList.size()) {
-            Toast.makeText(this, "Không xác định được sinh viên — thử chọn lại lớp", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        int studentId = studentList.get(selectedPos).getId();
-        String semester = spinnerSemester.getSelectedItem() != null
-                ? spinnerSemester.getSelectedItem().toString() : "";
+        AutoCompleteTextView dialogActvSemester = view.findViewById(R.id.actvSemester);
+        EditText dialogEdtSubject = view.findViewById(R.id.edtSubject);
+        EditText dialogEdtCredits = view.findViewById(R.id.edtCredits);
+        EditText dialogEdtScoreQT = view.findViewById(R.id.edtScoreQT);
+        EditText dialogEdtWeightQT = view.findViewById(R.id.edtWeightQT);
+        EditText dialogEdtScoreCK = view.findViewById(R.id.edtScoreCK);
+        EditText dialogEdtWeightCK = view.findViewById(R.id.edtWeightCK);
 
-        try {
-            loading.show(this, "Đang lưu điểm...");
-            scoreDAO.insert(new Score(studentId, subject, scoreVal, semester));
-            Log.d(TAG, "Lưu điểm SV id=" + studentId + " môn=" + subject + " điểm=" + scoreVal);
-            edtSubject.setText("");
-            edtScoreValue.setText("");
-            loadScoresForStudent(studentId);
-            Toast.makeText(this, "Đã lưu điểm " + subject + ": " + scoreVal, Toast.LENGTH_SHORT).show();
-        } catch (Exception e) {
-            String err = "Lỗi lưu điểm: " + e.getMessage();
-            Log.e(TAG, err, e);
-            Toast.makeText(this, err, Toast.LENGTH_LONG).show();
-        } finally {
-            loading.dismiss();
+        // Set up semesters dropdown
+        String[] semesters = {
+                "HK1 2024-2025", "HK2 2024-2025", "HK3 2024-2025",
+                "HK1 2025-2026", "HK2 2025-2026", "HK3 2025-2026"
+        };
+        ArrayAdapter<String> semAdapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_dropdown_item_1line, semesters);
+        dialogActvSemester.setAdapter(semAdapter);
+
+        // Default to selected semester filter if not "Tất cả học kỳ"
+        String defaultSemester = semesters[0];
+        if (selectedFilterSemester != null && !selectedFilterSemester.equals("Tất cả học kỳ")) {
+            for (String sem : semesters) {
+                if (sem.equals(selectedFilterSemester)) {
+                    defaultSemester = sem;
+                    break;
+                }
+            }
         }
+        dialogActvSemester.setText(defaultSemester, false);
+
+        // Set up weights watchers
+        dialogEdtWeightQT.addTextChangedListener(new TextWatcher() {
+            private boolean isBusy = false;
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            @Override public void afterTextChanged(Editable s) {
+                if (isBusy) return;
+                isBusy = true;
+                try {
+                    int val = Integer.parseInt(s.toString().trim());
+                    if (val >= 0 && val <= 100) {
+                        dialogEdtWeightCK.setText(String.valueOf(100 - val));
+                    }
+                } catch (NumberFormatException e) {
+                    dialogEdtWeightCK.setText("");
+                }
+                isBusy = false;
+            }
+        });
+
+        dialogEdtWeightCK.addTextChangedListener(new TextWatcher() {
+            private boolean isBusy = false;
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            @Override public void afterTextChanged(Editable s) {
+                if (isBusy) return;
+                isBusy = true;
+                try {
+                    int val = Integer.parseInt(s.toString().trim());
+                    if (val >= 0 && val <= 100) {
+                        dialogEdtWeightQT.setText(String.valueOf(100 - val));
+                    }
+                } catch (NumberFormatException e) {
+                    dialogEdtWeightQT.setText("");
+                }
+                isBusy = false;
+            }
+        });
+
+        view.findViewById(R.id.btnSaveScore).setOnClickListener(
+            DebounceClickListener.wrap(v -> {
+                if (currentStudentId <= 0) {
+                    Toast.makeText(this, "Sinh viên không hợp lệ", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                String subject = dialogEdtSubject.getText().toString().trim();
+                String creditsStr = dialogEdtCredits.getText().toString().trim();
+                String scoreQTStr = dialogEdtScoreQT.getText().toString().trim();
+                String weightQTStr = dialogEdtWeightQT.getText().toString().trim();
+                String scoreCKStr = dialogEdtScoreCK.getText().toString().trim();
+                String weightCKStr = dialogEdtWeightCK.getText().toString().trim();
+
+                if (subject.isEmpty()) { dialogEdtSubject.setError("Nhập tên môn học"); return; }
+                if (creditsStr.isEmpty()) { dialogEdtCredits.setError("Nhập số tín chỉ"); return; }
+                if (scoreQTStr.isEmpty()) { dialogEdtScoreQT.setError("Nhập điểm QT"); return; }
+                if (weightQTStr.isEmpty()) { dialogEdtWeightQT.setError("Nhập tỷ lệ QT"); return; }
+                if (scoreCKStr.isEmpty()) { dialogEdtScoreCK.setError("Nhập điểm CK"); return; }
+                if (weightCKStr.isEmpty()) { dialogEdtWeightCK.setError("Nhập tỷ lệ CK"); return; }
+
+                try {
+                    int credits = Integer.parseInt(creditsStr);
+                    float scoreQT = Float.parseFloat(scoreQTStr);
+                    int weightQT = Integer.parseInt(weightQTStr);
+                    float scoreCK = Float.parseFloat(scoreCKStr);
+                    int weightCK = Integer.parseInt(weightCKStr);
+
+                    if (credits <= 0) { dialogEdtCredits.setError("Số tín chỉ phải > 0"); return; }
+                    if (scoreQT < 0 || scoreQT > 10) { dialogEdtScoreQT.setError("Điểm từ 0 đến 10"); return; }
+                    if (scoreCK < 0 || scoreCK > 10) { dialogEdtScoreCK.setError("Điểm từ 0 đến 10"); return; }
+                    if (weightQT + weightCK != 100) {
+                        Toast.makeText(this, "Tổng tỷ lệ phần trăm phải bằng 100%", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    String semester = dialogActvSemester.getText() != null ? dialogActvSemester.getText().toString() : "";
+                    Score score = new Score(currentStudentId, subject, credits, scoreQT, weightQT, scoreCK, weightCK, semester);
+                    scoreDAO.insert(score);
+
+                    // Save the semester added as selected filter
+                    selectedFilterSemester = semester;
+                    loadScoresForStudent(currentStudentId);
+                    Toast.makeText(this, "Đã lưu điểm môn " + subject, Toast.LENGTH_SHORT).show();
+                    dialog.dismiss();
+
+                } catch (NumberFormatException e) {
+                    Toast.makeText(this, "Dữ liệu nhập vào không hợp lệ", Toast.LENGTH_SHORT).show();
+                }
+            })
+        );
+
+        dialog.show();
     }
 
     private void confirmDeleteScore(Score score, int position) {
         new AlertDialog.Builder(this)
-                .setTitle("Xóa điểm")
-                .setMessage("Xóa điểm môn \"" + score.getSubject() + "\": " + score.getScore() + "?")
+                .setTitle("Xóa môn học")
+                .setMessage("Bạn có chắc chắn muốn xóa môn học \"" + score.getSubject() + "\"?")
                 .setPositiveButton("Xóa", (d, w) -> {
                     scoreDAO.deleteById(score.getId());
-                    if (position >= 0 && position < scoreList.size()) {
-                        scoreList.remove(position);
-                        scoreAdapter.notifyItemRemoved(position);
-                    }
-                    int studentId = -1;
-                    int selectedPos = spinnerStudent.getSelectedItemPosition();
-                    if (!studentList.isEmpty() && selectedPos >= 0 && selectedPos < studentList.size()) {
-                        studentId = studentList.get(selectedPos).getId();
-                    }
-                    updateStats(studentId);
+                    loadScoresForStudent(currentStudentId);
                 })
-                .setNegativeButton("Hủy", null).show();
+                .setNegativeButton("Hủy", null)
+                .show();
     }
 
     @Override

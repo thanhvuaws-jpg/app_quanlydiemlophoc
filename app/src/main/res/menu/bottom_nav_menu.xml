@@ -5,17 +5,9 @@
         android:icon="@drawable/ic_home"
         android:title="Trang chủ" />
     <item
-        android:id="@+id/nav_students"
-        android:icon="@drawable/ic_students"
-        android:title="Sinh viên" />
-    <item
-        android:id="@+id/nav_todo"
-        android:icon="@drawable/ic_todo"
-        android:title="Công việc" />
-    <item
-        android:id="@+id/nav_logs"
-        android:icon="@drawable/ic_logs"
-        android:title="Nhật ký" />
+        android:id="@+id/nav_grades"
+        android:icon="@drawable/ic_school"
+        android:title="Bảng điểm" />
     <item
         android:id="@+id/nav_settings"
         android:icon="@drawable/ic_settings"

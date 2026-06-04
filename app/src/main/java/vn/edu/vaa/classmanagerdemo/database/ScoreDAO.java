@@ -22,6 +22,11 @@ public class ScoreDAO {
         ContentValues v = new ContentValues();
         v.put(DatabaseHelper.SCR_STUDENT_ID, score.getStudentId());
         v.put(DatabaseHelper.SCR_SUBJECT, score.getSubject());
+        v.put(DatabaseHelper.SCR_CREDITS, score.getCredits());
+        v.put(DatabaseHelper.SCR_SCORE_QT, score.getScoreQT());
+        v.put(DatabaseHelper.SCR_WEIGHT_QT, score.getWeightQT());
+        v.put(DatabaseHelper.SCR_SCORE_CK, score.getScoreCK());
+        v.put(DatabaseHelper.SCR_WEIGHT_CK, score.getWeightCK());
         v.put(DatabaseHelper.SCR_VALUE, score.getScore());
         v.put(DatabaseHelper.SCR_SEMESTER, score.getSemester());
         return db.insert(DatabaseHelper.TABLE_SCORES, null, v);
@@ -31,6 +36,11 @@ public class ScoreDAO {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues v = new ContentValues();
         v.put(DatabaseHelper.SCR_SUBJECT, score.getSubject());
+        v.put(DatabaseHelper.SCR_CREDITS, score.getCredits());
+        v.put(DatabaseHelper.SCR_SCORE_QT, score.getScoreQT());
+        v.put(DatabaseHelper.SCR_WEIGHT_QT, score.getWeightQT());
+        v.put(DatabaseHelper.SCR_SCORE_CK, score.getScoreCK());
+        v.put(DatabaseHelper.SCR_WEIGHT_CK, score.getWeightCK());
         v.put(DatabaseHelper.SCR_VALUE, score.getScore());
         v.put(DatabaseHelper.SCR_SEMESTER, score.getSemester());
         return db.update(DatabaseHelper.TABLE_SCORES, v,
@@ -47,11 +57,9 @@ public class ScoreDAO {
         List<Score> list = new ArrayList<>();
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         Cursor c = db.rawQuery(
-                "SELECT sc.*, s." + DatabaseHelper.COL_NAME + " as sname " +
-                "FROM " + DatabaseHelper.TABLE_SCORES + " sc " +
-                "LEFT JOIN " + DatabaseHelper.TABLE_STUDENTS + " s ON s." + DatabaseHelper.COL_ID + " = sc." + DatabaseHelper.SCR_STUDENT_ID + " " +
-                "WHERE sc." + DatabaseHelper.SCR_STUDENT_ID + "=? " +
-                "ORDER BY sc." + DatabaseHelper.SCR_SEMESTER + ", sc." + DatabaseHelper.SCR_SUBJECT,
+                "SELECT * FROM " + DatabaseHelper.TABLE_SCORES +
+                " WHERE " + DatabaseHelper.SCR_STUDENT_ID + "=? " +
+                " ORDER BY " + DatabaseHelper.SCR_SEMESTER + ", " + DatabaseHelper.SCR_SUBJECT,
                 new String[]{String.valueOf(studentId)});
         if (c.moveToFirst()) {
             do { list.add(fromCursor(c)); } while (c.moveToNext());
@@ -60,16 +68,14 @@ public class ScoreDAO {
         return list;
     }
 
-    public List<Score> getByClassId(int classId) {
+    public List<Score> getBySemester(int studentId, String semester) {
         List<Score> list = new ArrayList<>();
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         Cursor c = db.rawQuery(
-                "SELECT sc.*, s." + DatabaseHelper.COL_NAME + " as sname " +
-                "FROM " + DatabaseHelper.TABLE_SCORES + " sc " +
-                "JOIN " + DatabaseHelper.TABLE_STUDENTS + " s ON s." + DatabaseHelper.COL_ID + " = sc." + DatabaseHelper.SCR_STUDENT_ID + " " +
-                "WHERE s." + DatabaseHelper.COL_CLASS_ID + "=? " +
-                "ORDER BY s." + DatabaseHelper.COL_NAME + ", sc." + DatabaseHelper.SCR_SUBJECT,
-                new String[]{String.valueOf(classId)});
+                "SELECT * FROM " + DatabaseHelper.TABLE_SCORES +
+                " WHERE " + DatabaseHelper.SCR_STUDENT_ID + "=? AND " + DatabaseHelper.SCR_SEMESTER + "=? " +
+                " ORDER BY " + DatabaseHelper.SCR_SUBJECT,
+                new String[]{String.valueOf(studentId), semester});
         if (c.moveToFirst()) {
             do { list.add(fromCursor(c)); } while (c.moveToNext());
         }
@@ -89,6 +95,32 @@ public class ScoreDAO {
         return avg;
     }
 
+    public int getTotalCreditsByStudentId(int studentId) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor c = db.rawQuery(
+                "SELECT SUM(" + DatabaseHelper.SCR_CREDITS + ") FROM " + DatabaseHelper.TABLE_SCORES +
+                " WHERE " + DatabaseHelper.SCR_STUDENT_ID + "=?",
+                new String[]{String.valueOf(studentId)});
+        int total = 0;
+        if (c.moveToFirst() && !c.isNull(0)) total = c.getInt(0);
+        c.close();
+        return total;
+    }
+
+    public float getCumulativeGpaByStudentId(int studentId) {
+        List<Score> scores = getByStudentId(studentId);
+        if (scores.isEmpty()) return 0f;
+        float totalPoints = 0f;
+        int totalCredits = 0;
+        for (Score s : scores) {
+            totalPoints += s.getGrade4() * s.getCredits();
+            totalCredits += s.getCredits();
+        }
+        if (totalCredits == 0) return 0f;
+        float gpa = totalPoints / totalCredits;
+        return Math.round(gpa * 100f) / 100f; // Round to 2 decimal places
+    }
+
     public int getTotalCount() {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         Cursor c = db.rawQuery("SELECT COUNT(*) FROM " + DatabaseHelper.TABLE_SCORES, null);
@@ -98,16 +130,26 @@ public class ScoreDAO {
         return count;
     }
 
+    public int getSubjectCountByStudentId(int studentId) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor c = db.rawQuery("SELECT COUNT(*) FROM " + DatabaseHelper.TABLE_SCORES + " WHERE " + DatabaseHelper.SCR_STUDENT_ID + "=?", new String[]{String.valueOf(studentId)});
+        int count = 0;
+        if (c.moveToFirst()) count = c.getInt(0);
+        c.close();
+        return count;
+    }
+
     private Score fromCursor(Cursor c) {
-        Score s = new Score(
+        return new Score(
                 c.getInt(c.getColumnIndexOrThrow(DatabaseHelper.SCR_ID)),
                 c.getInt(c.getColumnIndexOrThrow(DatabaseHelper.SCR_STUDENT_ID)),
                 c.getString(c.getColumnIndexOrThrow(DatabaseHelper.SCR_SUBJECT)),
-                c.getFloat(c.getColumnIndexOrThrow(DatabaseHelper.SCR_VALUE)),
+                c.getInt(c.getColumnIndexOrThrow(DatabaseHelper.SCR_CREDITS)),
+                c.getFloat(c.getColumnIndexOrThrow(DatabaseHelper.SCR_SCORE_QT)),
+                c.getInt(c.getColumnIndexOrThrow(DatabaseHelper.SCR_WEIGHT_QT)),
+                c.getFloat(c.getColumnIndexOrThrow(DatabaseHelper.SCR_SCORE_CK)),
+                c.getInt(c.getColumnIndexOrThrow(DatabaseHelper.SCR_WEIGHT_CK)),
                 c.getString(c.getColumnIndexOrThrow(DatabaseHelper.SCR_SEMESTER))
         );
-        int snameIdx = c.getColumnIndex("sname");
-        if (snameIdx >= 0) s.setStudentName(c.getString(snameIdx));
-        return s;
     }
 }

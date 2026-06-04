@@ -14,8 +14,8 @@
             android:id="@+id/toolbarImportExport"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@drawable/bg_header"
-            app:title="Import XML &amp; Export CSV"
+            android:background="@color/primary"
+            app:title="Nhập &amp; Xuất Bảng Điểm"
             app:titleTextColor="#FFFFFF"
             app:navigationIconTint="#FFFFFF" />
     </com.google.android.material.appbar.AppBarLayout>
@@ -32,7 +32,7 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <!-- Card 1: Operation Controls -->
+            <!-- Card 1: Export Data -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -51,48 +51,35 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Trung tâm xử lý dữ liệu"
+                        android:text="Xuất bảng điểm cá nhân"
                         android:textColor="@color/text_primary"
                         android:textSize="16sp"
                         android:textStyle="bold"
-                        android:layout_marginBottom="16dp" />
+                        android:layout_marginBottom="6dp" />
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnImportXml"
-                        style="@style/Widget.App.Button"
+                    <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Import sinh viên từ XML mẫu" />
+                        android:text="Lưu trữ tất cả điểm học kỳ của bạn dưới dạng file CSV tiêu chuẩn mở."
+                        android:textColor="@color/text_secondary"
+                        android:textSize="12sp"
+                        android:layout_marginBottom="16dp" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:weightSum="3"
-                        android:layout_marginTop="4dp">
+                        android:weightSum="2">
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnExportCsv"
-                            style="@style/Widget.App.Button.Outlined"
+                            style="@style/Widget.App.Button"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:layout_marginEnd="4dp"
-                            android:text="Export CSV"
-                            android:textSize="11sp"
-                            android:padding="8dp" />
-
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnViewCsv"
-                            style="@style/Widget.App.Button.Outlined"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:layout_marginStart="4dp"
-                            android:layout_marginEnd="4dp"
-                            android:text="Xem CSV"
-                            android:textSize="11sp"
-                            android:padding="8dp" />
+                            android:layout_marginEnd="6dp"
+                            android:text="Xuất file CSV"
+                            android:textSize="13sp" />
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnShareCsv"
@@ -100,18 +87,17 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:layout_marginStart="4dp"
-                            android:text="Chia sẻ CSV"
-                            android:textSize="11sp"
+                            android:layout_marginStart="6dp"
+                            android:text="Chia sẻ file"
+                            android:textSize="13sp"
                             android:textColor="@color/accent"
-                            app:strokeColor="@color/accent"
-                            android:padding="8dp" />
+                            app:strokeColor="@color/accent" />
                     </LinearLayout>
 
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Card 2: Students RecyclerView -->
+            <!-- Card 2: Import Data -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -130,29 +116,49 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Danh sách Sinh viên trong SQLite"
+                        android:text="Nhập bảng điểm từ bên ngoài"
                         android:textColor="@color/text_primary"
                         android:textSize="16sp"
                         android:textStyle="bold"
-                        android:layout_marginBottom="12dp" />
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/recyclerImportStudents"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:nestedScrollingEnabled="false"
-                        android:scrollbars="vertical" />
+                        android:layout_marginBottom="6dp" />
 
                     <TextView
-                        android:id="@+id/tvEmptyStudents"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Chưa có sinh viên nào. Nhấn Import XML hoặc import file để thêm."
+                        android:text="Khôi phục hoặc nhập nhanh môn học mới bằng file CSV hoặc nhập/dán văn bản trực tiếp."
                         android:textColor="@color/text_secondary"
-                        android:textSize="13sp"
-                        android:gravity="center"
-                        android:padding="16dp"
-                        android:visibility="gone" />
+                        android:textSize="12sp"
+                        android:layout_marginBottom="16dp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:weightSum="2">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnImportCsvFile"
+                            style="@style/Widget.App.Button"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginEnd="6dp"
+                            android:text="Chọn file CSV"
+                            android:textSize="13sp"
+                            app:backgroundTint="@color/success" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnImportCsvText"
+                            style="@style/Widget.App.Button.Outlined"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginStart="6dp"
+                            android:text="Dán chữ CSV"
+                            android:textSize="13sp"
+                            android:textColor="@color/success"
+                            app:strokeColor="@color/success" />
+                    </LinearLayout>
 
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
@@ -176,7 +182,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Trình xem bảng CSV (BOM UTF-8)"
+                        android:text="Xem trước nội dung dữ liệu"
                         android:textColor="@color/text_primary"
                         android:textSize="14sp"
                         android:textStyle="bold"
@@ -191,7 +197,7 @@
 
                         <ScrollView
                             android:layout_width="match_parent"
-                            android:layout_height="120dp">
+                            android:layout_height="140dp">
                             <TextView
                                 android:id="@+id/txtCsvContent"
                                 android:layout_width="match_parent"
@@ -199,21 +205,11 @@
                                 android:fontFamily="monospace"
                                 android:textColor="#A7F3D0"
                                 android:textSize="12sp"
-                                android:text="(Chưa tải dữ liệu CSV)" />
+                                android:text="(Dữ liệu trống)" />
                         </ScrollView>
                     </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
-
-            <!-- Explanation Banner -->
-            <TextView
-                android:id="@+id/txtExplanation"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_explanation"
-                android:fontFamily="monospace"
-                android:textColor="@color/explanation_text"
-                android:textSize="12sp" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

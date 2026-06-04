@@ -4,27 +4,39 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
 
 import com.google.android.material.card.MaterialCardView;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.TreeMap;
+
 import vn.edu.vaa.classmanagerdemo.R;
-import vn.edu.vaa.classmanagerdemo.database.ClassDAO;
 import vn.edu.vaa.classmanagerdemo.database.ScoreDAO;
-import vn.edu.vaa.classmanagerdemo.database.StudentDAO;
-import vn.edu.vaa.classmanagerdemo.storage.ActionLogger;
+import vn.edu.vaa.classmanagerdemo.database.UserDAO;
+import vn.edu.vaa.classmanagerdemo.models.Score;
+import vn.edu.vaa.classmanagerdemo.models.User;
 import vn.edu.vaa.classmanagerdemo.storage.AppPreferenceManager;
 import vn.edu.vaa.classmanagerdemo.utils.NavigationHelper;
+import vn.edu.vaa.classmanagerdemo.views.GpaChartView;
 
 public class MainActivity extends AppCompatActivity {
     private AppPreferenceManager prefs;
-    private ActionLogger logger;
-    private TextView tvWelcome, tvStatClasses, tvStatStudents, tvStatScores;
-    private ClassDAO classDAO;
-    private StudentDAO studentDAO;
+    private UserDAO userDAO;
     private ScoreDAO scoreDAO;
+
+    private TextView tvWelcome;
+    private TextView tvStatClasses;  // Credits
+    private TextView tvStatStudents; // Cumulative GPA
+    private TextView tvStatScores;   // Courses count
+
+    private TextView tvScholarshipStatus;
+    private TextView tvTuitionTotal;
+    private GpaChartView gpaChartView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,10 +44,10 @@ public class MainActivity extends AppCompatActivity {
         prefs = new AppPreferenceManager(this);
         if (!prefs.isLoggedIn()) { goLogin(); return; }
         setContentView(R.layout.activity_main);
-        logger = new ActionLogger(this);
-        classDAO = new ClassDAO(this);
-        studentDAO = new StudentDAO(this);
+        
+        userDAO = new UserDAO(this);
         scoreDAO = new ScoreDAO(this);
+        
         initViews();
         initListeners();
         NavigationHelper.setupBottomNavigation(this, R.id.nav_home);
@@ -56,25 +68,21 @@ public class MainActivity extends AppCompatActivity {
         tvStatClasses = findViewById(R.id.tvStatClasses);
         tvStatStudents = findViewById(R.id.tvStatStudents);
         tvStatScores = findViewById(R.id.tvStatScores);
+        tvScholarshipStatus = findViewById(R.id.tvScholarshipStatus);
+        tvTuitionTotal = findViewById(R.id.tvTuitionTotal);
+        gpaChartView = findViewById(R.id.gpaChartView);
     }
 
     private void initListeners() {
-        // New feature cards
         MaterialCardView cardClasses = findViewById(R.id.cardClasses);
         MaterialCardView cardGrades = findViewById(R.id.cardGrades);
-        MaterialCardView cardImport = findViewById(R.id.cardImport);
+        MaterialCardView cardImportExport = findViewById(R.id.cardImportExport);
+        MaterialCardView cardSettings = findViewById(R.id.cardSettings);
 
-        cardClasses.setOnClickListener(v -> startActivity(new Intent(this, ClassListActivity.class)));
-        cardGrades.setOnClickListener(v -> startActivity(new Intent(this, GradeActivity.class)));
-        cardImport.setOnClickListener(v -> startActivity(new Intent(this, ImportStudentActivity.class)));
-
-        // Existing features
-        findViewById(R.id.cardStudents).setOnClickListener(v -> startActivity(new Intent(this, StudentActivity.class)));
-        findViewById(R.id.cardTodos).setOnClickListener(v -> startActivity(new Intent(this, TodoActivity.class)));
-        findViewById(R.id.cardNoteLog).setOnClickListener(v -> startActivity(new Intent(this, NoteLogActivity.class)));
-        findViewById(R.id.cardImportExport).setOnClickListener(v -> startActivity(new Intent(this, ImportExportActivity.class)));
-        findViewById(R.id.cardSettings).setOnClickListener(v -> startActivity(new Intent(this, SettingsActivity.class)));
-        findViewById(R.id.btnLogout).setOnClickListener(v -> confirmLogout());
+        cardClasses.setOnClickListener(v -> startActivity(new Intent(this, GradeActivity.class)));
+        cardGrades.setOnClickListener(v -> startActivity(new Intent(this, GradePredictActivity.class)));
+        cardImportExport.setOnClickListener(v -> startActivity(new Intent(this, ImportExportActivity.class)));
+        cardSettings.setOnClickListener(v -> startActivity(new Intent(this, SettingsActivity.class)));
     }
 
     private void renderUserInfo() {
@@ -84,28 +92,79 @@ public class MainActivity extends AppCompatActivity {
 
     private void loadStats() {
         new Thread(() -> {
-            int classCount = classDAO.getAll().size();
-            int studentCount = studentDAO.getAll().size();
-            int scoreCount = scoreDAO.getTotalCount();
+            int userId = prefs.getCurrentUserId();
+            User user = userDAO.findById(userId);
+            int trainingPoints = user != null ? user.getTrainingPoints() : 80;
+
+            int totalCredits = scoreDAO.getTotalCreditsByStudentId(userId);
+            float cumulativeGpa = scoreDAO.getCumulativeGpaByStudentId(userId);
+            int subjectCount = scoreDAO.getSubjectCountByStudentId(userId);
+
+            // Calculate tuition
+            long rate = prefs.getTuitionRate();
+            long totalTuition = totalCredits * rate;
+
+            // Determine scholarship eligibility based on VAA rules
+            // Xuất sắc: GPA >= 3.6 & ĐRL >= 90
+            // Giỏi: GPA >= 3.2 & ĐRL >= 80
+            // Khá: GPA >= 2.5 & ĐRL >= 70
+            String scholarshipText;
+            if (cumulativeGpa >= 3.6f && trainingPoints >= 90) {
+                scholarshipText = "Đạt học bổng Xuất sắc 🏆 (GPA: " + String.format(Locale.US, "%.2f", cumulativeGpa) + ", ĐRL: " + trainingPoints + ")";
+            } else if (cumulativeGpa >= 3.2f && trainingPoints >= 80) {
+                scholarshipText = "Đạt học bổng Giỏi 🏅 (GPA: " + String.format(Locale.US, "%.2f", cumulativeGpa) + ", ĐRL: " + trainingPoints + ")";
+            } else if (cumulativeGpa >= 2.5f && trainingPoints >= 70) {
+                scholarshipText = "Đạt học bổng Khá 🎗️ (GPA: " + String.format(Locale.US, "%.2f", cumulativeGpa) + ", ĐRL: " + trainingPoints + ")";
+            } else {
+                scholarshipText = "Chưa đạt (Yêu cầu GPA ≥ 2.5 & ĐRL ≥ 70)";
+            }
+
+            // Gather and calculate GPA progress per semester
+            List<Score> scores = scoreDAO.getByStudentId(userId);
+            Map<String, List<Score>> semMap = new TreeMap<>(); // sorted semesters
+            for (Score s : scores) {
+                String sem = s.getSemester();
+                if (sem == null || sem.trim().isEmpty()) {
+                    sem = "Chưa phân loại";
+                }
+                if (!semMap.containsKey(sem)) {
+                    semMap.put(sem, new ArrayList<>());
+                }
+                semMap.get(sem).add(s);
+            }
+
+            List<String> semestersList = new ArrayList<>();
+            List<Float> gpaList = new ArrayList<>();
+
+            for (Map.Entry<String, List<Score>> entry : semMap.entrySet()) {
+                String semName = entry.getKey();
+                List<Score> semScores = entry.getValue();
+
+                float totalPoints = 0f;
+                int semCredits = 0;
+                for (Score s : semScores) {
+                    totalPoints += s.getGrade4() * s.getCredits();
+                    semCredits += s.getCredits();
+                }
+                float semGpa = semCredits > 0 ? (totalPoints / semCredits) : 0f;
+                semGpa = Math.round(semGpa * 100f) / 100f; // 2 decimal places
+
+                semestersList.add(semName);
+                gpaList.add(semGpa);
+            }
+
             runOnUiThread(() -> {
-                tvStatClasses.setText(String.valueOf(classCount));
-                tvStatStudents.setText(String.valueOf(studentCount));
-                tvStatScores.setText(String.valueOf(scoreCount));
+                tvStatClasses.setText(String.valueOf(totalCredits));
+                tvStatStudents.setText(String.format(Locale.US, "%.2f", cumulativeGpa));
+                tvStatScores.setText(subjectCount + " môn");
+
+                tvScholarshipStatus.setText(scholarshipText);
+                tvTuitionTotal.setText(String.format(Locale.GERMANY, "%,d VND (%d tín chỉ × %,dđ)", totalTuition, totalCredits, rate));
+
+                // Bind chart data
+                gpaChartView.setData(semestersList, gpaList);
             });
         }).start();
-    }
-
-    private void confirmLogout() {
-        new AlertDialog.Builder(this)
-                .setTitle("Đăng xuất")
-                .setMessage("Bạn có chắc muốn đăng xuất?")
-                .setPositiveButton("Đăng xuất", (d, w) -> {
-                    logger.log("Logout: " + prefs.getUsername());
-                    prefs.clearLoginSession();
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-                    goLogin();
-                })
-                .setNegativeButton("Hủy", null).show();
     }
 
     private void goLogin() {

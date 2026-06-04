@@ -7,16 +7,18 @@ public class User {
     private String password;
     private String email;
     private String phone;
+    private int trainingPoints;
 
     public User() { }
 
-    public User(int id, String fullName, String username, String password, String email, String phone) {
+    public User(int id, String fullName, String username, String password, String email, String phone, int trainingPoints) {
         this.id = id;
         this.fullName = fullName;
         this.username = username;
         this.password = password;
         this.email = email;
         this.phone = phone;
+        this.trainingPoints = trainingPoints;
     }
 
     public User(String fullName, String username, String password, String email, String phone) {
@@ -25,6 +27,7 @@ public class User {
         this.password = password;
         this.email = email;
         this.phone = phone;
+        this.trainingPoints = 80; // default value
     }
 
     public int getId() { return id; }
@@ -39,4 +42,6 @@ public class User {
     public void setEmail(String email) { this.email = email; }
     public String getPhone() { return phone; }
     public void setPhone(String phone) { this.phone = phone; }
+    public int getTrainingPoints() { return trainingPoints; }
+    public void setTrainingPoints(int trainingPoints) { this.trainingPoints = trainingPoints; }
 }

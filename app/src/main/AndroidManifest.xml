@@ -5,7 +5,7 @@
         android:name=".MyApplication"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
-        android:label="ClassManager"
+        android:label="Sổ tay GPA VAA"
         android:roundIcon="@drawable/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.ClassManagerDemo">
@@ -20,25 +20,9 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <activity android:name=".activities.ClassListActivity" />
-        <activity android:name=".activities.ClassDetailActivity" />
         <activity android:name=".activities.GradeActivity" />
-        <activity android:name=".activities.ImportStudentActivity" />
+        <activity android:name=".activities.GradePredictActivity" />
         <activity android:name=".activities.ImportExportActivity" />
-        <activity
-            android:name=".activities.NoteLogActivity"
-            android:launchMode="singleTask"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".activities.TodoActivity"
-            android:launchMode="singleTask"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".activities.StudentActivity"
-            android:label="StudentActivity"
-            android:launchMode="singleTask"
-            android:exported="false"
-            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".activities.SettingsActivity"
             android:launchMode="singleTask"

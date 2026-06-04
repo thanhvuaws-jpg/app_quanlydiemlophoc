@@ -17,6 +17,7 @@ public class AppPreferenceManager {
     public static final String KEY_FULL_NAME = "fullName";
     public static final String KEY_EMAIL = "email";
     public static final String KEY_PHONE = "phone";
+    public static final String KEY_TUITION_RATE = "tuitionRate";
 
     private final SharedPreferences prefs;
 
@@ -51,11 +52,23 @@ public class AppPreferenceManager {
         }
     }
 
-    /**
-     * @deprecated Dùng saveLoginSession() + saveAppSettings() thay thế.
-     * Method này lưu darkMode vào key chung (không per-user) nên không
-     * tương thích với isDarkMode() hiện tại.
-     */
+    public long getTuitionRate() {
+        String username = getUsername();
+        if (!username.isEmpty()) {
+            return prefs.getLong(KEY_TUITION_RATE + "_" + username, 400000L); // 400k VND default
+        }
+        return prefs.getLong(KEY_TUITION_RATE, 400000L);
+    }
+
+    public void saveTuitionRate(long rate) {
+        String username = getUsername();
+        if (!username.isEmpty()) {
+            prefs.edit().putLong(KEY_TUITION_RATE + "_" + username, rate).apply();
+        } else {
+            prefs.edit().putLong(KEY_TUITION_RATE, rate).apply();
+        }
+    }
+
     @Deprecated
     public void save(String username, boolean remember, boolean darkMode, String language) {
         prefs.edit()
