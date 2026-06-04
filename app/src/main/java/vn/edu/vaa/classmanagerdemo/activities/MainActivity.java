@@ -37,6 +37,9 @@ public class MainActivity extends BaseActivity {
     private TextView tvScholarshipStatus;
     private TextView tvTuitionTotal;
     private GpaChartView gpaChartView;
+    private android.widget.ProgressBar progressGpa;
+    private TextView tvGpaProgressLabel;
+    private TextView tvGpaProgressHint;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +74,9 @@ public class MainActivity extends BaseActivity {
         tvScholarshipStatus = findViewById(R.id.tvScholarshipStatus);
         tvTuitionTotal = findViewById(R.id.tvTuitionTotal);
         gpaChartView = findViewById(R.id.gpaChartView);
+        progressGpa = findViewById(R.id.progressGpa);
+        tvGpaProgressLabel = findViewById(R.id.tvGpaProgressLabel);
+        tvGpaProgressHint = findViewById(R.id.tvGpaProgressHint);
     }
 
     private void initListeners() {
@@ -160,6 +166,55 @@ public class MainActivity extends BaseActivity {
 
                 tvScholarshipStatus.setText(scholarshipText);
                 tvTuitionTotal.setText(getString(R.string.tuition_format, totalTuition, totalCredits, rate));
+
+                // Progress bar GPA tiến tới học bổng
+                // Mục tiêu: GPA 3.20 (học bổng Giỏi) là mốc phổ biến nhất
+                float targetGpa = 3.20f;
+                float progressPercent = targetGpa > 0 ? Math.min(cumulativeGpa / targetGpa * 100f, 100f) : 0f;
+                int progressInt = (int) progressPercent;
+
+                if (progressGpa != null) {
+                    progressGpa.setProgress(progressInt);
+                    // Đổi màu thanh theo mức GPA
+                    String barColor;
+                    if (cumulativeGpa >= 3.6f)      barColor = "#10B981"; // xanh lá — Xuất sắc
+                    else if (cumulativeGpa >= 3.2f) barColor = "#3B82F6"; // xanh dương — Giỏi
+                    else if (cumulativeGpa >= 2.5f) barColor = "#6366F1"; // indigo — Khá
+                    else if (cumulativeGpa >= 2.0f) barColor = "#F59E0B"; // vàng — TB
+                    else                             barColor = "#EF4444"; // đỏ — Yếu
+                    android.graphics.drawable.LayerDrawable ld =
+                            (android.graphics.drawable.LayerDrawable) progressGpa.getProgressDrawable();
+                    android.graphics.drawable.Drawable progressLayer =
+                            ld.findDrawableByLayerId(android.R.id.progress);
+                    if (progressLayer != null) {
+                        progressLayer.setColorFilter(
+                                android.graphics.Color.parseColor(barColor),
+                                android.graphics.PorterDuff.Mode.SRC_IN);
+                    }
+                }
+                if (tvGpaProgressLabel != null) {
+                    tvGpaProgressLabel.setText(progressInt + "%");
+                    String labelColor;
+                    if (cumulativeGpa >= 3.2f)      labelColor = "#10B981";
+                    else if (cumulativeGpa >= 2.5f) labelColor = "#6366F1";
+                    else                             labelColor = "#F59E0B";
+                    tvGpaProgressLabel.setTextColor(android.graphics.Color.parseColor(labelColor));
+                }
+                if (tvGpaProgressHint != null) {
+                    String hint;
+                    if (cumulativeGpa >= 3.6f) {
+                        hint = "🏆 Đã đạt học bổng Xuất sắc (GPA ≥ 3.60)";
+                    } else if (cumulativeGpa >= 3.2f) {
+                        hint = "🏅 Đã đạt học bổng Giỏi (GPA ≥ 3.20)";
+                    } else if (cumulativeGpa >= 2.5f) {
+                        float need = 3.20f - cumulativeGpa;
+                        hint = String.format(java.util.Locale.US,
+                                "Cần thêm %.2f GPA để đạt học bổng Giỏi", need);
+                    } else {
+                        hint = "Cần GPA ≥ 3.20 để đạt học bổng Giỏi";
+                    }
+                    tvGpaProgressHint.setText(hint);
+                }
 
                 // Bind chart data
                 gpaChartView.setData(semestersList, gpaList);
