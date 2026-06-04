@@ -21,7 +21,10 @@
         </provider>
 
         <activity android:name=".activities.GradeActivity" />
-        <activity android:name=".activities.GradePredictActivity" />
+        <activity android:name=".activities.ClassListActivity"
+            android:launchMode="singleTask" />
+        <activity android:name=".activities.StudentListActivity" />
+        <activity android:name=".activities.ScoreActivity" />
         <activity android:name=".activities.ImportExportActivity" />
         <activity
             android:name=".activities.SettingsActivity"

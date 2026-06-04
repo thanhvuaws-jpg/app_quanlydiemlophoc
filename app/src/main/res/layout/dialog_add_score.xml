@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <View android:layout_width="40dp" android:layout_height="4dp"
+        android:layout_gravity="center_horizontal" android:layout_marginBottom="16dp"
+        android:background="#CBD5E1" />
+
+    <TextView android:id="@+id/tvDialogTitle"
+        android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:text="Nhập điểm" android:textSize="16sp" android:textStyle="bold"
+        android:textColor="@color/text_primary" android:layout_marginBottom="16dp" />
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="horizontal" android:weightSum="2">
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.App.TextInputLayout"
+            android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:layout_marginEnd="6dp">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edtScoreQT"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:hint="Điểm QT" android:inputType="numberDecimal" />
+        </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.App.TextInputLayout"
+            android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:layout_marginStart="6dp">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edtWeightQT"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:hint="Tỉ lệ % QT" android:inputType="number" />
+        </com.google.android.material.textfield.TextInputLayout>
+    </LinearLayout>
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="horizontal" android:weightSum="2">
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.App.TextInputLayout"
+            android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:layout_marginEnd="6dp">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edtScoreGK"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:hint="Điểm GK" android:inputType="numberDecimal" />
+        </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.App.TextInputLayout"
+            android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:layout_marginStart="6dp">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edtWeightGK"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:hint="Tỉ lệ % GK" android:inputType="number" />
+        </com.google.android.material.textfield.TextInputLayout>
+    </LinearLayout>
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="horizontal" android:weightSum="2">
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.App.TextInputLayout"
+            android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:layout_marginEnd="6dp">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edtScoreCK"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:hint="Điểm CK" android:inputType="numberDecimal" />
+        </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.App.TextInputLayout"
+            android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:layout_marginStart="6dp">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edtWeightCK"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:hint="Tỉ lệ % CK" android:inputType="number" />
+        </com.google.android.material.textfield.TextInputLayout>
+    </LinearLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.App.TextInputLayout"
+        android:layout_width="match_parent" android:layout_height="wrap_content">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edtSemester"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:hint="Học kỳ (VD: HK1 2024-2025)"
+            android:inputType="text" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        app:cardCornerRadius="10dp" app:cardElevation="0dp"
+        app:cardBackgroundColor="#EEF2FF" app:strokeWidth="0dp">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="horizontal" android:padding="12dp" android:gravity="center_vertical">
+            <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" android:text="Điểm tổng kết:"
+                android:textSize="13sp" android:textColor="#4F46E5" />
+            <TextView android:id="@+id/tvScorePreview"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="--" android:textSize="22sp" android:textStyle="bold"
+                android:textColor="#4F46E5" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnSaveScore"
+        style="@style/Widget.App.Button"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:text="Lưu điểm" />
+</LinearLayout>

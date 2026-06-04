@@ -1,0 +1,167 @@
+package vn.edu.vaa.classmanagerdemo.activities;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.MenuItem;
+import android.widget.Toast;
+import android.widget.EditText;
+import android.widget.AutoCompleteTextView;
+import android.widget.ArrayAdapter;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import vn.edu.vaa.classmanagerdemo.R;
+import vn.edu.vaa.classmanagerdemo.database.ClassDAO;
+import vn.edu.vaa.classmanagerdemo.models.SchoolClass;
+import vn.edu.vaa.classmanagerdemo.storage.AppPreferenceManager;
+import vn.edu.vaa.classmanagerdemo.utils.NavigationHelper;
+import vn.edu.vaa.classmanagerdemo.utils.DebounceClickListener;
+import vn.edu.vaa.classmanagerdemo.adapters.ClassAdapter;
+
+public class ClassListActivity extends BaseActivity {
+
+    private ClassDAO classDAO;
+    private AppPreferenceManager prefs;
+    private RecyclerView recyclerClasses;
+    private List<SchoolClass> classList = new ArrayList<>();
+    private ClassAdapter classAdapter;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        prefs = new AppPreferenceManager(this);
+        if (!prefs.isLoggedIn()) { goLogin(); return; }
+        setContentView(R.layout.activity_class_list);
+
+        Toolbar toolbar = findViewById(R.id.toolbarClasses);
+        setSupportActionBar(toolbar);
+
+        classDAO = new ClassDAO(this);
+        recyclerClasses = findViewById(R.id.recyclerClasses);
+
+        classAdapter = new ClassAdapter(classList,
+            cls -> {
+                Intent intent = new Intent(this, StudentListActivity.class);
+                intent.putExtra("class_id", cls.getId());
+                intent.putExtra("class_name", cls.getClassName());
+                intent.putExtra("class_subject", cls.getSubject());
+                startActivity(intent);
+            },
+            cls -> showEditClassDialog(cls),
+            cls -> confirmDeleteClass(cls)
+        );
+        recyclerClasses.setLayoutManager(new LinearLayoutManager(this));
+        recyclerClasses.setAdapter(classAdapter);
+
+        FloatingActionButton fab = findViewById(R.id.fabAddClass);
+        fab.setOnClickListener(DebounceClickListener.wrap(v -> showAddClassDialog()));
+
+        NavigationHelper.setupBottomNavigation(this, R.id.nav_home);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadClasses();
+        NavigationHelper.setupBottomNavigation(this, R.id.nav_home);
+    }
+
+    private void loadClasses() {
+        new Thread(() -> {
+            List<SchoolClass> list = classDAO.getByTeacherId(prefs.getCurrentUserId());
+            runOnUiThread(() -> {
+                classList.clear();
+                classList.addAll(list);
+                classAdapter.notifyDataSetChanged();
+            });
+        }).start();
+    }
+
+    private void showAddClassDialog() {
+        android.view.View view = getLayoutInflater().inflate(R.layout.dialog_add_class, null);
+        EditText edtClassName = view.findViewById(R.id.edtClassName);
+        EditText edtSubject = view.findViewById(R.id.edtSubject);
+        AutoCompleteTextView actvYear = view.findViewById(R.id.actvSchoolYear);
+
+        String[] years = {"2024-2025", "2025-2026", "2026-2027"};
+        actvYear.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, years));
+        actvYear.setText(years[0], false);
+
+        new AlertDialog.Builder(this)
+            .setTitle("Thêm lớp học mới")
+            .setView(view)
+            .setPositiveButton("Lưu", (d, w) -> {
+                String name = edtClassName.getText().toString().trim();
+                String subject = edtSubject.getText().toString().trim();
+                String year = actvYear.getText() != null ? actvYear.getText().toString().trim() : years[0];
+                if (name.isEmpty()) { Toast.makeText(this, "Nhập tên lớp", Toast.LENGTH_SHORT).show(); return; }
+                if (subject.isEmpty()) { Toast.makeText(this, "Nhập môn học", Toast.LENGTH_SHORT).show(); return; }
+                SchoolClass cls = new SchoolClass(prefs.getCurrentUserId(), name, subject, year);
+                classDAO.insert(cls);
+                loadClasses();
+                Toast.makeText(this, "Đã thêm lớp " + name, Toast.LENGTH_SHORT).show();
+            })
+            .setNegativeButton("Hủy", null)
+            .show();
+    }
+
+    private void showEditClassDialog(SchoolClass cls) {
+        android.view.View view = getLayoutInflater().inflate(R.layout.dialog_add_class, null);
+        EditText edtClassName = view.findViewById(R.id.edtClassName);
+        EditText edtSubject = view.findViewById(R.id.edtSubject);
+        AutoCompleteTextView actvYear = view.findViewById(R.id.actvSchoolYear);
+
+        edtClassName.setText(cls.getClassName());
+        edtSubject.setText(cls.getSubject());
+        String[] years = {"2024-2025", "2025-2026", "2026-2027"};
+        actvYear.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, years));
+        actvYear.setText(cls.getSchoolYear(), false);
+
+        new AlertDialog.Builder(this)
+            .setTitle("Chỉnh sửa lớp học")
+            .setView(view)
+            .setPositiveButton("Lưu", (d, w) -> {
+                cls.setClassName(edtClassName.getText().toString().trim());
+                cls.setSubject(edtSubject.getText().toString().trim());
+                if (actvYear.getText() != null) cls.setSchoolYear(actvYear.getText().toString().trim());
+                classDAO.update(cls);
+                loadClasses();
+                Toast.makeText(this, "Đã cập nhật", Toast.LENGTH_SHORT).show();
+            })
+            .setNegativeButton("Hủy", null)
+            .show();
+    }
+
+    private void confirmDeleteClass(SchoolClass cls) {
+        new AlertDialog.Builder(this)
+            .setTitle("Xóa lớp học")
+            .setMessage("Xóa lớp \"" + cls.getClassName() + "\" sẽ xóa toàn bộ học sinh và điểm. Tiếp tục?")
+            .setPositiveButton("Xóa", (d, w) -> {
+                classDAO.deleteById(cls.getId());
+                loadClasses();
+                Toast.makeText(this, "Đã xóa lớp " + cls.getClassName(), Toast.LENGTH_SHORT).show();
+            })
+            .setNegativeButton("Hủy", null)
+            .show();
+    }
+
+    private void goLogin() {
+        startActivity(new Intent(this, LoginActivity.class)
+            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+        finish();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) { finish(); return true; }
+        return super.onOptionsItemSelected(item);
+    }
+}

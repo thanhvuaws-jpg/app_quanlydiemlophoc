@@ -85,8 +85,8 @@ public class MainActivity extends BaseActivity {
         MaterialCardView cardImportExport = findViewById(R.id.cardImportExport);
         MaterialCardView cardSettings = findViewById(R.id.cardSettings);
 
-        cardClasses.setOnClickListener(v -> startActivity(new Intent(this, GradeActivity.class)));
-        cardGrades.setOnClickListener(v -> startActivity(new Intent(this, GradePredictActivity.class)));
+        cardClasses.setOnClickListener(v -> startActivity(new Intent(this, ClassListActivity.class)));
+        cardGrades.setOnClickListener(v -> startActivity(new Intent(this, GradeActivity.class)));
         cardImportExport.setOnClickListener(v -> startActivity(new Intent(this, ImportExportActivity.class)));
         cardSettings.setOnClickListener(v -> startActivity(new Intent(this, SettingsActivity.class)));
     }
