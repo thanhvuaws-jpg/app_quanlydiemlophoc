@@ -3,13 +3,13 @@
     <item
         android:id="@+id/nav_home"
         android:icon="@drawable/ic_home"
-        android:title="Trang chủ" />
+        android:title="@string/nav_home" />
     <item
         android:id="@+id/nav_grades"
         android:icon="@drawable/ic_school"
-        android:title="Bảng điểm" />
+        android:title="@string/nav_scores" />
     <item
         android:id="@+id/nav_settings"
         android:icon="@drawable/ic_settings"
-        android:title="Cài đặt" />
+        android:title="@string/nav_settings" />
 </menu>

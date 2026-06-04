@@ -29,7 +29,7 @@
     <string name="login_now">Login now</string>
 
     <!-- Main Activity -->
-    <string name="nav_home">Dashboard</string>
+    <string name="nav_home">Home</string>
     <string name="nav_scores">Grades</string>
     <string name="nav_settings">Settings</string>
     
@@ -147,6 +147,10 @@
     <string name="uncategorized_semester">Uncategorized</string>
     <string name="courses_count_format">%1$d subjects</string>
     <string name="tuition_format">%1$,d VND (%2$d credits × %3$,dđ)</string>
+    <string name="chart_no_data">No data — please add subjects</string>
+    <string name="gpa_term">Term GPA</string>
+    <string name="score_count_format">%1$d subjects (%2$d credits)</string>
+    <string name="share_grades_title">Share Grades</string>
     <string name="mock_course">Mock Subject</string>
     <string name="mock_credits_example">3 credits</string>
     <string name="action_delete">Delete</string>

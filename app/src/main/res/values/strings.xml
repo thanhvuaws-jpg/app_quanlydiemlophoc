@@ -29,8 +29,8 @@
     <string name="login_now">Đăng nhập ngay</string>
 
     <!-- Main Activity -->
-    <string name="nav_home">Tổng quan</string>
-    <string name="nav_scores">Điểm số</string>
+    <string name="nav_home">Trang chủ</string>
+    <string name="nav_scores">Bảng điểm</string>
     <string name="nav_settings">Cài đặt</string>
     
     <string name="dashboard_title">Tổng quan học tập</string>
@@ -147,6 +147,10 @@
     <string name="uncategorized_semester">Chưa phân loại</string>
     <string name="courses_count_format">%1$d môn</string>
     <string name="tuition_format">%1$,d VND (%2$d tín chỉ × %3$,dđ)</string>
+    <string name="chart_no_data">Chưa có dữ liệu — hãy thêm môn học</string>
+    <string name="gpa_term">GPA Học kỳ</string>
+    <string name="score_count_format">%1$d môn (%2$d tín chỉ)</string>
+    <string name="share_grades_title">Chia sẻ bảng điểm</string>
     <string name="mock_course">Môn học giả định</string>
     <string name="mock_credits_example">3 tín chỉ</string>
     <string name="action_delete">Xóa</string>

@@ -67,7 +67,7 @@ public class GradeActivity extends BaseActivity {
     private final List<Score> scoreList = new ArrayList<>();
     private ScoreAdapter scoreAdapter;
     private int currentStudentId = -1;
-    private String selectedFilterSemester = "Tất cả học kỳ";
+    private String selectedFilterSemester = getString(R.string.all_semesters);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -142,7 +142,7 @@ public class GradeActivity extends BaseActivity {
         
         // Rebuild semester list for filter
         List<String> semestersList = new ArrayList<>();
-        semestersList.add("Tất cả học kỳ");
+        semestersList.add(getString(R.string.all_semesters));
         for (Score s : fullScoreList) {
             String sem = s.getSemester();
             if (sem != null && !sem.trim().isEmpty() && !semestersList.contains(sem)) {
@@ -150,7 +150,7 @@ public class GradeActivity extends BaseActivity {
             }
         }
         
-        // Sort semester list excluding "Tất cả học kỳ"
+        // Sort semester list excluding getString(R.string.all_semesters)
         if (semestersList.size() > 2) {
             List<String> subList = semestersList.subList(1, semestersList.size());
             Collections.sort(subList);
@@ -162,8 +162,8 @@ public class GradeActivity extends BaseActivity {
         if (semestersList.contains(selectedFilterSemester)) {
             spFilterSemester.setText(selectedFilterSemester, false);
         } else {
-            spFilterSemester.setText("Tất cả học kỳ", false);
-            selectedFilterSemester = "Tất cả học kỳ";
+            spFilterSemester.setText(getString(R.string.all_semesters), false);
+            selectedFilterSemester = getString(R.string.all_semesters);
         }
 
         applySemesterFilter();
@@ -179,7 +179,7 @@ public class GradeActivity extends BaseActivity {
 
     private void applySemesterFilter() {
         scoreList.clear();
-        if (selectedFilterSemester.equals("Tất cả học kỳ")) {
+        if (selectedFilterSemester.equals(getString(R.string.all_semesters))) {
             scoreList.addAll(fullScoreList);
         } else {
             for (Score s : fullScoreList) {
@@ -201,8 +201,8 @@ public class GradeActivity extends BaseActivity {
         }
         float avgGpa = totalCredits > 0 ? (weightedGpaSum / totalCredits) : 0f;
 
-        String labelPrefix = selectedFilterSemester.equals("Tất cả học kỳ") ? "GPA tích lũy" : "GPA Học kỳ";
-        tvScoreCount.setText(scoreList.size() + " môn (" + totalCredits + " tín chỉ)");
+        String labelPrefix = selectedFilterSemester.equals(getString(R.string.all_semesters)) ? getString(R.string.cumulative_gpa) : getString(R.string.gpa_term);
+        tvScoreCount.setText(getString(R.string.score_count_format, scoreList.size(), totalCredits));
         if (scoreList.isEmpty()) {
             tvAverage.setText(labelPrefix + ": --");
         } else {
@@ -220,7 +220,7 @@ public class GradeActivity extends BaseActivity {
                 else if (avgGpa >= 2.5f) { rank = "Khá"; color = "#6366F1"; emoji = "⭐"; }
                 else if (avgGpa >= 2.0f) { rank = "Trung bình"; color = "#F59E0B"; emoji = "📚"; }
                 else { rank = "Yếu — cần cải thiện"; color = "#EF4444"; emoji = "⚠️"; }
-                String label = selectedFilterSemester.equals("Tất cả học kỳ")
+                String label = selectedFilterSemester.equals(getString(R.string.all_semesters))
                         ? "Học lực tích lũy" : "Học lực " + selectedFilterSemester;
                 tvSemesterRank.setText(emoji + "  " + label + ": " + rank
                         + "  (GPA " + String.format(java.util.Locale.US, "%.2f", avgGpa) + ")");
@@ -263,9 +263,9 @@ public class GradeActivity extends BaseActivity {
                 android.R.layout.simple_dropdown_item_1line, suggestions);
         dialogActvSemester.setAdapter(semAdapter);
 
-        // Default to selected semester filter if not "Tất cả học kỳ"
+        // Default to selected semester filter if not getString(R.string.all_semesters)
         String defaultSemester = "HK1 2024-2025";
-        if (selectedFilterSemester != null && !selectedFilterSemester.equals("Tất cả học kỳ")) {
+        if (selectedFilterSemester != null && !selectedFilterSemester.equals(getString(R.string.all_semesters))) {
             defaultSemester = selectedFilterSemester;
         } else if (!suggestions.isEmpty()) {
             defaultSemester = suggestions.get(0);
@@ -962,7 +962,7 @@ public class GradeActivity extends BaseActivity {
                 shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION); // temp permission for receiving app
                 shareIntent.setDataAndType(contentUri, getContentResolver().getType(contentUri));
                 shareIntent.putExtra(Intent.EXTRA_STREAM, contentUri);
-                startActivity(Intent.createChooser(shareIntent, "Chia sẻ bảng điểm"));
+                startActivity(Intent.createChooser(shareIntent, getString(R.string.share_grades_title)));
             }
         } catch (java.io.IOException e) {
             e.printStackTrace();

@@ -91,7 +91,7 @@ public class GpaChartView extends View {
         float graphHeight = height - paddingTop - paddingBottom;
 
         if (semesters.isEmpty() || gpaValues.isEmpty()) {
-            canvas.drawText("Chưa có dữ liệu — hãy thêm môn học", width / 2f, height / 2f, textPaint);
+            canvas.drawText(getContext().getString(vn.edu.vaa.classmanagerdemo.R.string.chart_no_data), width / 2f, height / 2f, textPaint);
             return;
         }
 
