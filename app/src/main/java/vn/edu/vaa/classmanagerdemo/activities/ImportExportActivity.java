@@ -29,7 +29,7 @@ import vn.edu.vaa.classmanagerdemo.storage.AppPreferenceManager;
 import vn.edu.vaa.classmanagerdemo.storage.CsvExporter;
 import vn.edu.vaa.classmanagerdemo.utils.NavigationHelper;
 
-public class ImportExportActivity extends AppCompatActivity {
+public class ImportExportActivity extends BaseActivity {
     private TextView txtCsvContent;
     private ScoreDAO scoreDAO;
     private AppPreferenceManager prefs;

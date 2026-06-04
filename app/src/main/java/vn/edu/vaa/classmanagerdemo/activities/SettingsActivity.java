@@ -18,7 +18,7 @@ import vn.edu.vaa.classmanagerdemo.models.User;
 import vn.edu.vaa.classmanagerdemo.storage.AppPreferenceManager;
 import vn.edu.vaa.classmanagerdemo.utils.NavigationHelper;
 
-public class SettingsActivity extends AppCompatActivity {
+public class SettingsActivity extends BaseActivity {
     private SwitchMaterial swDarkMode;
     private TextInputEditText spLanguage;
     private TextInputEditText edtTrainingPoints;
@@ -114,12 +114,12 @@ public class SettingsActivity extends AppCompatActivity {
         try {
             points = Integer.parseInt(strPoints);
             if (points < 0 || points > 100) {
-                edtTrainingPoints.setError("Điểm rèn luyện phải từ 0 - 100");
+                edtTrainingPoints.setError(getString(R.string.error_invalid_points));
                 edtTrainingPoints.requestFocus();
                 return;
             }
         } catch (Exception e) {
-            edtTrainingPoints.setError("Vui lòng nhập số hợp lệ");
+            edtTrainingPoints.setError(getString(R.string.error_parsing_number));
             edtTrainingPoints.requestFocus();
             return;
         }
@@ -128,15 +128,17 @@ public class SettingsActivity extends AppCompatActivity {
         try {
             tuitionRate = Long.parseLong(strRate);
             if (tuitionRate < 0) {
-                edtTuitionRate.setError("Học phí không thể âm");
+                edtTuitionRate.setError(getString(R.string.error_tuition_negative));
                 edtTuitionRate.requestFocus();
                 return;
             }
         } catch (Exception e) {
-            edtTuitionRate.setError("Vui lòng nhập số tiền hợp lệ");
+            edtTuitionRate.setError(getString(R.string.error_invalid_tuition));
             edtTuitionRate.requestFocus();
             return;
         }
+
+        String oldLang = prefs.getLanguage();
 
         // Save preferences and database
         prefs.saveAppSettings(darkMode, language);
@@ -154,21 +156,28 @@ public class SettingsActivity extends AppCompatActivity {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         }
 
-        Toast.makeText(this, "Đã lưu cấu hình thành công", Toast.LENGTH_SHORT).show();
-        readAndRender();
+        Toast.makeText(this, getString(R.string.success), Toast.LENGTH_SHORT).show();
+
+        if (!oldLang.equals(language)) {
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+        } else {
+            readAndRender();
+        }
     }
 
     private void confirmLogout() {
         new AlertDialog.Builder(this)
-                .setTitle("Đăng xuất")
-                .setMessage("Đăng xuất sẽ xóa phiên đăng nhập của bạn. Dữ liệu điểm số cá nhân của bạn vẫn sẽ được giữ nguyên trong cơ sở dữ liệu.")
-                .setPositiveButton("Đăng xuất", (dialog, which) -> {
+                .setTitle(getString(R.string.logout))
+                .setMessage(getString(R.string.logout_message))
+                .setPositiveButton(getString(R.string.logout), (dialog, which) -> {
                     prefs.clearLoginSession();
                     // Reset to light mode upon logout
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
                     goLogin();
                 })
-                .setNegativeButton("Hủy", null)
+                .setNegativeButton(getString(R.string.cancel), null)
                 .show();
     }
 

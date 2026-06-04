@@ -15,7 +15,7 @@ import vn.edu.vaa.classmanagerdemo.database.UserDAO;
 import vn.edu.vaa.classmanagerdemo.models.User;
 import vn.edu.vaa.classmanagerdemo.storage.AppPreferenceManager;
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends BaseActivity {
     private EditText edtUsername, edtPassword;
     private CheckBox cbRemember;
     private AppPreferenceManager prefs;
@@ -56,19 +56,19 @@ public class LoginActivity extends AppCompatActivity {
         boolean remember = cbRemember.isChecked();
 
         if (username.isEmpty()) {
-            edtUsername.setError("Vui lòng nhập tên đăng nhập");
+            edtUsername.setError(getString(R.string.error_empty_username));
             edtUsername.requestFocus();
             return;
         }
         if (password.isEmpty()) {
-            edtPassword.setError("Vui lòng nhập mật khẩu");
+            edtPassword.setError(getString(R.string.error_empty_password));
             edtPassword.requestFocus();
             return;
         }
 
         User user = userDAO.login(username, password);
         if (user == null) {
-            Toast.makeText(this, "Sai tên đăng nhập hoặc mật khẩu", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.error_invalid_credentials), Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -81,7 +81,7 @@ public class LoginActivity extends AppCompatActivity {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         }
 
-        Toast.makeText(this, "Xin chào " + user.getFullName(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, getString(R.string.hello_user, user.getFullName()), Toast.LENGTH_SHORT).show();
         openMainAndFinish("login_success");
     }
 

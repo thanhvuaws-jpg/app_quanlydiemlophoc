@@ -43,7 +43,7 @@ import vn.edu.vaa.classmanagerdemo.utils.NavigationHelper;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.tabs.TabLayout;
 
-public class GradeActivity extends AppCompatActivity {
+public class GradeActivity extends BaseActivity {
 
     private ScoreDAO scoreDAO;
     private AppPreferenceManager prefs;

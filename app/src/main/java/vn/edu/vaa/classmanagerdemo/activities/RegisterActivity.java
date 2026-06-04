@@ -12,7 +12,7 @@ import vn.edu.vaa.classmanagerdemo.database.UserDAO;
 import vn.edu.vaa.classmanagerdemo.models.User;
 import vn.edu.vaa.classmanagerdemo.utils.Validator;
 
-public class RegisterActivity extends AppCompatActivity {
+public class RegisterActivity extends BaseActivity {
     private EditText edtFullName, edtUsername, edtPassword, edtConfirmPassword, edtEmail, edtPhone;
     private UserDAO userDAO;
 
@@ -42,33 +42,33 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private boolean validateForm() {
-        if (!Validator.require(edtFullName, "Họ tên không được rỗng")) return false;
-        if (!Validator.require(edtUsername, "Tên đăng nhập không được rỗng")) return false;
+        if (!Validator.require(edtFullName, getString(R.string.error_empty_name))) return false;
+        if (!Validator.require(edtUsername, getString(R.string.error_empty_username))) return false;
         String username = edtUsername.getText().toString().trim();
         if (username.length() < 4) {
-            edtUsername.setError("Tên đăng nhập tối thiểu 4 ký tự");
+            edtUsername.setError(getString(R.string.error_short_username));
             edtUsername.requestFocus();
             return false;
         }
         if (userDAO.usernameExists(username)) {
-            edtUsername.setError("Tên đăng nhập đã tồn tại");
+            edtUsername.setError(getString(R.string.error_username_exists));
             edtUsername.requestFocus();
             return false;
         }
         String password = edtPassword.getText().toString();
         if (password.length() < 6) {
-            edtPassword.setError("Mật khẩu tối thiểu 6 ký tự");
+            edtPassword.setError(getString(R.string.error_short_password));
             edtPassword.requestFocus();
             return false;
         }
         String confirm = edtConfirmPassword.getText().toString();
         if (!password.equals(confirm)) {
-            edtConfirmPassword.setError("Mật khẩu xác nhận không khớp");
+            edtConfirmPassword.setError(getString(R.string.error_password_mismatch));
             edtConfirmPassword.requestFocus();
             return false;
         }
-        return Validator.optionalEmail(edtEmail, "Email không hợp lệ")
-                && Validator.optionalPhone(edtPhone, "Số điện thoại phải gồm 10-11 chữ số");
+        return Validator.optionalEmail(edtEmail, getString(R.string.error_invalid_email))
+                && Validator.optionalPhone(edtPhone, getString(R.string.error_invalid_phone));
     }
 
     private void handleRegister() {
@@ -85,10 +85,10 @@ public class RegisterActivity extends AppCompatActivity {
         );
         long id = userDAO.register(user);
         if (id == -1) {
-            Toast.makeText(this, "Đăng ký thất bại. Có thể username đã tồn tại.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.error_register_failed), Toast.LENGTH_SHORT).show();
             return;
         }
-        Toast.makeText(this, "Đăng ký thành công", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, getString(R.string.success_register), Toast.LENGTH_SHORT).show();
         // Delay nhỏ để Toast hiển thị rồi mới finish
         new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(this::finish, 1200);
     }

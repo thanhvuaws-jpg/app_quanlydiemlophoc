@@ -30,7 +30,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Cài đặt"
+                    android:text="@string/settings_title"
                     android:textColor="@color/text_primary"
                     android:textSize="22sp"
                     android:textStyle="bold" />
@@ -38,7 +38,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Tài khoản và thiết lập ứng dụng"
+                    android:text="@string/settings_subtitle"
                     android:textColor="@color/text_secondary"
                     android:textSize="13sp"
                     android:layout_marginTop="2dp" />
@@ -114,7 +114,7 @@
                             android:id="@+id/swDarkMode"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Bật Dark Mode"
+                            android:text="@string/dark_mode"
                             android:textColor="@color/text_primary"
                             android:layout_marginBottom="12dp" />
 
@@ -123,7 +123,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="12dp"
-                            android:hint="Ngôn ngữ">
+                            android:hint="@string/language">
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/spLanguage"
                                 android:layout_width="match_parent"
@@ -138,7 +138,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="12dp"
-                            android:hint="Điểm rèn luyện (ĐRL)">
+                            android:hint="@string/training_points">
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/edtTrainingPoints"
                                 android:layout_width="match_parent"
@@ -151,7 +151,7 @@
                             style="@style/Widget.App.TextInputLayout"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="Học phí / tín chỉ (VND)">
+                            android:hint="@string/tuition_rate">
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/edtTuitionRate"
                                 android:layout_width="match_parent"
@@ -182,7 +182,7 @@
                             style="@style/Widget.App.Button"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Lưu cấu hình"
+                            android:text="@string/save_config"
                             app:icon="@drawable/ic_save"
                             app:iconGravity="textStart"
                             app:iconPadding="8dp" />
@@ -193,7 +193,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
-                            android:text="Đăng xuất"
+                            android:text="@string/logout"
                             android:textColor="@color/danger"
                             app:strokeColor="@color/danger"
                             app:icon="@drawable/ic_logout"

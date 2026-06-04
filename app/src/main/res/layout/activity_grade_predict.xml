@@ -14,7 +14,7 @@
         android:layout_height="?attr/actionBarSize"
         android:background="@color/primary"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:title="Dự đoán điểm GPA"
+        app:title="@string/predict_title"
         app:titleTextColor="@android:color/white" />
 
     <androidx.core.widget.NestedScrollView
@@ -47,7 +47,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="📊 Trạng thái hiện tại"
+                        android:text="@string/current_status"
                         android:textColor="@color/text_primary"
                         android:textSize="15sp"
                         android:textStyle="bold"
@@ -70,7 +70,7 @@
                                 android:id="@+id/edtCurrentGpa"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:hint="GPA hiện tại (hệ 4)"
+                                android:hint="@string/current_gpa"
                                 android:inputType="numberDecimal" />
                         </com.google.android.material.textfield.TextInputLayout>
 
@@ -85,7 +85,7 @@
                                 android:id="@+id/edtCurrentCredits"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:hint="Tín chỉ tích lũy"
+                                android:hint="@string/credits"
                                 android:inputType="number" />
                         </com.google.android.material.textfield.TextInputLayout>
 
@@ -113,7 +113,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="🎯 Mục tiêu GPA tích lũy"
+                        android:text="@string/target_goals"
                         android:textColor="@color/text_primary"
                         android:textSize="15sp"
                         android:textStyle="bold"
@@ -129,7 +129,7 @@
                             android:id="@+id/edtTargetGpa"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="GPA tích lũy muốn đạt (hệ 4)"
+                            android:hint="@string/target_gpa"
                             android:inputType="numberDecimal" />
                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -142,7 +142,7 @@
                             android:id="@+id/edtFutureCredits"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="Số tín chỉ học tiếp theo"
+                            android:hint="@string/future_credits"
                             android:inputType="number" />
                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -154,7 +154,7 @@
                 android:id="@+id/btnCalculatePredict"
                 android:layout_width="match_parent"
                 android:layout_height="52dp"
-                android:text="Tính toán dự đoán"
+                android:text="@string/calculate_predict"
                 android:textColor="@android:color/white"
                 android:textSize="15sp"
                 android:textStyle="bold"

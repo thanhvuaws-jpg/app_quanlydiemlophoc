@@ -15,7 +15,7 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@color/primary"
-            app:title="Nhập &amp; Xuất Bảng Điểm"
+            app:title="@string/import_export_title"
             app:titleTextColor="#FFFFFF"
             app:navigationIconTint="#FFFFFF" />
     </com.google.android.material.appbar.AppBarLayout>
@@ -51,7 +51,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Xuất bảng điểm cá nhân"
+                        android:text="@string/export_personal_scores"
                         android:textColor="@color/text_primary"
                         android:textSize="16sp"
                         android:textStyle="bold"
@@ -60,7 +60,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Lưu trữ tất cả điểm học kỳ của bạn dưới dạng file CSV tiêu chuẩn mở."
+                        android:text="@string/export_personal_scores_desc"
                         android:textColor="@color/text_secondary"
                         android:textSize="12sp"
                         android:layout_marginBottom="16dp" />
@@ -78,7 +78,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:layout_marginEnd="6dp"
-                            android:text="Xuất file CSV"
+                            android:text="@string/export_csv"
                             android:textSize="13sp" />
 
                         <com.google.android.material.button.MaterialButton
@@ -88,7 +88,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:layout_marginStart="6dp"
-                            android:text="Chia sẻ file"
+                            android:text="@string/share_file_btn"
                             android:textSize="13sp"
                             android:textColor="@color/accent"
                             app:strokeColor="@color/accent" />
@@ -116,7 +116,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Nhập bảng điểm từ bên ngoài"
+                        android:text="@string/import_external_scores"
                         android:textColor="@color/text_primary"
                         android:textSize="16sp"
                         android:textStyle="bold"
@@ -125,7 +125,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Khôi phục hoặc nhập nhanh môn học mới bằng file CSV hoặc nhập/dán văn bản trực tiếp."
+                        android:text="@string/import_external_scores_desc"
                         android:textColor="@color/text_secondary"
                         android:textSize="12sp"
                         android:layout_marginBottom="16dp" />

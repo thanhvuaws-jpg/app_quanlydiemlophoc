@@ -1,0 +1,151 @@
+<resources>
+    <!-- App & General -->
+    <string name="app_name">GPA Tracker</string>
+    <string name="app_title">VAA GPA Tracker</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+    <string name="close">Close</string>
+    <string name="confirm">Confirm</string>
+    <string name="success">Success</string>
+    <string name="error">Error</string>
+    
+    <!-- Login & Register -->
+    <string name="login_title">Login to VAA Grade Management System</string>
+    <string name="login_button">Login</string>
+    <string name="register_title">Create a new account</string>
+    <string name="register_button">Register</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="confirm_password">Confirm password</string>
+    <string name="full_name">Full name</string>
+    <string name="email">Email</string>
+    <string name="phone">Phone number</string>
+    <string name="remember_login">Remember login</string>
+    <string name="no_account">Don\'t have an account?</string>
+    <string name="register_now">Register now</string>
+    <string name="have_account">Already have an account?</string>
+    <string name="login_now">Login now</string>
+
+    <!-- Main Activity -->
+    <string name="nav_home">Dashboard</string>
+    <string name="nav_scores">Grades</string>
+    <string name="nav_settings">Settings</string>
+    
+    <string name="dashboard_title">Study Dashboard</string>
+    <string name="cumulative_gpa">Cumulative GPA</string>
+    <string name="total_credits">Total Credits</string>
+    <string name="semester_rank">Academic Standing</string>
+    <string name="gpa_chart">GPA Progress Chart</string>
+    <string name="quick_actions">Quick Actions</string>
+    
+    <string name="action_add_score">Add Grade</string>
+    <string name="action_predict_gpa">Predict GPA</string>
+    <string name="action_import_export">Import/Export File</string>
+
+    <!-- Grade Activity -->
+    <string name="scores_title">Personal Grades</string>
+    <string name="tab_subjects">Subjects</string>
+    <string name="tab_summary">Summary</string>
+    <string name="filter_semester">Filter Semester</string>
+    <string name="all_semesters">All semesters</string>
+    <string name="simulate_gpa">Simulate GPA</string>
+    <string name="share_gpa">Share Grades</string>
+
+    <string name="add_subject_title">Add new subject</string>
+    <string name="edit_subject_title">Update subject</string>
+    <string name="subject_name">Subject Name</string>
+    <string name="semester_hint">Semester (e.g., Sem1 2024-2025)</string>
+    <string name="credits">Credits</string>
+    <string name="score_midterm">Midterm Score (MT)</string>
+    <string name="weight_midterm">MT Weight %</string>
+    <string name="score_final">Final Score (FN)</string>
+    <string name="weight_final">FN Weight %</string>
+    <string name="final_score">Final Score:</string>
+    <string name="save_subject">Save Grade</string>
+
+    <!-- Predict GPA -->
+    <string name="predict_title">GPA Prediction</string>
+    <string name="current_status">Current Status</string>
+    <string name="current_gpa">Current GPA (4.0 scale)</string>
+    <string name="target_goals">Target Goals</string>
+    <string name="target_gpa">Target Cumulative GPA (4.0 scale)</string>
+    <string name="future_credits">Future Credits</string>
+    <string name="calculate_predict">Calculate Prediction</string>
+    <string name="predict_result">Prediction Result</string>
+
+    <!-- Simulate GPA -->
+    <string name="simulate_title">Semester Grade Simulation</string>
+    <string name="add_mock_course">Add Mock Subject</string>
+
+    <!-- Import Export -->
+    <string name="import_export_title">Import &amp; Export Grades</string>
+    <string name="export_csv">Export to CSV</string>
+    <string name="import_csv">Import from CSV</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_subtitle">Account and App Configuration</string>
+    <string name="account_info">Account Information</string>
+    <string name="app_config">App Configuration</string>
+    <string name="dark_mode">Enable Dark Mode</string>
+    <string name="language">Language</string>
+    <string name="training_points">Training Points (TP)</string>
+    <string name="tuition_rate">Tuition / Credit (VND)</string>
+    <string name="save_config">Save Configuration</string>
+    <string name="logout">Logout</string>
+    <string name="logout_message">Logging out will clear your session. Your personal grade data will be kept securely.</string>
+
+    <!-- Ranks -->
+    <string name="rank_excellent">Excellent</string>
+    <string name="rank_good">Good</string>
+    <string name="rank_fair">Fair</string>
+    <string name="rank_average">Average</string>
+    <string name="rank_weak">Weak</string>
+
+    <!-- Toast & Errors -->
+    <string name="error_empty_username">Please enter username</string>
+    <string name="error_empty_password">Please enter password</string>
+    <string name="error_invalid_credentials">Invalid username or password</string>
+    <string name="error_empty_name">Full name cannot be empty</string>
+    <string name="error_short_username">Username must be at least 4 characters</string>
+    <string name="error_username_exists">Username already exists</string>
+    <string name="error_short_password">Password must be at least 6 characters</string>
+    <string name="error_password_mismatch">Passwords do not match</string>
+    <string name="error_invalid_email">Invalid email</string>
+    <string name="error_invalid_phone">Phone number must be 10-11 digits</string>
+    <string name="error_register_failed">Registration failed. Username might exist.</string>
+    <string name="success_register">Registration successful</string>
+    <string name="hello_user">Hello %s</string>
+
+    <string name="error_missing_info">Please enter all information</string>
+    <string name="error_gpa_range">GPA must be between 0.0 and 4.0</string>
+    <string name="error_credits_positive">Credits must be greater than 0</string>
+    <string name="predict_impossible">❌ Not Feasible</string>
+    <string name="predict_impossible_desc">To reach a target GPA of %1$.2f, you need an average GPA of %2$.2f in your next %3$d credits. This exceeds the maximum of 4.00.\n\nTip: You should lower your target GPA or increase your future credits.</string>
+    <string name="predict_achieved">🎉 Goal Achieved</string>
+    <string name="predict_achieved_desc">Your current GPA (%1$.2f) has reached or exceeded your target (%2$.2f)! Keep up the good work.</string>
+    <string name="predict_feasible">✅ Feasible</string>
+    <string name="predict_feasible_desc">You need an average score of %1$.2f/4.00 in the next %2$d credits to reach a cumulative GPA of %3$.2f.\n\nGood luck!</string>
+    <string name="error_parsing_number">Please enter a valid number</string>
+    <string name="error_invalid_tuition">Please enter a valid amount</string>
+    <string name="error_tuition_negative">Tuition cannot be negative</string>
+    <string name="error_invalid_points">Training points must be between 0 and 100</string>
+    
+    <string name="export_personal_scores">Export Personal Grades</string>
+    <string name="export_personal_scores_desc">Save all your semester grades as a standard CSV file.</string>
+    <string name="share_file_btn">Share file</string>
+    <string name="import_external_scores">Import External Grades</string>
+    <string name="import_external_scores_desc">Restore or quickly input new subjects using a CSV file or direct text.</string>
+    <string name="import_text_btn">Import CSV Text</string>
+    
+    <string name="scholarship_excellent">Excellent Scholarship 🏆 (GPA: %1$.2f, TP: %2$d)</string>
+    <string name="scholarship_good">Good Scholarship 🏅 (GPA: %1$.2f, TP: %2$d)</string>
+    <string name="scholarship_fair">Fair Scholarship 🎗️ (GPA: %1$.2f, TP: %2$d)</string>
+    <string name="scholarship_none">Not eligible (Requires GPA ≥ 2.5 &amp; TP ≥ 70)</string>
+    <string name="uncategorized_semester">Uncategorized</string>
+    <string name="courses_count_format">%1$d subjects</string>
+    <string name="tuition_format">%1$,d VND (%2$d credits × %3$,dđ)</string>
+
+</resources>

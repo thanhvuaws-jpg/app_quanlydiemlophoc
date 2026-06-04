@@ -1,3 +1,151 @@
 <resources>
+    <!-- App & General -->
     <string name="app_name">GPA Tracker</string>
+    <string name="app_title">Sổ tay GPA VAA</string>
+    <string name="save">Lưu</string>
+    <string name="cancel">Hủy</string>
+    <string name="edit">Sửa</string>
+    <string name="delete">Xóa</string>
+    <string name="close">Đóng</string>
+    <string name="confirm">Xác nhận</string>
+    <string name="success">Thành công</string>
+    <string name="error">Lỗi</string>
+    
+    <!-- Login & Register -->
+    <string name="login_title">Đăng nhập hệ thống quản lý điểm VAA</string>
+    <string name="login_button">Đăng nhập</string>
+    <string name="register_title">Tạo tài khoản mới</string>
+    <string name="register_button">Đăng ký</string>
+    <string name="username">Tên đăng nhập</string>
+    <string name="password">Mật khẩu</string>
+    <string name="confirm_password">Xác nhận mật khẩu</string>
+    <string name="full_name">Họ và tên</string>
+    <string name="email">Email</string>
+    <string name="phone">Số điện thoại</string>
+    <string name="remember_login">Giữ đăng nhập</string>
+    <string name="no_account">Chưa có tài khoản?</string>
+    <string name="register_now">Đăng ký ngay</string>
+    <string name="have_account">Đã có tài khoản?</string>
+    <string name="login_now">Đăng nhập ngay</string>
+
+    <!-- Main Activity -->
+    <string name="nav_home">Tổng quan</string>
+    <string name="nav_scores">Điểm số</string>
+    <string name="nav_settings">Cài đặt</string>
+    
+    <string name="dashboard_title">Tổng quan học tập</string>
+    <string name="cumulative_gpa">GPA tích lũy</string>
+    <string name="total_credits">Tổng tín chỉ</string>
+    <string name="semester_rank">Học lực</string>
+    <string name="gpa_chart">Biểu đồ tiến trình học tập</string>
+    <string name="quick_actions">Tiện ích nhanh</string>
+    
+    <string name="action_add_score">Thêm điểm</string>
+    <string name="action_predict_gpa">Dự đoán GPA</string>
+    <string name="action_import_export">Nhập/Xuất File</string>
+
+    <!-- Grade Activity (Điểm số) -->
+    <string name="scores_title">Bảng điểm cá nhân</string>
+    <string name="tab_subjects">Môn học</string>
+    <string name="tab_summary">Tổng kết</string>
+    <string name="filter_semester">Lọc Học kỳ</string>
+    <string name="all_semesters">Tất cả học kỳ</string>
+    <string name="simulate_gpa">Giả lập GPA</string>
+    <string name="share_gpa">Chia sẻ điểm</string>
+
+    <string name="add_subject_title">Thêm môn học mới</string>
+    <string name="edit_subject_title">Cập nhật môn học</string>
+    <string name="subject_name">Tên môn học</string>
+    <string name="semester_hint">Học kỳ (VD: HK1 2024-2025)</string>
+    <string name="credits">Tín chỉ</string>
+    <string name="score_midterm">Điểm quá trình (QT)</string>
+    <string name="weight_midterm">Tỷ lệ QT %</string>
+    <string name="score_final">Điểm cuối kỳ (CK)</string>
+    <string name="weight_final">Tỷ lệ CK %</string>
+    <string name="final_score">Điểm tổng kết:</string>
+    <string name="save_subject">Lưu điểm môn học</string>
+
+    <!-- Predict GPA (Dự đoán GPA) -->
+    <string name="predict_title">Dự đoán điểm GPA</string>
+    <string name="current_status">Trạng thái hiện tại</string>
+    <string name="current_gpa">GPA hiện tại (hệ 4)</string>
+    <string name="target_goals">Mục tiêu GPA tích lũy</string>
+    <string name="target_gpa">GPA tích lũy muốn đạt (hệ 4)</string>
+    <string name="future_credits">Số tín chỉ học tiếp theo</string>
+    <string name="calculate_predict">Tính toán dự đoán</string>
+    <string name="predict_result">Kết quả dự đoán</string>
+
+    <!-- Simulate GPA (Giả lập GPA) -->
+    <string name="simulate_title">Giả lập điểm học kỳ</string>
+    <string name="add_mock_course">Thêm môn học giả định</string>
+
+    <!-- Import Export -->
+    <string name="import_export_title">Nhập &amp; Xuất Bảng Điểm</string>
+    <string name="export_csv">Xuất ra File CSV</string>
+    <string name="import_csv">Nhập từ File CSV</string>
+
+    <!-- Settings (Cài đặt) -->
+    <string name="settings_title">Cài đặt</string>
+    <string name="settings_subtitle">Tài khoản và thiết lập ứng dụng</string>
+    <string name="account_info">Thông tin tài khoản</string>
+    <string name="app_config">Thiết lập ứng dụng</string>
+    <string name="dark_mode">Bật giao diện tối</string>
+    <string name="language">Ngôn ngữ</string>
+    <string name="training_points">Điểm rèn luyện (ĐRL)</string>
+    <string name="tuition_rate">Học phí / tín chỉ (VND)</string>
+    <string name="save_config">Lưu cấu hình</string>
+    <string name="logout">Đăng xuất</string>
+    <string name="logout_message">Đăng xuất sẽ xóa phiên đăng nhập của bạn. Dữ liệu điểm số cá nhân vẫn sẽ được giữ nguyên.</string>
+
+    <!-- Ranks -->
+    <string name="rank_excellent">Xuất sắc</string>
+    <string name="rank_good">Giỏi</string>
+    <string name="rank_fair">Khá</string>
+    <string name="rank_average">Trung bình</string>
+    <string name="rank_weak">Yếu</string>
+
+    <!-- Toast & Errors -->
+    <string name="error_empty_username">Vui lòng nhập tên đăng nhập</string>
+    <string name="error_empty_password">Vui lòng nhập mật khẩu</string>
+    <string name="error_invalid_credentials">Sai tên đăng nhập hoặc mật khẩu</string>
+    <string name="error_empty_name">Họ tên không được rỗng</string>
+    <string name="error_short_username">Tên đăng nhập tối thiểu 4 ký tự</string>
+    <string name="error_username_exists">Tên đăng nhập đã tồn tại</string>
+    <string name="error_short_password">Mật khẩu tối thiểu 6 ký tự</string>
+    <string name="error_password_mismatch">Mật khẩu xác nhận không khớp</string>
+    <string name="error_invalid_email">Email không hợp lệ</string>
+    <string name="error_invalid_phone">Số điện thoại phải gồm 10-11 chữ số</string>
+    <string name="error_register_failed">Đăng ký thất bại. Có thể username đã tồn tại.</string>
+    <string name="success_register">Đăng ký thành công</string>
+    <string name="hello_user">Xin chào %s</string>
+
+    <string name="error_missing_info">Vui lòng nhập đầy đủ thông tin</string>
+    <string name="error_gpa_range">GPA phải nằm trong khoảng từ 0.0 đến 4.0</string>
+    <string name="error_credits_positive">Số tín chỉ phải lớn hơn 0</string>
+    <string name="predict_impossible">❌ Không khả thi</string>
+    <string name="predict_impossible_desc">Để đạt mục tiêu GPA tích lũy là %1$.2f, bạn cần đạt điểm trung bình GPA tương lai là %2$.2f trong %3$d tín chỉ tiếp theo. Điều này vượt quá mức tối đa là 4.00.\n\nKhuyên: Bạn nên giảm bớt mục tiêu GPA mong muốn hoặc tăng số tín chỉ học tiếp theo để giảm gánh nặng điểm số.</string>
+    <string name="predict_achieved">🎉 Đã đạt mục tiêu</string>
+    <string name="predict_achieved_desc">GPA hiện tại của bạn (%1$.2f) đã đạt hoặc vượt qua mục tiêu (%2$.2f) mong muốn! Hãy tiếp tục duy trì thành tích tốt này nhé.</string>
+    <string name="predict_feasible">✅ Khả thi</string>
+    <string name="predict_feasible_desc">Bạn cần đạt điểm trung bình là %1$.2f/4.00 trong %2$d tín chỉ tiếp theo để đạt mục tiêu GPA tích lũy %3$.2f.\n\nChúc bạn học tập tốt và đạt được mục tiêu!</string>
+    <string name="error_parsing_number">Vui lòng nhập số hợp lệ</string>
+    <string name="error_invalid_tuition">Vui lòng nhập số tiền hợp lệ</string>
+    <string name="error_tuition_negative">Học phí không thể âm</string>
+    <string name="error_invalid_points">Điểm rèn luyện phải từ 0 - 100</string>
+    
+    <string name="export_personal_scores">Xuất bảng điểm cá nhân</string>
+    <string name="export_personal_scores_desc">Lưu trữ tất cả điểm học kỳ của bạn dưới dạng file CSV tiêu chuẩn mở.</string>
+    <string name="share_file_btn">Chia sẻ file</string>
+    <string name="import_external_scores">Nhập bảng điểm từ bên ngoài</string>
+    <string name="import_external_scores_desc">Khôi phục hoặc nhập nhanh môn học mới bằng file CSV hoặc nhập/dán văn bản trực tiếp.</string>
+    <string name="import_text_btn">Nhập văn bản CSV</string>
+    
+    <string name="scholarship_excellent">Đạt học bổng Xuất sắc 🏆 (GPA: %1$.2f, ĐRL: %2$d)</string>
+    <string name="scholarship_good">Đạt học bổng Giỏi 🏅 (GPA: %1$.2f, ĐRL: %2$d)</string>
+    <string name="scholarship_fair">Đạt học bổng Khá 🎗️ (GPA: %1$.2f, ĐRL: %2$d)</string>
+    <string name="scholarship_none">Chưa đạt (Yêu cầu GPA ≥ 2.5 &amp; ĐRL ≥ 70)</string>
+    <string name="uncategorized_semester">Chưa phân loại</string>
+    <string name="courses_count_format">%1$d môn</string>
+    <string name="tuition_format">%1$,d VND (%2$d tín chỉ × %3$,dđ)</string>
+
 </resources>

@@ -26,7 +26,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Tạo tài khoản"
+                android:text="@string/register_title"
                 android:textColor="@color/primary"
                 android:textSize="28sp"
                 android:textStyle="bold"
@@ -35,7 +35,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Điền đầy đủ thông tin bên dưới"
+                android:text="@string/no_account"
                 android:textColor="@color/text_secondary"
                 android:textSize="14sp" />
         </LinearLayout>
@@ -60,7 +60,7 @@
                     style="@style/Widget.App.TextInputLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Họ và tên *"
+                    android:hint="@string/full_name"
                     app:startIconDrawable="@android:drawable/ic_menu_myplaces">
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/edtRegisterFullName"
@@ -76,7 +76,7 @@
                     style="@style/Widget.App.TextInputLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Tên đăng nhập * (≥4 ký tự)"
+                    android:hint="@string/username"
                     app:startIconDrawable="@android:drawable/ic_menu_myplaces">
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/edtRegisterUsername"
@@ -92,7 +92,7 @@
                     style="@style/Widget.App.TextInputLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Mật khẩu * (≥6 ký tự)"
+                    android:hint="@string/password"
                     app:endIconMode="password_toggle"
                     app:startIconDrawable="@android:drawable/ic_lock_lock">
                     <com.google.android.material.textfield.TextInputEditText
@@ -109,7 +109,7 @@
                     style="@style/Widget.App.TextInputLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Xác nhận mật khẩu *"
+                    android:hint="@string/confirm_password"
                     app:endIconMode="password_toggle"
                     app:startIconDrawable="@android:drawable/ic_lock_lock">
                     <com.google.android.material.textfield.TextInputEditText
@@ -134,7 +134,7 @@
                     style="@style/Widget.App.TextInputLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Email (tuỳ chọn)"
+                    android:hint="@string/email"
                     app:startIconDrawable="@android:drawable/sym_action_email">
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/edtRegisterEmail"
@@ -150,7 +150,7 @@
                     style="@style/Widget.App.TextInputLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Số điện thoại (tuỳ chọn)"
+                    android:hint="@string/phone"
                     app:startIconDrawable="@android:drawable/stat_sys_phone_call">
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/edtRegisterPhone"
@@ -168,7 +168,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="Tạo tài khoản"
+                    android:text="@string/register_button"
                     app:icon="@drawable/ic_register"
                     app:iconGravity="textStart"
                     app:iconPadding="8dp" />
@@ -179,7 +179,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="Quay lại đăng nhập"
+                    android:text="@string/have_account"
                     app:icon="@drawable/ic_arrow_back"
                     app:iconGravity="textStart"
                     app:iconPadding="8dp" />

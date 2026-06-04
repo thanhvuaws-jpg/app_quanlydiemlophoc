@@ -32,7 +32,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="GPA Tracker"
+                android:text="@string/app_name"
                 android:textColor="@color/primary"
                 android:textSize="30sp"
                 android:textStyle="bold"
@@ -41,7 +41,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Đăng nhập hệ thống quản lý điểm VAA"
+                android:text="@string/login_title"
                 android:textColor="@color/text_secondary"
                 android:textSize="14sp" />
         </LinearLayout>
@@ -64,7 +64,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Đăng nhập"
+                    android:text="@string/login_button"
                     android:textColor="@color/text_primary"
                     android:textSize="20sp"
                     android:textStyle="bold"
@@ -74,7 +74,7 @@
                     style="@style/Widget.App.TextInputLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Tên đăng nhập"
+                    android:hint="@string/username"
                     app:startIconDrawable="@android:drawable/ic_menu_myplaces">
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/edtLoginUsername"
@@ -89,7 +89,7 @@
                     style="@style/Widget.App.TextInputLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Mật khẩu"
+                    android:hint="@string/password"
                     app:endIconMode="password_toggle"
                     app:startIconDrawable="@android:drawable/ic_lock_lock">
                     <com.google.android.material.textfield.TextInputEditText
@@ -105,7 +105,7 @@
                     android:id="@+id/cbRememberLogin"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Ghi nhớ đăng nhập"
+                    android:text="@string/remember_login"
                     android:textColor="@color/text_primary"
                     android:layout_marginTop="4dp"
                     android:layout_marginBottom="16dp" />
@@ -115,7 +115,7 @@
                     style="@style/Widget.App.Button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Đăng nhập"
+                    android:text="@string/login_button"
                     app:icon="@drawable/ic_login"
                     app:iconGravity="textStart"
                     app:iconPadding="8dp" />
@@ -126,7 +126,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="Đăng ký tài khoản mới"
+                    android:text="@string/register_now"
                     app:icon="@drawable/ic_register"
                     app:iconGravity="textStart"
                     app:iconPadding="8dp" />

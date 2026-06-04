@@ -19,7 +19,7 @@ import vn.edu.vaa.classmanagerdemo.database.ScoreDAO;
 import vn.edu.vaa.classmanagerdemo.storage.AppPreferenceManager;
 import vn.edu.vaa.classmanagerdemo.utils.NavigationHelper;
 
-public class GradePredictActivity extends AppCompatActivity {
+public class GradePredictActivity extends BaseActivity {
     private TextInputEditText edtCurrentGpa, edtCurrentCredits, edtTargetGpa, edtFutureCredits;
     private MaterialCardView cardPredictResult;
     private TextView tvPredictTitle, tvPredictMessage;
@@ -72,7 +72,7 @@ public class GradePredictActivity extends AppCompatActivity {
         String futureCreditsStr = edtFutureCredits.getText().toString().trim();
 
         if (currentGpaStr.isEmpty() || currentCreditsStr.isEmpty() || targetGpaStr.isEmpty() || futureCreditsStr.isEmpty()) {
-            Toast.makeText(this, "Vui lòng nhập đầy đủ thông tin", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.error_missing_info), Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -83,11 +83,11 @@ public class GradePredictActivity extends AppCompatActivity {
             int futureCredits = Integer.parseInt(futureCreditsStr);
 
             if (currentGpa < 0 || currentGpa > 4.0 || targetGpa < 0 || targetGpa > 4.0) {
-                Toast.makeText(this, "GPA phải nằm trong khoảng từ 0.0 đến 4.0", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.error_gpa_range), Toast.LENGTH_SHORT).show();
                 return;
             }
-            if (currentCredits < 0 || futureCredits <= 0) {
-                Toast.makeText(this, "Số tín chỉ phải lớn hơn 0", Toast.LENGTH_SHORT).show();
+            if (currentCredits <= 0 || futureCredits <= 0) {
+                Toast.makeText(this, getString(R.string.error_credits_positive), Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -100,30 +100,17 @@ public class GradePredictActivity extends AppCompatActivity {
             cardPredictResult.setVisibility(View.VISIBLE);
 
             if (futureGpaRequired > 4.0f) {
-                tvPredictTitle.setText("❌ Không khả thi");
-                tvPredictTitle.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
-                tvPredictMessage.setText(String.format(Locale.getDefault(),
-                        "Để đạt mục tiêu GPA tích lũy là %.2f, bạn cần đạt điểm trung bình GPA tương lai là %.2f trong %d tín chỉ tiếp theo. Điều này vượt quá mức tối đa là 4.00.\n\nKhuyên: Bạn nên giảm bớt mục tiêu GPA mong muốn hoặc tăng số tín chỉ học tiếp theo để giảm gánh nặng điểm số.",
-                        targetGpa, futureGpaRequired, futureCredits));
-            } else if (futureGpaRequired <= 0f) {
-                tvPredictTitle.setText("🎉 Đã đạt mục tiêu");
-                tvPredictTitle.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
-                tvPredictMessage.setText(String.format(Locale.getDefault(),
-                        "GPA hiện tại của bạn (%.2f) đã đạt hoặc vượt mục tiêu mong muốn (%.2f). Bạn chỉ cần hoàn thành các tín chỉ mới mà không cần lo lắng về việc cải thiện điểm GPA.",
-                        currentGpa, targetGpa));
+                tvPredictTitle.setText(getString(R.string.predict_impossible));
+                tvPredictTitle.setTextColor(getResources().getColor(R.color.danger, null));
+                tvPredictMessage.setText(getString(R.string.predict_impossible_desc, targetGpa, futureGpaRequired, futureCredits));
+            } else if (futureGpaRequired <= currentGpa && futureGpaRequired <= 0) {
+                tvPredictTitle.setText(getString(R.string.predict_achieved));
+                tvPredictTitle.setTextColor(getResources().getColor(R.color.success, null));
+                tvPredictMessage.setText(getString(R.string.predict_achieved_desc, currentGpa, targetGpa));
             } else {
-                tvPredictTitle.setText(String.format(Locale.US, "💪 Cần đạt: %.2f", futureGpaRequired));
-                tvPredictTitle.setTextColor(getResources().getColor(R.color.primary));
-
-                String letter = getSuggestedLetter(futureGpaRequired);
-                String system10 = getSuggestedSystem10(futureGpaRequired);
-
-                tvPredictMessage.setText(String.format(Locale.getDefault(),
-                        "Để đạt mục tiêu GPA tích lũy là %.2f sau khi học thêm %d tín chỉ, bạn cần đạt điểm GPA trung bình là %.2f cho các môn học sắp tới.\n\n" +
-                                "👉 Quy đổi tương đương:\n" +
-                                "• Điểm hệ 10 khoảng: %s\n" +
-                                "• Điểm chữ khoảng: %s",
-                        targetGpa, futureCredits, futureGpaRequired, system10, letter));
+                tvPredictTitle.setText(getString(R.string.predict_feasible));
+                tvPredictTitle.setTextColor(getResources().getColor(R.color.primary, null));
+                tvPredictMessage.setText(getString(R.string.predict_feasible_desc, futureGpaRequired, futureCredits, targetGpa));
             }
 
         } catch (NumberFormatException e) {

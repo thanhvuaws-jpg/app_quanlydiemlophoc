@@ -24,7 +24,7 @@ import vn.edu.vaa.classmanagerdemo.storage.AppPreferenceManager;
 import vn.edu.vaa.classmanagerdemo.utils.NavigationHelper;
 import vn.edu.vaa.classmanagerdemo.views.GpaChartView;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
     private AppPreferenceManager prefs;
     private UserDAO userDAO;
     private ScoreDAO scoreDAO;
@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void renderUserInfo() {
         String name = prefs.getFullName().isEmpty() ? prefs.getUsername() : prefs.getFullName();
-        tvWelcome.setText("Xin chào, " + name);
+        tvWelcome.setText(getString(R.string.hello_user, name));
     }
 
     private void loadStats() {
@@ -110,13 +110,13 @@ public class MainActivity extends AppCompatActivity {
             // Khá: GPA >= 2.5 & ĐRL >= 70
             String scholarshipText;
             if (cumulativeGpa >= 3.6f && trainingPoints >= 90) {
-                scholarshipText = "Đạt học bổng Xuất sắc 🏆 (GPA: " + String.format(Locale.US, "%.2f", cumulativeGpa) + ", ĐRL: " + trainingPoints + ")";
+                scholarshipText = getString(R.string.scholarship_excellent, cumulativeGpa, trainingPoints);
             } else if (cumulativeGpa >= 3.2f && trainingPoints >= 80) {
-                scholarshipText = "Đạt học bổng Giỏi 🏅 (GPA: " + String.format(Locale.US, "%.2f", cumulativeGpa) + ", ĐRL: " + trainingPoints + ")";
+                scholarshipText = getString(R.string.scholarship_good, cumulativeGpa, trainingPoints);
             } else if (cumulativeGpa >= 2.5f && trainingPoints >= 70) {
-                scholarshipText = "Đạt học bổng Khá 🎗️ (GPA: " + String.format(Locale.US, "%.2f", cumulativeGpa) + ", ĐRL: " + trainingPoints + ")";
+                scholarshipText = getString(R.string.scholarship_fair, cumulativeGpa, trainingPoints);
             } else {
-                scholarshipText = "Chưa đạt (Yêu cầu GPA ≥ 2.5 & ĐRL ≥ 70)";
+                scholarshipText = getString(R.string.scholarship_none);
             }
 
             // Gather and calculate GPA progress per semester
@@ -125,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
             for (Score s : scores) {
                 String sem = s.getSemester();
                 if (sem == null || sem.trim().isEmpty()) {
-                    sem = "Chưa phân loại";
+                    sem = getString(R.string.uncategorized_semester);
                 }
                 if (!semMap.containsKey(sem)) {
                     semMap.put(sem, new ArrayList<>());
@@ -156,10 +156,10 @@ public class MainActivity extends AppCompatActivity {
             runOnUiThread(() -> {
                 tvStatClasses.setText(String.valueOf(totalCredits));
                 tvStatStudents.setText(String.format(Locale.US, "%.2f", cumulativeGpa));
-                tvStatScores.setText(subjectCount + " môn");
+                tvStatScores.setText(getString(R.string.courses_count_format, subjectCount));
 
                 tvScholarshipStatus.setText(scholarshipText);
-                tvTuitionTotal.setText(String.format(Locale.GERMANY, "%,d VND (%d tín chỉ × %,dđ)", totalTuition, totalCredits, rate));
+                tvTuitionTotal.setText(getString(R.string.tuition_format, totalTuition, totalCredits, rate));
 
                 // Bind chart data
                 gpaChartView.setData(semestersList, gpaList);

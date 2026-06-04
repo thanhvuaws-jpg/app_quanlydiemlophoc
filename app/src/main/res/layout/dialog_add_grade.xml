@@ -22,7 +22,7 @@
         android:id="@+id/tvDialogTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Thêm môn học mới"
+        android:text="@string/add_subject_title"
         android:textSize="18sp"
         android:textStyle="bold"
         android:textColor="@color/text_primary"
@@ -43,7 +43,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="12dp"
-                android:hint="Tên môn học"
+                android:hint="@string/subject_name"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                 app:boxCornerRadiusTopStart="10dp" app:boxCornerRadiusTopEnd="10dp"
                 app:boxCornerRadiusBottomStart="10dp" app:boxCornerRadiusBottomEnd="10dp">
@@ -69,7 +69,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1.2"
                     android:layout_marginEnd="6dp"
-                    android:hint="Học kỳ (VD: HK1 2024-2025)"
+                    android:hint="@string/semester_hint"
                     app:boxCornerRadiusTopStart="10dp" app:boxCornerRadiusTopEnd="10dp"
                     app:boxCornerRadiusBottomStart="10dp" app:boxCornerRadiusBottomEnd="10dp">
                     <com.google.android.material.textfield.MaterialAutoCompleteTextView
@@ -84,7 +84,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="0.8"
                     android:layout_marginStart="6dp"
-                    android:hint="Tín chỉ"
+                    android:hint="@string/credits"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                     app:boxCornerRadiusTopStart="10dp" app:boxCornerRadiusTopEnd="10dp"
                     app:boxCornerRadiusBottomStart="10dp" app:boxCornerRadiusBottomEnd="10dp">
@@ -111,7 +111,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1.2"
                     android:layout_marginEnd="6dp"
-                    android:hint="Điểm quá trình (QT)"
+                    android:hint="@string/score_midterm"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                     app:boxCornerRadiusTopStart="10dp" app:boxCornerRadiusTopEnd="10dp"
                     app:boxCornerRadiusBottomStart="10dp" app:boxCornerRadiusBottomEnd="10dp">
@@ -127,7 +127,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="0.8"
                     android:layout_marginStart="6dp"
-                    android:hint="Tỷ lệ QT %"
+                    android:hint="@string/weight_midterm"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                     app:boxCornerRadiusTopStart="10dp" app:boxCornerRadiusTopEnd="10dp"
                     app:boxCornerRadiusBottomStart="10dp" app:boxCornerRadiusBottomEnd="10dp">
@@ -154,7 +154,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1.2"
                     android:layout_marginEnd="6dp"
-                    android:hint="Điểm cuối kỳ (CK)"
+                    android:hint="@string/score_final"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                     app:boxCornerRadiusTopStart="10dp" app:boxCornerRadiusTopEnd="10dp"
                     app:boxCornerRadiusBottomStart="10dp" app:boxCornerRadiusBottomEnd="10dp">
@@ -170,7 +170,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="0.8"
                     android:layout_marginStart="6dp"
-                    android:hint="Tỷ lệ CK %"
+                    android:hint="@string/weight_final"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                     app:boxCornerRadiusTopStart="10dp" app:boxCornerRadiusTopEnd="10dp"
                     app:boxCornerRadiusBottomStart="10dp" app:boxCornerRadiusBottomEnd="10dp">
@@ -203,7 +203,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Điểm tổng kết:"
+                        android:text="@string/final_score"
                         android:textSize="13sp"
                         android:textColor="#4F46E5" />
                     <TextView
@@ -229,7 +229,7 @@
                 android:id="@+id/btnSaveScore"
                 android:layout_width="match_parent"
                 android:layout_height="52dp"
-                android:text="Lưu điểm môn học"
+                android:text="@string/save_subject"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 app:cornerRadius="12dp"
