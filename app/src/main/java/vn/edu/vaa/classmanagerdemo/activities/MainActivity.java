@@ -162,7 +162,7 @@ public class MainActivity extends BaseActivity {
             runOnUiThread(() -> {
                 tvStatClasses.setText(String.valueOf(totalCredits));
                 tvStatStudents.setText(String.format(Locale.US, "%.2f", cumulativeGpa));
-                tvStatScores.setText(getString(R.string.courses_count_format, subjectCount));
+                tvStatScores.setText(String.valueOf(subjectCount));
 
                 tvScholarshipStatus.setText(scholarshipText);
                 tvTuitionTotal.setText(getString(R.string.tuition_format, totalTuition, totalCredits, rate));
