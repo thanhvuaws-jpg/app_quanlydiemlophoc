@@ -21,7 +21,7 @@
             android:textSize="14sp"
             android:textStyle="bold"
             android:textColor="@color/text_primary"
-            android:text="Môn học giả định" />
+            android:text="@string/mock_course" />
 
         <TextView
             android:id="@+id/tvSimItemCredits"
@@ -29,7 +29,7 @@
             android:layout_height="wrap_content"
             android:textSize="12sp"
             android:textColor="@color/text_secondary"
-            android:text="3 tín chỉ" />
+            android:text="@string/mock_credits_example" />
     </LinearLayout>
 
     <TextView
@@ -46,7 +46,7 @@
         android:id="@+id/btnRemoveSimItem"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Xóa"
+        android:text="@string/action_delete"
         android:textSize="13sp"
         android:textColor="#EF4444"
         android:textStyle="bold"

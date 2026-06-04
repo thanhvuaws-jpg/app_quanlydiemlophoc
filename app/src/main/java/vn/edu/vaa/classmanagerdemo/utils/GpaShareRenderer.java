@@ -55,12 +55,12 @@ public class GpaShareRenderer {
         // Subtitle VAA
         textPaint.setTextSize(16);
         textPaint.setColor(Color.parseColor("#64748B"));
-        canvas.drawText("HỌC VIỆN HÀNG KHÔNG VIỆT NAM", width / 2f, 200, textPaint);
+        canvas.drawText(context.getString(vn.edu.vaa.classmanagerdemo.R.string.vaa_name), width / 2f, 200, textPaint);
 
         // Main Title
         textPaint.setTextSize(32);
         textPaint.setColor(Color.parseColor("#1E293B"));
-        canvas.drawText("BẢNG VÀNG THÀNH TÍCH", width / 2f, 250, textPaint);
+        canvas.drawText(context.getString(vn.edu.vaa.classmanagerdemo.R.string.gpa_card_title), width / 2f, 250, textPaint);
 
         // 4. Student info section
         Paint infoPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -80,7 +80,7 @@ public class GpaShareRenderer {
         infoPaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.NORMAL));
         infoPaint.setTextSize(16);
         infoPaint.setColor(Color.parseColor("#64748B"));
-        canvas.drawText("Mã sinh viên: " + studentCode, width / 2f, 355, infoPaint);
+        canvas.drawText(context.getString(vn.edu.vaa.classmanagerdemo.R.string.student_id_label, studentCode), width / 2f, 355, infoPaint);
 
         // 5. Circle GPA display
         float circleX = width / 2f;
@@ -111,7 +111,7 @@ public class GpaShareRenderer {
         gpaLabelPaint.setTextSize(13);
         gpaLabelPaint.setColor(Color.parseColor("#64748B"));
         gpaLabelPaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
-        canvas.drawText("GPA TÍCH LŨY (HỆ 4)", circleX, circleY + 46, gpaLabelPaint);
+        canvas.drawText(context.getString(vn.edu.vaa.classmanagerdemo.R.string.gpa_cumulative_4_label), circleX, circleY + 46, gpaLabelPaint);
 
         // 6. Secondary stats cards (Grid of 3 cards)
         // Card dimensions
@@ -122,15 +122,15 @@ public class GpaShareRenderer {
 
         // Card 1: GPA 10
         float card1X = 50 + gap + 15;
-        drawStatCard(canvas, card1X, cardY, cardW, cardH, "GPA Hệ 10", String.format(Locale.US, "%.2f", gpa10), "#3B82F6");
+        drawStatCard(canvas, card1X, cardY, cardW, cardH, context.getString(vn.edu.vaa.classmanagerdemo.R.string.gpa_10), String.format(Locale.US, "%.2f", gpa10), "#3B82F6");
 
         // Card 2: Total Credits
         float card2X = card1X + cardW + gap;
-        drawStatCard(canvas, card2X, cardY, cardW, cardH, "Số tín chỉ", totalCredits + " TC", "#10B981");
+        drawStatCard(canvas, card2X, cardY, cardW, cardH, context.getString(vn.edu.vaa.classmanagerdemo.R.string.total_credits_label), totalCredits + " TC", "#10B981");
 
         // Card 3: Rank
         float card3X = card2X + cardW + gap;
-        drawStatCard(canvas, card3X, cardY, cardW, cardH, "Xếp loại", rank, "#F59E0B");
+        drawStatCard(canvas, card3X, cardY, cardW, cardH, context.getString(vn.edu.vaa.classmanagerdemo.R.string.rank_label), rank, "#F59E0B");
 
         // 7. Footer branding
         Paint footerPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -138,7 +138,7 @@ public class GpaShareRenderer {
         footerPaint.setTextSize(13);
         footerPaint.setColor(Color.parseColor("#94A3B8"));
         footerPaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.ITALIC));
-        canvas.drawText("Được tạo bởi ứng dụng Sổ tay GPA VAA", width / 2f, 850, footerPaint);
+        canvas.drawText(context.getString(vn.edu.vaa.classmanagerdemo.R.string.gpa_card_footer), width / 2f, 850, footerPaint);
 
         return bitmap;
     }

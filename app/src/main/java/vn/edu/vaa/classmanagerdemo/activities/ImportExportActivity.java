@@ -85,15 +85,15 @@ public class ImportExportActivity extends BaseActivity {
         try {
             List<Score> scores = scoreDAO.getByStudentId(currentStudentId);
             if (scores.isEmpty()) {
-                Toast.makeText(this, "Chưa có điểm môn học nào để xuất", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.msg_no_scores_export), Toast.LENGTH_SHORT).show();
                 return;
             }
             lastCsvFile = CsvExporter.exportScores(this, scores);
             String content = CsvExporter.readCsv(lastCsvFile);
             txtCsvContent.setText(content);
-            Toast.makeText(this, "Xuất thành công: " + lastCsvFile.getName(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.msg_export_success, lastCsvFile.getName()), Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
-            Toast.makeText(this, "Lỗi xuất CSV: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getString(R.string.msg_export_error, e.getMessage()), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -110,13 +110,13 @@ public class ImportExportActivity extends BaseActivity {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("*/*");
         intent.addCategory(Intent.CATEGORY_OPENABLE);
-        filePickerLauncher.launch(Intent.createChooser(intent, "Chọn file CSV điểm"));
+        filePickerLauncher.launch(Intent.createChooser(intent, getString(R.string.chooser_csv_file)));
     }
 
     private void handleImportCsvFile(Uri uri) {
         try {
             InputStream is = getContentResolver().openInputStream(uri);
-            if (is == null) throw new Exception("Không thể mở file");
+            if (is == null) throw new Exception(getString(R.string.error_cannot_open_file));
             File tempFile = new File(getCacheDir(), "temp_import.csv");
             try (FileOutputStream fos = new FileOutputStream(tempFile)) {
                 byte[] buf = new byte[4096];
@@ -139,12 +139,12 @@ public class ImportExportActivity extends BaseActivity {
             }
 
             String preview = CsvExporter.readCsv(tempFile);
-            String msg = "Nhập thành công " + count + " môn học!";
-            if (skipped > 0) msg += "\n⚠ Bỏ qua " + skipped + " môn đã tồn tại.";
-            txtCsvContent.setText(msg + "\n\nNội dung file:\n" + preview);
-            Toast.makeText(this, "Nhập: " + count + " mới, " + skipped + " trùng bỏ qua", Toast.LENGTH_SHORT).show();
+            String msg = getString(R.string.msg_import_success, count);
+            if (skipped > 0) msg += getString(R.string.msg_import_skipped, skipped);
+            txtCsvContent.setText(msg + getString(R.string.msg_file_content) + preview);
+            Toast.makeText(this, getString(R.string.msg_import_summary, count, skipped), Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
-            Toast.makeText(this, "Lỗi nhập file: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getString(R.string.msg_import_error, e.getMessage()), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -155,16 +155,16 @@ public class ImportExportActivity extends BaseActivity {
         input.setGravity(android.view.Gravity.TOP);
 
         new AlertDialog.Builder(this)
-                .setTitle("Dán văn bản CSV")
-                .setMessage("Hãy nhập hoặc dán nội dung CSV điểm. Dòng đầu là tiêu đề cột.")
+                .setTitle(getString(R.string.dialog_paste_csv_title))
+                .setMessage(getString(R.string.dialog_paste_csv_msg))
                 .setView(input)
-                .setPositiveButton("Nhập điểm", (dialog, which) -> {
+                .setPositiveButton(getString(R.string.btn_import_scores), (dialog, which) -> {
                     String csvText = input.getText().toString().trim();
                     if (!csvText.isEmpty()) {
                         handleImportCsvText(csvText);
                     }
                 })
-                .setNegativeButton("Hủy", null)
+                .setNegativeButton(getString(R.string.btn_cancel), null)
                 .show();
     }
 
@@ -184,12 +184,12 @@ public class ImportExportActivity extends BaseActivity {
                     count++;
                 }
             }
-            String msg = "Nhập thành công " + count + " môn học từ văn bản!";
-            if (skipped > 0) msg += "\n⚠ Bỏ qua " + skipped + " môn đã tồn tại.";
-            txtCsvContent.setText(msg + "\n\nNội dung:\n" + text);
-            Toast.makeText(this, "Nhập: " + count + " mới, " + skipped + " trùng bỏ qua", Toast.LENGTH_SHORT).show();
+            String msg = getString(R.string.msg_import_text_success, count);
+            if (skipped > 0) msg += getString(R.string.msg_import_skipped, skipped);
+            txtCsvContent.setText(msg + getString(R.string.msg_content) + text);
+            Toast.makeText(this, getString(R.string.msg_import_summary, count, skipped), Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
-            Toast.makeText(this, "Lỗi nhập văn bản: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getString(R.string.msg_import_text_error, e.getMessage()), Toast.LENGTH_LONG).show();
         }
     }
 

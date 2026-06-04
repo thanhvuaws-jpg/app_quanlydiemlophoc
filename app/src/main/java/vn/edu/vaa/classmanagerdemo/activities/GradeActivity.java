@@ -356,8 +356,8 @@ public class GradeActivity extends BaseActivity {
                     int weightCK = Integer.parseInt(weightCKStr);
 
                     if (credits <= 0) { dialogEdtCredits.setError("Số tín chỉ phải > 0"); return; }
-                    if (scoreQT < 0 || scoreQT > 10) { dialogEdtScoreQT.setError("Điểm từ 0 đến 10"); return; }
-                    if (scoreCK < 0 || scoreCK > 10) { dialogEdtScoreCK.setError("Điểm từ 0 đến 10"); return; }
+                    if (scoreQT < 0 || scoreQT > 10) { dialogEdtScoreQT.setError(getString(R.string.error_score_range)); return; }
+                    if (scoreCK < 0 || scoreCK > 10) { dialogEdtScoreCK.setError(getString(R.string.error_score_range)); return; }
                     if (weightQT + weightCK != 100) {
                         Toast.makeText(this, "Tổng tỷ lệ phần trăm phải bằng 100%", Toast.LENGTH_SHORT).show();
                         return;
@@ -374,7 +374,7 @@ public class GradeActivity extends BaseActivity {
                     // Save the semester added as selected filter
                     selectedFilterSemester = semester;
                     loadScoresForStudent(currentStudentId);
-                    Toast.makeText(this, "Đã lưu điểm môn " + subject, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, getString(R.string.msg_saved_course, subject), Toast.LENGTH_SHORT).show();
                     dialog.dismiss();
 
                 } catch (NumberFormatException e) {
@@ -394,7 +394,7 @@ public class GradeActivity extends BaseActivity {
                     scoreDAO.deleteById(score.getId());
                     loadScoresForStudent(currentStudentId);
                 })
-                .setNegativeButton("Hủy", null)
+                .setNegativeButton(getString(R.string.btn_cancel), null)
                 .show();
     }
 
@@ -747,8 +747,8 @@ public class GradeActivity extends BaseActivity {
                     int weightCK = Integer.parseInt(weightCKStr);
 
                     if (credits <= 0) { dialogEdtCredits.setError("Số tín chỉ phải > 0"); return; }
-                    if (scoreQT < 0 || scoreQT > 10) { dialogEdtScoreQT.setError("Điểm từ 0 đến 10"); return; }
-                    if (scoreCK < 0 || scoreCK > 10) { dialogEdtScoreCK.setError("Điểm từ 0 đến 10"); return; }
+                    if (scoreQT < 0 || scoreQT > 10) { dialogEdtScoreQT.setError(getString(R.string.error_score_range)); return; }
+                    if (scoreCK < 0 || scoreCK > 10) { dialogEdtScoreCK.setError(getString(R.string.error_score_range)); return; }
                     if (weightQT + weightCK != 100) {
                         Toast.makeText(this, "Tổng tỷ lệ phần trăm phải bằng 100%", Toast.LENGTH_SHORT).show();
                         return;
@@ -772,7 +772,7 @@ public class GradeActivity extends BaseActivity {
 
                     selectedFilterSemester = semester;
                     loadScoresForStudent(currentStudentId);
-                    Toast.makeText(this, "Đã cập nhật điểm môn " + subject, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, getString(R.string.msg_updated_course, subject), Toast.LENGTH_SHORT).show();
                     dialog.dismiss();
 
                 } catch (NumberFormatException e) {
@@ -863,7 +863,7 @@ public class GradeActivity extends BaseActivity {
 
                     tvName.setText(c.getSubjectName());
                     tvCredits.setText(c.getCredits() + " tín chỉ  •  GPA hệ 4: " + String.format(Locale.US, "%.1f", c.getGrade4()));
-                    tvScoreVal.setText("Điểm: " + String.format(Locale.US, "%.1f", c.getScore10()));
+                    tvScoreVal.setText(getString(R.string.score_label, String.format(Locale.US, "%.1f", c.getScore10())));
                     btnRemove.setOnClickListener(v -> {
                         simulatedList.remove(idx);
                         run(); // Re-render
@@ -890,7 +890,7 @@ public class GradeActivity extends BaseActivity {
                 int credits = Integer.parseInt(creditsStr);
                 float score10 = Float.parseFloat(scoreStr);
                 if (credits <= 0) { edtSimCredits.setError("Số tín chỉ phải > 0"); return; }
-                if (score10 < 0 || score10 > 10) { edtSimScore.setError("Điểm từ 0 đến 10"); return; }
+                if (score10 < 0 || score10 > 10) { edtSimScore.setError(getString(R.string.error_score_range)); return; }
 
                 simulatedList.add(new vn.edu.vaa.classmanagerdemo.models.SimulatedCourse(name, credits, score10));
                 edtSimSubjectName.setText("");

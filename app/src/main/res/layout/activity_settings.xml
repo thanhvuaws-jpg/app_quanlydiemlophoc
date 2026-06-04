@@ -69,7 +69,7 @@
                         <TextView
                              android:layout_width="match_parent"
                              android:layout_height="wrap_content"
-                             android:text="👤  Thông tin tài khoản"
+                             android:text="@string/settings_account_info"
                              android:textColor="@color/text_primary"
                              android:textSize="15sp"
                              android:textStyle="bold"
@@ -104,7 +104,7 @@
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="⚙️  Thiết lập ứng dụng"
+                            android:text="@string/settings_app_config"
                             android:textColor="@color/text_primary"
                             android:textSize="15sp"
                             android:textStyle="bold"

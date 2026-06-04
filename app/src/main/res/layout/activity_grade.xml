@@ -71,7 +71,7 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:text="0 môn học"
+                                android:text="@string/zero_courses"
                                 android:textSize="13sp"
                                 android:textStyle="bold"
                                 android:textColor="@color/primary" />
@@ -120,7 +120,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Lọc Học kỳ:"
+                                android:text="@string/filter_semester_label"
                                 android:textSize="13sp"
                                 android:textStyle="bold"
                                 android:textColor="@color/text_secondary"
@@ -150,7 +150,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Danh sách môn học  •  nhấn để sửa  •  nhấn giữ để xóa"
+                        android:text="@string/course_list_hint"
                         android:textSize="14sp"
                         android:textStyle="bold"
                         android:textColor="@color/text_primary"
@@ -169,7 +169,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:text="🔮  Mô phỏng GPA tương lai"
+                        android:text="@string/btn_simulate_gpa"
                         android:textSize="13sp" />
 
                     <com.google.android.material.button.MaterialButton
@@ -178,7 +178,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="📤  Chia sẻ bảng điểm"
+                        android:text="@string/btn_share_gpa"
                         android:textSize="13sp"
                         app:backgroundTint="#06B6D4" />
 
@@ -211,7 +211,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="TỔNG KẾT TÍCH LŨY TOÀN BỘ"
+                                android:text="@string/total_cumulative_summary"
                                 android:textColor="#C7D2FE"
                                 android:textSize="11sp"
                                 android:textStyle="bold"
@@ -233,7 +233,7 @@
                                     <TextView
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:text="Tích lũy (10)"
+                                        android:text="@string/cumulative_10"
                                         android:textColor="#C7D2FE"
                                         android:textSize="10sp" />
                                     <TextView
@@ -256,7 +256,7 @@
                                     <TextView
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:text="Tích lũy (4)"
+                                        android:text="@string/cumulative_4"
                                         android:textColor="#C7D2FE"
                                         android:textSize="10sp" />
                                     <TextView
@@ -279,7 +279,7 @@
                                     <TextView
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:text="Tín chỉ tích lũy"
+                                        android:text="@string/cumulative_credits"
                                         android:textColor="#C7D2FE"
                                         android:textSize="10sp" />
                                     <TextView
@@ -306,7 +306,7 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Xếp loại học lực:"
+                                    android:text="@string/academic_rank_label"
                                     android:textColor="#C7D2FE"
                                     android:textSize="12sp"
                                     android:layout_marginEnd="6dp" />
@@ -315,7 +315,7 @@
                                     android:id="@+id/tvCumulativeClassification"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Chưa xếp loại"
+                                    android:text="@string/unclassified"
                                     android:textColor="#FFFFFF"
                                     android:textSize="13sp"
                                     android:textStyle="bold" />
@@ -328,7 +328,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Thống kê theo từng Học kỳ"
+                        android:text="@string/stats_by_semester"
                         android:textSize="14sp"
                         android:textStyle="bold"
                         android:textColor="@color/text_primary"

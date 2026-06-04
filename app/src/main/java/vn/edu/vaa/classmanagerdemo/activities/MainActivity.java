@@ -203,15 +203,15 @@ public class MainActivity extends BaseActivity {
                 if (tvGpaProgressHint != null) {
                     String hint;
                     if (cumulativeGpa >= 3.6f) {
-                        hint = "🏆 Đã đạt học bổng Xuất sắc (GPA ≥ 3.60)";
+                        hint = getString(R.string.scholarship_hint_excellent);
                     } else if (cumulativeGpa >= 3.2f) {
-                        hint = "🏅 Đã đạt học bổng Giỏi (GPA ≥ 3.20)";
+                        hint = getString(R.string.scholarship_hint_good);
                     } else if (cumulativeGpa >= 2.5f) {
                         float need = 3.20f - cumulativeGpa;
                         hint = String.format(java.util.Locale.US,
-                                "Cần thêm %.2f GPA để đạt học bổng Giỏi", need);
+                                getString(R.string.scholarship_hint_need), need);
                     } else {
-                        hint = "Cần GPA ≥ 3.20 để đạt học bổng Giỏi";
+                        hint = getString(R.string.scholarship_hint_default);
                     }
                     tvGpaProgressHint.setText(hint);
                 }

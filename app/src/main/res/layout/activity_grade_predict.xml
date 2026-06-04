@@ -182,7 +182,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="💡 Kết quả dự đoán"
+                        android:text="@string/predict_result_label"
                         android:textColor="@color/text_primary"
                         android:textSize="15sp"
                         android:textStyle="bold"
@@ -192,7 +192,7 @@
                         android:id="@+id/tvPredictTitle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Yêu cầu điểm số"
+                        android:text="@string/score_requirement"
                         android:textColor="@color/text_primary"
                         android:textSize="18sp"
                         android:textStyle="bold"

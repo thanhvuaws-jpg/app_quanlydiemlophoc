@@ -26,7 +26,7 @@
                 android:id="@+id/tvSemName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Học kỳ 1 2024-2025"
+                android:text="@string/example_semester"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:textColor="@color/text_primary" />
@@ -36,7 +36,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
-                android:text="Khá"
+                android:text="@string/grade_fair"
                 android:textSize="13sp"
                 android:textStyle="bold"
                 android:textColor="@color/primary" />
@@ -65,7 +65,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="GPA Hệ 10"
+                    android:text="@string/gpa_10"
                     android:textSize="11sp"
                     android:textColor="@color/text_secondary"
                     android:layout_marginBottom="4dp"/>
@@ -89,7 +89,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="GPA Hệ 4"
+                    android:text="@string/gpa_4"
                     android:textSize="11sp"
                     android:textColor="@color/text_secondary"
                     android:layout_marginBottom="4dp"/>
@@ -113,7 +113,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Số tín chỉ"
+                    android:text="@string/total_credits_label"
                     android:textSize="11sp"
                     android:textColor="@color/text_secondary"
                     android:layout_marginBottom="4dp"/>
@@ -121,7 +121,7 @@
                     android:id="@+id/tvSemCredits"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="15 tín chỉ"
+                    android:text="@string/credits_example"
                     android:textSize="14sp"
                     android:textStyle="bold"
                     android:textColor="@color/text_primary"/>

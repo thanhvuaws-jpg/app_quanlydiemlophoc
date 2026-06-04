@@ -46,7 +46,7 @@ public class LoadingHelper {
     }
 
     public void show(Context context) {
-        show(context, "Đang xử lý...");
+        show(context, context.getString(vn.edu.vaa.classmanagerdemo.R.string.loading_processing));
     }
 
     public void dismiss() {

@@ -65,7 +65,7 @@
                         android:id="@+id/tvWelcome"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Xin chào, Sinh viên"
+                        android:text="@string/welcome_student"
                         android:textColor="@color/text_secondary"
                         android:textSize="13sp"
                         android:layout_marginTop="1dp" />
@@ -258,7 +258,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Quản lý &amp; tính điểm GPA"
+                                android:text="@string/scores_desc"
                                 android:textColor="@color/text_secondary"
                                 android:textSize="11sp"
                                 android:layout_marginTop="2dp" />
@@ -309,7 +309,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Ước lượng điểm tương lai"
+                                android:text="@string/predict_desc"
                                 android:textColor="@color/text_secondary"
                                 android:textSize="11sp"
                                 android:layout_marginTop="2dp" />
@@ -368,7 +368,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Sao lưu điểm ra file CSV"
+                                android:text="@string/import_export_desc"
                                 android:textColor="@color/text_secondary"
                                 android:textSize="11sp"
                                 android:layout_marginTop="2dp" />
@@ -419,7 +419,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Thiết lập tài khoản &amp; giao diện"
+                                android:text="@string/settings_desc"
                                 android:textColor="@color/text_secondary"
                                 android:textSize="11sp"
                                 android:layout_marginTop="2dp" />
@@ -451,7 +451,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="📈  Biểu đồ tiến trình GPA"
+                        android:text="@string/gpa_chart_title"
                         android:textColor="@color/text_primary"
                         android:textSize="14sp"
                         android:textStyle="bold"
@@ -508,7 +508,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Đánh giá học bổng VAA"
+                            android:text="@string/scholarship_evaluation"
                             android:textColor="@color/text_primary"
                             android:textSize="14sp"
                             android:textStyle="bold" />
@@ -517,7 +517,7 @@
                             android:id="@+id/tvScholarshipStatus"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Chưa xếp loại học bổng"
+                            android:text="@string/scholarship_unclassified"
                             android:textColor="@color/text_secondary"
                             android:textSize="12sp"
                             android:layout_marginTop="2dp" />
@@ -557,7 +557,7 @@
                             android:id="@+id/tvGpaProgressHint"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Cần GPA 3.20 để đạt học bổng Giỏi"
+                            android:text="@string/scholarship_hint_default"
                             android:textSize="11sp"
                             android:textColor="@color/text_secondary"
                             android:layout_marginTop="4dp" />
@@ -610,7 +610,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Học phí ước tính tích lũy"
+                            android:text="@string/estimated_tuition_cumulative"
                             android:textColor="@color/text_primary"
                             android:textSize="14sp"
                             android:textStyle="bold" />
