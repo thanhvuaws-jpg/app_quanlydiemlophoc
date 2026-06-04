@@ -86,6 +86,20 @@
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
 
+                    <!-- Badge xếp loại học kỳ -->
+                    <TextView
+                        android:id="@+id/tvSemesterRank"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
+                        android:gravity="center"
+                        android:padding="10dp"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        android:text=""
+                        android:visibility="gone"
+                        android:background="@drawable/bg_card" />
+
                     <!-- Bộ lọc Học kỳ -->
                     <com.google.android.material.card.MaterialCardView
                         android:layout_width="match_parent"
@@ -112,13 +126,23 @@
                                 android:textColor="@color/text_secondary"
                                 android:layout_marginEnd="8dp" />
 
-                            <Spinner
-                                android:id="@+id/spFilterSemester"
+                            <com.google.android.material.textfield.TextInputLayout
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                                 android:layout_width="0dp"
-                                android:layout_height="40dp"
+                                android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:background="@android:drawable/btn_dropdown"
-                                android:spinnerMode="dropdown" />
+                                app:boxCornerRadiusTopStart="10dp"
+                                app:boxCornerRadiusTopEnd="10dp"
+                                app:boxCornerRadiusBottomStart="10dp"
+                                app:boxCornerRadiusBottomEnd="10dp">
+                                <AutoCompleteTextView
+                                    android:id="@+id/spFilterSemester"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:inputType="none"
+                                    android:paddingStart="12dp"
+                                    android:paddingEnd="12dp" />
+                            </com.google.android.material.textfield.TextInputLayout>
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
 
@@ -126,7 +150,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Danh sách môn học (Nhấn giữ để xóa)"
+                        android:text="Danh sách môn học  •  nhấn để sửa  •  nhấn giữ để xóa"
                         android:textSize="14sp"
                         android:textStyle="bold"
                         android:textColor="@color/text_primary"
@@ -138,6 +162,25 @@
                         android:layout_height="wrap_content"
                         android:nestedScrollingEnabled="false"
                         android:paddingBottom="16dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnSimulate"
+                        style="@style/Widget.App.Button.Outlined"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="🔮  Mô phỏng GPA tương lai"
+                        android:textSize="13sp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnShareGpa"
+                        style="@style/Widget.App.Button"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="📤  Chia sẻ bảng điểm"
+                        android:textSize="13sp"
+                        app:backgroundTint="#06B6D4" />
 
                 </LinearLayout>
 

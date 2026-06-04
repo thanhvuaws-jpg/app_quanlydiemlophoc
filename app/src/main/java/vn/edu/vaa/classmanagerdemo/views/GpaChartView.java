@@ -90,17 +90,17 @@ public class GpaChartView extends View {
         float graphWidth = width - paddingLeft - paddingRight;
         float graphHeight = height - paddingTop - paddingBottom;
 
+        if (semesters.isEmpty() || gpaValues.isEmpty()) {
+            canvas.drawText("Chưa có dữ liệu — hãy thêm môn học", width / 2f, height / 2f, textPaint);
+            return;
+        }
+
         // Draw horizontal grid lines for GPA (1.0, 2.0, 3.0, 4.0)
         for (int i = 1; i <= 4; i++) {
             float gpaLevel = i;
             float y = paddingTop + graphHeight * (1f - (gpaLevel / 4.0f));
             canvas.drawLine(paddingLeft, y, width - paddingRight, y, gridPaint);
             canvas.drawText(String.valueOf(i) + ".0", paddingLeft - 40f, y + 8f, textPaint);
-        }
-
-        if (semesters.isEmpty() || gpaValues.isEmpty()) {
-            canvas.drawText("Chưa đủ dữ liệu vẽ biểu đồ tiến trình", width / 2f, height / 2f, textPaint);
-            return;
         }
 
         int pointsCount = semesters.size();

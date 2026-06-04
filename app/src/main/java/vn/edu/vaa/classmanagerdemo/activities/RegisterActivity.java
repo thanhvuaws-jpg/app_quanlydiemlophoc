@@ -89,5 +89,7 @@ public class RegisterActivity extends AppCompatActivity {
             return;
         }
         Toast.makeText(this, "Đăng ký thành công", Toast.LENGTH_SHORT).show();
+        // Delay nhỏ để Toast hiển thị rồi mới finish
+        new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(this::finish, 1200);
     }
 }

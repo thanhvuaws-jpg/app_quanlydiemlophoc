@@ -20,14 +20,15 @@ import vn.edu.vaa.classmanagerdemo.models.Score;
 
 public class ScoreAdapter extends RecyclerView.Adapter<ScoreAdapter.ViewHolder> {
 
-    public interface OnScoreDeleteListener {
+    public interface OnScoreEditListener {
+        void onEdit(Score score, int position);
         void onDelete(Score score, int position);
     }
 
     private final List<Score> list;
-    private final OnScoreDeleteListener listener;
+    private final OnScoreEditListener listener;
 
-    public ScoreAdapter(List<Score> list, OnScoreDeleteListener listener) {
+    public ScoreAdapter(List<Score> list, OnScoreEditListener listener) {
         this.list = list;
         this.listener = listener;
     }
@@ -49,11 +50,11 @@ public class ScoreAdapter extends RecyclerView.Adapter<ScoreAdapter.ViewHolder> 
         h.tvScore.setTextColor(parsedColor);
         h.scoreCircle.setStrokeColor(parsedColor);
 
-        // Repurpose tvStudent to show breakdown: credits, QT, CK, weights
+        // Repurpose tvStudent to show breakdown: QT, CK, weights
         h.tvStudent.setVisibility(View.VISIBLE);
         h.tvStudent.setText(String.format(Locale.getDefault(),
-                "%d TC  •  QT: %.1f (%d%%)  •  CK: %.1f (%d%%)",
-                s.getCredits(), s.getScoreQT(), s.getWeightQT(), s.getScoreCK(), s.getWeightCK()));
+                "QT: %.1f (%d%%)  •  CK: %.1f (%d%%)",
+                s.getScoreQT(), s.getWeightQT(), s.getScoreCK(), s.getWeightCK()));
         h.tvStudent.setTextSize(11f);
         h.tvStudent.setTypeface(Typeface.DEFAULT);
         h.tvStudent.setTextColor(Color.parseColor("#64748B"));
@@ -64,9 +65,20 @@ public class ScoreAdapter extends RecyclerView.Adapter<ScoreAdapter.ViewHolder> 
 
         h.tvSemester.setText(s.getSemester() != null ? s.getSemester() : "");
 
+        if (h.tvCredits != null) {
+            h.tvCredits.setText(s.getCredits() + " tín chỉ");
+        }
+
         h.tvGrade.setText(String.format(Locale.US, "%s (%.1f)", s.getGradeLetter(), s.getGrade4()));
         h.tvGrade.setBackgroundColor(Color.parseColor(color + "1A")); // 10% opacity
         h.tvGrade.setTextColor(parsedColor);
+
+        h.itemView.setOnClickListener(v -> {
+            int pos = h.getBindingAdapterPosition();
+            if (listener != null && pos != RecyclerView.NO_POSITION) {
+                listener.onEdit(list.get(pos), pos);
+            }
+        });
 
         h.itemView.setOnLongClickListener(v -> {
             int pos = h.getBindingAdapterPosition();
@@ -82,7 +94,7 @@ public class ScoreAdapter extends RecyclerView.Adapter<ScoreAdapter.ViewHolder> 
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         MaterialCardView scoreCircle;
-        TextView tvScore, tvStudent, tvSubject, tvSemester, tvGrade;
+        TextView tvScore, tvStudent, tvSubject, tvSemester, tvGrade, tvCredits;
 
         ViewHolder(View v) {
             super(v);
@@ -92,6 +104,7 @@ public class ScoreAdapter extends RecyclerView.Adapter<ScoreAdapter.ViewHolder> 
             tvSubject = v.findViewById(R.id.tvScoreSubject);
             tvSemester = v.findViewById(R.id.tvScoreSemester);
             tvGrade = v.findViewById(R.id.tvScoreGrade);
+            tvCredits = v.findViewById(R.id.tvScoreCredits);
         }
     }
 }

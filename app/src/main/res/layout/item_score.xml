@@ -69,6 +69,15 @@
                 android:textSize="11sp"
                 android:textColor="@color/text_secondary"
                 android:layout_marginTop="2dp" />
+
+            <TextView
+                android:id="@+id/tvScoreCredits"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="11sp"
+                android:textColor="@color/primary"
+                android:textStyle="bold"
+                android:layout_marginTop="2dp" />
         </LinearLayout>
 
         <!-- Grade badge -->
