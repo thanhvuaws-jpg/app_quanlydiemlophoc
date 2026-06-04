@@ -152,4 +152,17 @@ public class ScoreDAO {
                 c.getString(c.getColumnIndexOrThrow(DatabaseHelper.SCR_SEMESTER))
         );
     }
+
+    public boolean existsBySubjectAndSemester(int studentId, String subject, String semester) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor c = db.rawQuery(
+                "SELECT 1 FROM " + DatabaseHelper.TABLE_SCORES +
+                " WHERE " + DatabaseHelper.SCR_STUDENT_ID + "=?" +
+                " AND " + DatabaseHelper.SCR_SUBJECT + "=?" +
+                " AND " + DatabaseHelper.SCR_SEMESTER + "=?",
+                new String[]{String.valueOf(studentId), subject, semester});
+        boolean exists = c.moveToFirst();
+        c.close();
+        return exists;
+    }
 }

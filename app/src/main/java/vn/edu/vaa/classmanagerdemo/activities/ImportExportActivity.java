@@ -128,15 +128,21 @@ public class ImportExportActivity extends BaseActivity {
             is.close();
 
             List<Score> scores = CsvExporter.importScores(tempFile, currentStudentId);
-            int count = 0;
+            int count = 0, skipped = 0;
             for (Score s : scores) {
-                scoreDAO.insert(s);
-                count++;
+                if (scoreDAO.existsBySubjectAndSemester(currentStudentId, s.getSubject(), s.getSemester())) {
+                    skipped++;
+                } else {
+                    scoreDAO.insert(s);
+                    count++;
+                }
             }
 
             String preview = CsvExporter.readCsv(tempFile);
-            txtCsvContent.setText("Nhập thành công " + count + " môn học!\n\nNội dung file:\n" + preview);
-            Toast.makeText(this, "Nhập thành công " + count + " môn học!", Toast.LENGTH_SHORT).show();
+            String msg = "Nhập thành công " + count + " môn học!";
+            if (skipped > 0) msg += "\n⚠ Bỏ qua " + skipped + " môn đã tồn tại.";
+            txtCsvContent.setText(msg + "\n\nNội dung file:\n" + preview);
+            Toast.makeText(this, "Nhập: " + count + " mới, " + skipped + " trùng bỏ qua", Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
             Toast.makeText(this, "Lỗi nhập file: " + e.getMessage(), Toast.LENGTH_LONG).show();
         }
@@ -169,13 +175,19 @@ public class ImportExportActivity extends BaseActivity {
                 pw.print(text);
             }
             List<Score> scores = CsvExporter.importScores(tempFile, currentStudentId);
-            int count = 0;
+            int count = 0, skipped = 0;
             for (Score s : scores) {
-                scoreDAO.insert(s);
-                count++;
+                if (scoreDAO.existsBySubjectAndSemester(currentStudentId, s.getSubject(), s.getSemester())) {
+                    skipped++;
+                } else {
+                    scoreDAO.insert(s);
+                    count++;
+                }
             }
-            txtCsvContent.setText("Nhập thành công " + count + " môn học từ văn bản!\n\nNội dung:\n" + text);
-            Toast.makeText(this, "Nhập thành công " + count + " môn học!", Toast.LENGTH_SHORT).show();
+            String msg = "Nhập thành công " + count + " môn học từ văn bản!";
+            if (skipped > 0) msg += "\n⚠ Bỏ qua " + skipped + " môn đã tồn tại.";
+            txtCsvContent.setText(msg + "\n\nNội dung:\n" + text);
+            Toast.makeText(this, "Nhập: " + count + " mới, " + skipped + " trùng bỏ qua", Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
             Toast.makeText(this, "Lỗi nhập văn bản: " + e.getMessage(), Toast.LENGTH_LONG).show();
         }

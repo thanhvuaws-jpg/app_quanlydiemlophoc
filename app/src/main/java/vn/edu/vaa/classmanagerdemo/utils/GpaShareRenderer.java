@@ -68,7 +68,14 @@ public class GpaShareRenderer {
         infoPaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
         infoPaint.setTextSize(24);
         infoPaint.setColor(Color.parseColor("#334155"));
-        canvas.drawText(studentName.toUpperCase(), width / 2f, 320, infoPaint);
+        // Giới hạn độ rộng tên trong card (tối đa 640px — card width 700, padding 30 mỗi bên)
+        float maxNameWidth = width - 160f;
+        String displayName = studentName.toUpperCase();
+        // Đo độ rộng text, nếu vượt quá thì cắt bớt và thêm "..."
+        while (infoPaint.measureText(displayName) > maxNameWidth && displayName.length() > 3) {
+            displayName = displayName.substring(0, displayName.length() - 4) + "...";
+        }
+        canvas.drawText(displayName, width / 2f, 320, infoPaint);
 
         infoPaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.NORMAL));
         infoPaint.setTextSize(16);

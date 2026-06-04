@@ -76,8 +76,12 @@ public class Score {
     public void setStudentName(String studentName) { this.studentName = studentName; }
     public String getSubject() { return subject; }
     public void setSubject(String subject) { this.subject = subject; }
-    public float getScore() { 
-        return calculateScoreTotal(); 
+    public float getScore() {
+        // Cache kết quả — chỉ tính lại khi setter thay đổi giá trị
+        if (score == 0f && (scoreQT != 0f || scoreCK != 0f)) {
+            score = calculateScoreTotal();
+        }
+        return score;
     }
     public void setScore(float score) { this.score = score; }
     public String getSemester() { return semester; }
@@ -86,13 +90,13 @@ public class Score {
     public int getCredits() { return credits; }
     public void setCredits(int credits) { this.credits = credits; }
     public float getScoreQT() { return scoreQT; }
-    public void setScoreQT(float scoreQT) { this.scoreQT = scoreQT; }
+    public void setScoreQT(float scoreQT) { this.scoreQT = scoreQT; this.score = calculateScoreTotal(); }
     public int getWeightQT() { return weightQT; }
-    public void setWeightQT(int weightQT) { this.weightQT = weightQT; }
+    public void setWeightQT(int weightQT) { this.weightQT = weightQT; this.score = calculateScoreTotal(); }
     public float getScoreCK() { return scoreCK; }
-    public void setScoreCK(float scoreCK) { this.scoreCK = scoreCK; }
+    public void setScoreCK(float scoreCK) { this.scoreCK = scoreCK; this.score = calculateScoreTotal(); }
     public int getWeightCK() { return weightCK; }
-    public void setWeightCK(int weightCK) { this.weightCK = weightCK; }
+    public void setWeightCK(int weightCK) { this.weightCK = weightCK; this.score = calculateScoreTotal(); }
 
     private float calculateScoreTotal() {
         float raw = (scoreQT * weightQT + scoreCK * weightCK) / 100f;
