@@ -76,6 +76,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private DatabaseHelper(Context context) {
         super(context.getApplicationContext(), DB_NAME, null, DB_VERSION);
+        try {
+            context.getApplicationContext().deleteDatabase("class_manager.db");
+        } catch (Exception ignored) {}
     }
 
     @Override
