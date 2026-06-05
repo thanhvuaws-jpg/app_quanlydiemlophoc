@@ -245,36 +245,12 @@ public class ImportExportActivity extends BaseActivity {
 
                 List<String> headers = parseCsvLine(firstLine, delimiter);
 
-                int codeCol = -1;
-                int nameCol = -1;
-                int gkCol = -1;
-                int ckCol = -1;
-                int semCol = -1;
-                int noteCol = -1;
-
-                for (int i = 0; i < headers.size(); i++) {
-                    String h = headers.get(i).toLowerCase();
-                    if (h.contains("mã") || h.contains("code") || h.contains("mssv") || h.contains("ms") || h.contains("id") || h.contains("ma")) {
-                        codeCol = i;
-                    } else if (h.contains("tên") || h.contains("name") || h.contains("ten") || h.contains("họ") || h.contains("ho")) {
-                        nameCol = i;
-                    } else if (h.contains("gk") || h.contains("giữa") || h.contains("giua") || h.contains("midterm")) {
-                        gkCol = i;
-                    } else if (h.contains("ck") || h.contains("cuối") || h.contains("cuoi") || h.contains("final")) {
-                        ckCol = i;
-                    } else if (h.contains("kỳ") || h.contains("ky") || h.contains("semester")) {
-                        semCol = i;
-                    } else if (h.contains("chú") || h.contains("chu") || h.contains("note") || h.contains("nhận xét") || h.contains("nhan xet")) {
-                        noteCol = i;
-                    }
-                }
-
-                if (codeCol == -1) codeCol = 0;
-                if (nameCol == -1 && headers.size() > 1) nameCol = 1;
-                if (gkCol == -1 && headers.size() > 2) gkCol = 2;
-                if (ckCol == -1 && headers.size() > 3) ckCol = 3;
-                if (semCol == -1 && headers.size() > 4) semCol = 4;
-                if (noteCol == -1 && headers.size() > 5) noteCol = 5;
+                int codeCol = findCodeColumn(headers);
+                int nameCol = findNameColumn(headers);
+                int gkCol = findGkColumn(headers);
+                int ckCol = findCkColumn(headers);
+                int semCol = findSemesterColumn(headers);
+                int noteCol = findNoteColumn(headers);
 
                 int classId = selectedClass.getId();
                 List<Student> students = studentDAO.getByClassId(classId);
@@ -297,12 +273,12 @@ public class ImportExportActivity extends BaseActivity {
 
                     float gk = 0f;
                     if (gkCol != -1 && cols.size() > gkCol) {
-                        try { gk = Float.parseFloat(cols.get(gkCol).trim()); } catch (Exception ignored) {}
+                        gk = parseFloatSafe(cols.get(gkCol));
                     }
 
                     float ck = 0f;
                     if (ckCol != -1 && cols.size() > ckCol) {
-                        try { ck = Float.parseFloat(cols.get(ckCol).trim()); } catch (Exception ignored) {}
+                        ck = parseFloatSafe(cols.get(ckCol));
                     }
 
                     String semester = "Học kỳ I";
@@ -416,6 +392,108 @@ public class ImportExportActivity extends BaseActivity {
         reader.close();
         inputStream.close();
         return sb.toString();
+    }
+
+    private int findCodeColumn(List<String> headers) {
+        for (int i = 0; i < headers.size(); i++) {
+            String h = headers.get(i).toLowerCase().trim();
+            if (h.equals("mã hs") || h.equals("ma hs") || h.equals("mã số") || h.equals("ma so") || 
+                h.equals("mssv") || h.equals("mã sinh viên") || h.equals("ma sinh vien") ||
+                h.equals("mã học sinh") || h.equals("ma hoc sinh") || h.equals("student code") || 
+                h.equals("student id") || h.equals("code") || h.equals("id")) {
+                return i;
+            }
+        }
+        for (int i = 0; i < headers.size(); i++) {
+            String h = headers.get(i).toLowerCase().trim();
+            if (h.contains("mssv") || h.contains("code") || h.contains("mã số") || h.contains("ma so") ||
+                h.equals("mã") || h.equals("ma")) {
+                return i;
+            }
+        }
+        for (int i = 0; i < headers.size(); i++) {
+            String h = headers.get(i).toLowerCase().trim();
+            if ((h.contains("mã") || h.contains("ma")) && !h.contains("tên") && !h.contains("ten")) {
+                return i;
+            }
+        }
+        return 0;
+    }
+
+    private int findNameColumn(List<String> headers) {
+        for (int i = 0; i < headers.size(); i++) {
+            String h = headers.get(i).toLowerCase().trim();
+            if (h.equals("họ tên") || h.equals("ho ten") || h.equals("họ và tên") || h.equals("ho va ten") || 
+                h.equals("tên") || h.equals("ten") || h.equals("name") || h.equals("full name") || h.equals("fullname")) {
+                return i;
+            }
+        }
+        for (int i = 0; i < headers.size(); i++) {
+            String h = headers.get(i).toLowerCase().trim();
+            if ((h.contains("tên") || h.contains("ten") || h.contains("name")) && 
+                !h.contains("mã") && !h.contains("code") && !h.contains("lớp") && !h.contains("lop")) {
+                return i;
+            }
+        }
+        for (int i = 0; i < headers.size(); i++) {
+            String h = headers.get(i).toLowerCase().trim();
+            if ((h.contains("họ") || h.contains("ho")) && !h.contains("học") && !h.contains("hoc") && !h.contains("code")) {
+                return i;
+            }
+        }
+        return 1 < headers.size() ? 1 : 0;
+    }
+
+    private int findGkColumn(List<String> headers) {
+        for (int i = 0; i < headers.size(); i++) {
+            String h = headers.get(i).toLowerCase().trim();
+            if (h.equals("gk") || h.contains("giữa") || h.contains("giua") || h.contains("midterm") || h.contains("giữa kỳ") || h.contains("giua ky")) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private int findCkColumn(List<String> headers) {
+        for (int i = 0; i < headers.size(); i++) {
+            String h = headers.get(i).toLowerCase().trim();
+            if (h.equals("ck") || h.contains("cuối") || h.contains("cuoi") || h.contains("final") || h.contains("cuối kỳ") || h.contains("cuoi ky")) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private int findSemesterColumn(List<String> headers) {
+        for (int i = 0; i < headers.size(); i++) {
+            String h = headers.get(i).toLowerCase().trim();
+            if (h.equals("học kỳ") || h.equals("hoc ky") || h.contains("kỳ") || h.contains("ky") || h.contains("semester")) {
+                if (!h.contains("giữa") && !h.contains("giua") && !h.contains("cuối") && !h.contains("cuoi") && !h.equals("gk") && !h.equals("ck")) {
+                    return i;
+                }
+            }
+        }
+        return -1;
+    }
+
+    private int findNoteColumn(List<String> headers) {
+        for (int i = 0; i < headers.size(); i++) {
+            String h = headers.get(i).toLowerCase().trim();
+            if (h.equals("ghi chú") || h.equals("ghi chu") || h.contains("chú") || h.contains("chu") || h.contains("note") || h.contains("nhận xét") || h.contains("nhan xet")) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private float parseFloatSafe(String val) {
+        if (val == null) return 0f;
+        val = val.trim().replace(",", ".");
+        try {
+            return Float.parseFloat(val);
+        } catch (Exception e) {
+            return 0f;
+        }
     }
 
     @Override

@@ -512,17 +512,8 @@ public class StudentListActivity extends BaseActivity {
         layout.addView(spinnerCode);
         
         // Auto select best match
-        int nameIndex = 0;
-        int codeIndex = 0;
-        for (int i = 0; i < headers.size(); i++) {
-            String h = headers.get(i).toLowerCase();
-            if (h.contains("tên") || h.contains("name") || h.contains("ten") || h.contains("họ") || h.contains("ho")) {
-                nameIndex = i;
-            }
-            if (h.contains("mã") || h.contains("code") || h.contains("mssv") || h.contains("ms") || h.contains("id") || h.contains("ma")) {
-                codeIndex = i;
-            }
-        }
+        int nameIndex = findNameColumn(headers);
+        int codeIndex = findCodeColumn(headers);
         if (nameIndex == codeIndex && headers.size() > 1) {
             codeIndex = (nameIndex + 1) % headers.size();
         }
@@ -673,17 +664,8 @@ public class StudentListActivity extends BaseActivity {
         layout.addView(spinnerCode);
         
         // Auto select best match
-        int nameIndex = 0;
-        int codeIndex = 0;
-        for (int i = 0; i < headers.size(); i++) {
-            String h = headers.get(i).toLowerCase();
-            if (h.contains("tên") || h.contains("name") || h.contains("ten") || h.contains("họ") || h.contains("ho")) {
-                nameIndex = i;
-            }
-            if (h.contains("mã") || h.contains("code") || h.contains("mssv") || h.contains("ms") || h.contains("id") || h.contains("ma")) {
-                codeIndex = i;
-            }
-        }
+        int nameIndex = findNameColumn(headers);
+        int codeIndex = findCodeColumn(headers);
         if (nameIndex == codeIndex && headers.size() > 1) {
             codeIndex = (nameIndex + 1) % headers.size();
         }
@@ -788,5 +770,55 @@ public class StudentListActivity extends BaseActivity {
                 row.addView(tvScore);
             }
         }
+    }
+
+    private int findCodeColumn(List<String> headers) {
+        for (int i = 0; i < headers.size(); i++) {
+            String h = headers.get(i).toLowerCase().trim();
+            if (h.equals("mã hs") || h.equals("ma hs") || h.equals("mã số") || h.equals("ma so") || 
+                h.equals("mssv") || h.equals("mã sinh viên") || h.equals("ma sinh vien") ||
+                h.equals("mã học sinh") || h.equals("ma hoc sinh") || h.equals("student code") || 
+                h.equals("student id") || h.equals("code") || h.equals("id")) {
+                return i;
+            }
+        }
+        for (int i = 0; i < headers.size(); i++) {
+            String h = headers.get(i).toLowerCase().trim();
+            if (h.contains("mssv") || h.contains("code") || h.contains("mã số") || h.contains("ma so") ||
+                h.equals("mã") || h.equals("ma")) {
+                return i;
+            }
+        }
+        for (int i = 0; i < headers.size(); i++) {
+            String h = headers.get(i).toLowerCase().trim();
+            if ((h.contains("mã") || h.contains("ma")) && !h.contains("tên") && !h.contains("ten")) {
+                return i;
+            }
+        }
+        return 0;
+    }
+
+    private int findNameColumn(List<String> headers) {
+        for (int i = 0; i < headers.size(); i++) {
+            String h = headers.get(i).toLowerCase().trim();
+            if (h.equals("họ tên") || h.equals("ho ten") || h.equals("họ và tên") || h.equals("ho va ten") || 
+                h.equals("tên") || h.equals("ten") || h.equals("name") || h.equals("full name") || h.equals("fullname")) {
+                return i;
+            }
+        }
+        for (int i = 0; i < headers.size(); i++) {
+            String h = headers.get(i).toLowerCase().trim();
+            if ((h.contains("tên") || h.contains("ten") || h.contains("name")) && 
+                !h.contains("mã") && !h.contains("code") && !h.contains("lớp") && !h.contains("lop")) {
+                return i;
+            }
+        }
+        for (int i = 0; i < headers.size(); i++) {
+            String h = headers.get(i).toLowerCase().trim();
+            if ((h.contains("họ") || h.contains("ho")) && !h.contains("học") && !h.contains("hoc") && !h.contains("code")) {
+                return i;
+            }
+        }
+        return 1 < headers.size() ? 1 : 0;
     }
 }
