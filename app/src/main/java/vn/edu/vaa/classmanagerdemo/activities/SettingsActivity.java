@@ -2,7 +2,6 @@ package vn.edu.vaa.classmanagerdemo.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Button;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -54,8 +53,8 @@ public class SettingsActivity extends BaseActivity {
     }
 
     private void initListeners() {
-        Button btnSave = findViewById(R.id.btnSavePrefs);
-        Button btnLogout = findViewById(R.id.btnLogout);
+        android.view.View btnSave = findViewById(R.id.btnSavePrefs);
+        android.view.View btnLogout = findViewById(R.id.btnLogout);
         android.view.View btnBackupRestore = findViewById(R.id.btnBackupRestore);
 
         btnSave.setOnClickListener(v -> handleSavePrefs());

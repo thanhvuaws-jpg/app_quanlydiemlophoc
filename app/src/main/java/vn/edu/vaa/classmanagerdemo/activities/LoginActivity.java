@@ -2,7 +2,6 @@ package vn.edu.vaa.classmanagerdemo.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -44,7 +43,7 @@ public class LoginActivity extends BaseActivity {
     }
 
     private void initListeners() {
-        Button btnLogin = findViewById(R.id.btnLogin);
+        android.view.View btnLogin = findViewById(R.id.btnLogin);
         android.view.View btnRegister = findViewById(R.id.btnOpenRegister);
         btnLogin.setOnClickListener(v -> handleLogin());
         btnRegister.setOnClickListener(v -> startActivity(new Intent(this, RegisterActivity.class)));

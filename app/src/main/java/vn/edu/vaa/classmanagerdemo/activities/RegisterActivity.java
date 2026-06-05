@@ -1,7 +1,6 @@
 package vn.edu.vaa.classmanagerdemo.activities;
 
 import android.os.Bundle;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -35,7 +34,7 @@ public class RegisterActivity extends BaseActivity {
     }
 
     private void initListeners() {
-        Button btnRegister = findViewById(R.id.btnRegisterAccount);
+        android.view.View btnRegister = findViewById(R.id.btnRegisterAccount);
         android.view.View btnBackLogin = findViewById(R.id.btnBackLogin);
         btnRegister.setOnClickListener(v -> handleRegister());
         btnBackLogin.setOnClickListener(v -> finish());
