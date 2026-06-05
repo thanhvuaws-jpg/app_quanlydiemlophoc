@@ -86,13 +86,20 @@ public class ClassDAO {
     }
 
     private SchoolClass fromCursor(Cursor c) {
-        return new SchoolClass(
-                c.getInt(c.getColumnIndexOrThrow(DatabaseHelper.CLS_ID)),
-                c.getInt(c.getColumnIndexOrThrow(DatabaseHelper.CLS_TEACHER_ID)),
-                c.getString(c.getColumnIndexOrThrow(DatabaseHelper.CLS_NAME)),
-                c.getString(c.getColumnIndexOrThrow(DatabaseHelper.CLS_SUBJECT)),
-                c.getString(c.getColumnIndexOrThrow(DatabaseHelper.CLS_SCHOOL_YEAR)),
-                c.getString(c.getColumnIndexOrThrow(DatabaseHelper.CLS_DEADLINE))
-        );
+        int idIdx = c.getColumnIndex(DatabaseHelper.CLS_ID);
+        int teacherIdIdx = c.getColumnIndex(DatabaseHelper.CLS_TEACHER_ID);
+        int nameIdx = c.getColumnIndex(DatabaseHelper.CLS_NAME);
+        int subjectIdx = c.getColumnIndex(DatabaseHelper.CLS_SUBJECT);
+        int yearIdx = c.getColumnIndex(DatabaseHelper.CLS_SCHOOL_YEAR);
+        int deadlineIdx = c.getColumnIndex(DatabaseHelper.CLS_DEADLINE);
+
+        int id = idIdx != -1 ? c.getInt(idIdx) : 0;
+        int teacherId = teacherIdIdx != -1 ? c.getInt(teacherIdIdx) : 0;
+        String name = nameIdx != -1 ? c.getString(nameIdx) : "";
+        String subject = subjectIdx != -1 ? c.getString(subjectIdx) : "";
+        String year = yearIdx != -1 ? c.getString(yearIdx) : "";
+        String deadline = deadlineIdx != -1 ? c.getString(deadlineIdx) : "";
+
+        return new SchoolClass(id, teacherId, name, subject, year, deadline);
     }
 }

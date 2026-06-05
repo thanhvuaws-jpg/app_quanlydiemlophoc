@@ -153,6 +153,23 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
+    @Override
+    public void onOpen(SQLiteDatabase db) {
+        super.onOpen(db);
+        // Self-healing database check to prevent upgrade discrepancies on active test devices
+        db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_TEMPLATES + " (" +
+                TPL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                TPL_TEACHER_ID + " INTEGER NOT NULL, " +
+                TPL_NAME + " TEXT NOT NULL, " +
+                TPL_W_QT + " INTEGER NOT NULL, " +
+                TPL_W_GK + " INTEGER NOT NULL, " +
+                TPL_W_CK + " INTEGER NOT NULL);");
+
+        try {
+            db.execSQL("ALTER TABLE " + TABLE_CLASSES + " ADD COLUMN " + CLS_DEADLINE + " TEXT DEFAULT ''");
+        } catch (Exception ignored) {}
+    }
+
     private void seedData(SQLiteDatabase db) {
         String hashed = "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92";
         db.execSQL("INSERT OR IGNORE INTO " + TABLE_USERS +
