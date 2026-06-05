@@ -275,12 +275,12 @@ public class StudentListActivity extends BaseActivity {
                 File file = new File(dir, "diem_" + safeClass + ".csv");
                 FileWriter fw = new FileWriter(file);
                 fw.write('\uFEFF'); // UTF-8 BOM
-                fw.write("Mã HS,Họ tên,QT,GK,CK,Điểm TK,Xếp loại\n");
+                fw.write("Mã HS,Họ tên,GK,CK,Điểm TK,Xếp loại\n");
                 for (Score s : scores) {
-                    fw.write(String.format(java.util.Locale.US, "%s,%s,%.1f,%.1f,%.1f,%.1f,%s\n",
+                    fw.write(String.format(java.util.Locale.US, "%s,%s,%.1f,%.1f,%.1f,%s\n",
                         s.getStudentCode() != null ? s.getStudentCode() : "",
                         s.getStudentName() != null ? s.getStudentName() : "",
-                        s.getScoreQT(), s.getScoreGK(), s.getScoreCK(),
+                        s.getScoreGK(), s.getScoreCK(),
                         s.getScore(), s.getGradeLabel()));
                 }
                 fw.close();

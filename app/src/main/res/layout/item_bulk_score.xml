@@ -37,7 +37,8 @@
         android:hint="QT" android:inputType="numberDecimal"
         android:textSize="12sp" android:gravity="center"
         android:background="@drawable/bg_input_small"
-        android:layout_marginStart="4dp" />
+        android:layout_marginStart="4dp"
+        android:visibility="gone" />
     <EditText android:id="@+id/edtBulkGK"
         android:layout_width="48dp" android:layout_height="36dp"
         android:hint="GK" android:inputType="numberDecimal"

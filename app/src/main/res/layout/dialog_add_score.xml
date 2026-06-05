@@ -93,15 +93,12 @@
 
     <com.google.android.material.textfield.TextInputLayout
         style="@style/Widget.App.TextInputLayout"
-        android:layout_width="match_parent" android:layout_height="wrap_content"
-        app:endIconMode="dropdown_menu">
-        <AutoCompleteTextView
+        android:layout_width="match_parent" android:layout_height="wrap_content">
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edtSemester"
             android:layout_width="match_parent" android:layout_height="wrap_content"
             android:hint="Học kỳ (VD: HK1 2024-2025)"
-            android:inputType="text"
-            android:padding="16dp"
-            android:background="@android:color/transparent" />
+            android:inputType="text" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.card.MaterialCardView

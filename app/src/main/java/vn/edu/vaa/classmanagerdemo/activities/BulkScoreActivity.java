@@ -35,7 +35,7 @@ public class BulkScoreActivity extends BaseActivity {
     private List<Student> studentList = new ArrayList<>();
     private int classId;
     private String className, classSubject;
-    private EditText edtWQT, edtWGK, edtWCK;
+    private EditText edtWQT, edtWGK, edtWCK, edtBulkSemester;
     private RecyclerView recyclerBulk;
 
     @Override
@@ -60,6 +60,7 @@ public class BulkScoreActivity extends BaseActivity {
         edtWQT = ((com.google.android.material.textfield.TextInputEditText) findViewById(R.id.edtBulkWQT));
         edtWGK = ((com.google.android.material.textfield.TextInputEditText) findViewById(R.id.edtBulkWGK));
         edtWCK = ((com.google.android.material.textfield.TextInputEditText) findViewById(R.id.edtBulkWCK));
+        edtBulkSemester = findViewById(R.id.edtBulkSemester);
         recyclerBulk = findViewById(R.id.recyclerBulkScore);
 
         studentList.addAll(studentDAO.getByClassId(classId));
@@ -73,7 +74,8 @@ public class BulkScoreActivity extends BaseActivity {
     private void saveAll() {
         int wqt, wgk, wck;
         try {
-            wqt = Integer.parseInt(edtWQT.getText().toString().trim());
+            String wqtStr = edtWQT.getText().toString().trim();
+            wqt = wqtStr.isEmpty() ? 0 : Integer.parseInt(wqtStr);
             wgk = Integer.parseInt(edtWGK.getText().toString().trim());
             wck = Integer.parseInt(edtWCK.getText().toString().trim());
             if (wqt + wgk + wck != 100) {
@@ -97,14 +99,17 @@ public class BulkScoreActivity extends BaseActivity {
             String sQT = eQT.getText().toString().trim();
             String sGK = eGK.getText().toString().trim();
             String sCK = eCK.getText().toString().trim();
-            if (sQT.isEmpty() || sGK.isEmpty() || sCK.isEmpty()) continue;
+            if (sGK.isEmpty() || sCK.isEmpty()) continue;
             try {
-                float qt = Float.parseFloat(sQT);
+                float qt = sQT.isEmpty() ? 0f : Float.parseFloat(sQT);
                 float gk = Float.parseFloat(sGK);
                 float ck = Float.parseFloat(sCK);
                 Student student = studentList.get(recyclerBulk.getChildAdapterPosition(child));
-                Score score = new Score(student.getId(), classId, qt, wqt, gk, wgk, ck, wck,
-                    "HK " + java.util.Calendar.getInstance().get(java.util.Calendar.YEAR));
+                String semesterStr = edtBulkSemester.getText().toString().trim();
+                if (semesterStr.isEmpty()) {
+                    semesterStr = "HK " + java.util.Calendar.getInstance().get(java.util.Calendar.YEAR);
+                }
+                Score score = new Score(student.getId(), classId, qt, wqt, gk, wgk, ck, wck, semesterStr);
                 score.setSubject(classSubject);
                 scoreDAO.insert(score);
                 saved++;
@@ -138,10 +143,13 @@ public class BulkScoreActivity extends BaseActivity {
                 @Override public void beforeTextChanged(CharSequence cs, int a, int b, int c) {}
                 @Override public void onTextChanged(CharSequence cs, int a, int b, int c) {
                     try {
-                        float qt = Float.parseFloat(h.edtQT.getText().toString().trim());
+                        String qtStr = h.edtQT.getText().toString().trim();
+                        float qt = qtStr.isEmpty() ? 0f : Float.parseFloat(qtStr);
                         float gk = Float.parseFloat(h.edtGK.getText().toString().trim());
                         float ck = Float.parseFloat(h.edtCK.getText().toString().trim());
-                        int wqtV = Integer.parseInt(edtWQT.getText().toString().trim());
+                        
+                        String wqtStr = edtWQT.getText().toString().trim();
+                        int wqtV = wqtStr.isEmpty() ? 0 : Integer.parseInt(wqtStr);
                         int wgkV = Integer.parseInt(edtWGK.getText().toString().trim());
                         int wckV = Integer.parseInt(edtWCK.getText().toString().trim());
                         if (wqtV + wgkV + wckV != 100) { h.tvPreview.setText("!"); return; }
