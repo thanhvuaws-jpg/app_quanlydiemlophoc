@@ -83,34 +83,6 @@ public class StudentListActivity extends BaseActivity {
             getSupportActionBar().setTitle(className);
         }
 
-        // Inflate bulk menu
-        toolbar.inflateMenu(R.menu.menu_student_list);
-        toolbar.setOnMenuItemClickListener(item -> {
-            if (item.getItemId() == R.id.action_bulk_score) {
-                Intent i = new Intent(this, BulkScoreActivity.class);
-                i.putExtra("class_id", classId);
-                i.putExtra("class_name", className);
-                i.putExtra("class_subject", classSubject);
-                startActivity(i);
-                return true;
-            } else if (item.getItemId() == R.id.action_import_csv) {
-                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                intent.setType("*/*");
-                String[] mimeTypes = {
-                    "text/comma-separated-values",
-                    "text/csv",
-                    "text/plain",
-                    "application/vnd.ms-excel",
-                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                };
-                intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
-                intent.addCategory(Intent.CATEGORY_OPENABLE);
-                startActivityForResult(Intent.createChooser(intent, "Chọn file CSV hoặc Excel"), RC_IMPORT_CSV);
-                return true;
-            }
-            return false;
-        });
-
         studentDAO = new StudentDAO(this);
         scoreDAO = new ScoreDAO(this);
         recyclerStudents = findViewById(R.id.recyclerStudents);
@@ -406,8 +378,38 @@ public class StudentListActivity extends BaseActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(android.view.Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_student_list, menu);
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) { NavigationHelper.finishWithSlide(this); return true; }
+        if (item.getItemId() == android.R.id.home) {
+            NavigationHelper.finishWithSlide(this);
+            return true;
+        } else if (item.getItemId() == R.id.action_bulk_score) {
+            Intent i = new Intent(this, BulkScoreActivity.class);
+            i.putExtra("class_id", classId);
+            i.putExtra("class_name", className);
+            i.putExtra("class_subject", classSubject);
+            startActivity(i);
+            return true;
+        } else if (item.getItemId() == R.id.action_import_csv) {
+            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+            intent.setType("*/*");
+            String[] mimeTypes = {
+                "text/comma-separated-values",
+                "text/csv",
+                "text/plain",
+                "application/vnd.ms-excel",
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            };
+            intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+            startActivityForResult(Intent.createChooser(intent, "Chọn file CSV hoặc Excel"), RC_IMPORT_CSV);
+            return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 
