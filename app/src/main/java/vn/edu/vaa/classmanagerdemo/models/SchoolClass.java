@@ -7,6 +7,7 @@ public class SchoolClass {
     private String subject;
     private String schoolYear;
     private int studentCount;
+    private String deadline = "";
 
     public SchoolClass() {}
 
@@ -17,12 +18,21 @@ public class SchoolClass {
         this.schoolYear = schoolYear;
     }
 
-    public SchoolClass(int id, int teacherId, String className, String subject, String schoolYear) {
+    public SchoolClass(int teacherId, String className, String subject, String schoolYear, String deadline) {
+        this.teacherId = teacherId;
+        this.className = className;
+        this.subject = subject;
+        this.schoolYear = schoolYear;
+        this.deadline = deadline;
+    }
+
+    public SchoolClass(int id, int teacherId, String className, String subject, String schoolYear, String deadline) {
         this.id = id;
         this.teacherId = teacherId;
         this.className = className;
         this.subject = subject;
         this.schoolYear = schoolYear;
+        this.deadline = deadline;
     }
 
     public int getId() { return id; }
@@ -37,4 +47,6 @@ public class SchoolClass {
     public void setSchoolYear(String schoolYear) { this.schoolYear = schoolYear; }
     public int getStudentCount() { return studentCount; }
     public void setStudentCount(int studentCount) { this.studentCount = studentCount; }
+    public String getDeadline() { return deadline != null ? deadline : ""; }
+    public void setDeadline(String deadline) { this.deadline = deadline; }
 }

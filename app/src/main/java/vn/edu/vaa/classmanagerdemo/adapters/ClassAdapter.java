@@ -17,6 +17,9 @@ import vn.edu.vaa.classmanagerdemo.models.SchoolClass;
 
 public class ClassAdapter extends RecyclerView.Adapter<ClassAdapter.ViewHolder> {
 
+    private static final String[] CLASS_COLORS = {"#EEF2FF","#FEF3C7","#ECFDF5","#FFF1F2","#F0F9FF","#FDF4FF"};
+    private static final String[] CLASS_ICON_COLORS = {"#4F46E5","#D97706","#059669","#E11D48","#0284C7","#9333EA"};
+
     public interface OnClassClickListener {
         void onClick(SchoolClass cls);
     }
@@ -56,6 +59,20 @@ public class ClassAdapter extends RecyclerView.Adapter<ClassAdapter.ViewHolder> 
         h.tvSubject.setText(cls.getSubject());
         h.tvSchoolYear.setText(cls.getSchoolYear());
         h.tvStudentCount.setText(cls.getStudentCount() + " học sinh");
+
+        // Đổi màu icon lớp theo position
+        try {
+            int ci = position % CLASS_COLORS.length;
+            android.view.View iconCard = h.itemView.findViewById(R.id.cardClassIcon);
+            if (iconCard instanceof com.google.android.material.card.MaterialCardView) {
+                ((com.google.android.material.card.MaterialCardView) iconCard)
+                    .setCardBackgroundColor(android.graphics.Color.parseColor(CLASS_COLORS[ci]));
+            }
+            android.widget.ImageView icon = h.itemView.findViewById(R.id.ivClassIcon);
+            if (icon != null) {
+                icon.setColorFilter(android.graphics.Color.parseColor(CLASS_ICON_COLORS[ci]));
+            }
+        } catch (Exception ignored) {}
 
         h.itemView.setOnClickListener(v -> clickListener.onClick(cls));
         h.itemView.setOnLongClickListener(v -> {

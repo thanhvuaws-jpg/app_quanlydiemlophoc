@@ -58,12 +58,38 @@ public class ScoreAdapter extends RecyclerView.Adapter<ScoreAdapter.ViewHolder> 
             h.tvGradeLetter.setTextColor(Color.BLACK);
         }
 
+        // Badge bg cũng đổi màu theo grade
+        try {
+            com.google.android.material.card.MaterialCardView badge =
+                (com.google.android.material.card.MaterialCardView) h.tvGradeLetter.getParent();
+            badge.setCardBackgroundColor(
+                android.graphics.Color.parseColor(score.getGradeColor() + "33")); // 20% opacity
+            h.tvGradeLetter.setTextColor(android.graphics.Color.parseColor(score.getGradeColor()));
+        } catch (Exception ignored) {}
+
         h.itemView.setOnClickListener(v -> {
             new androidx.appcompat.app.AlertDialog.Builder(v.getContext())
                 .setTitle("Tùy chọn điểm")
-                .setItems(new String[]{"Chỉnh sửa", "Xóa"}, (d, which) -> {
+                .setItems(new String[]{"Chỉnh sửa", "Xóa", "Nhận xét tự động"}, (d, which) -> {
                     if (which == 0) editListener.onEdit(score, position);
-                    else editListener.onDelete(score, position);
+                    else if (which == 1) editListener.onDelete(score, position);
+                    else if (which == 2) {
+                        String comment = score.generateComment();
+                        new androidx.appcompat.app.AlertDialog.Builder(v.getContext())
+                            .setTitle("Nhận xét tự động")
+                            .setMessage(comment)
+                            .setPositiveButton("Sao chép", (dialog, w) -> {
+                                android.content.ClipboardManager clipboard = (android.content.ClipboardManager) 
+                                    v.getContext().getSystemService(android.content.Context.CLIPBOARD_SERVICE);
+                                android.content.ClipData clip = android.content.ClipData.newPlainText("Comment", comment);
+                                if (clipboard != null) {
+                                    clipboard.setPrimaryClip(clip);
+                                    android.widget.Toast.makeText(v.getContext(), "Đã sao chép nhận xét!", android.widget.Toast.LENGTH_SHORT).show();
+                                }
+                            })
+                            .setNegativeButton("Đóng", null)
+                            .show();
+                    }
                 }).show();
         });
     }

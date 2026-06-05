@@ -59,6 +59,7 @@ public class StudentListActivity extends BaseActivity {
     // Stats views
     private TextView tvCountA, tvCountB, tvCountC, tvCountD, tvCountF;
     private TextView tvClassAvg, tvClassMax, tvClassMin;
+    private android.widget.ProgressBar progressLoading;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,6 +94,7 @@ public class StudentListActivity extends BaseActivity {
         studentDAO = new StudentDAO(this);
         scoreDAO = new ScoreDAO(this);
         recyclerStudents = findViewById(R.id.recyclerStudents);
+        progressLoading = findViewById(R.id.progressLoading);
 
         studentAdapter = new StudentAdapter(studentList,
             student -> {
@@ -159,6 +161,9 @@ public class StudentListActivity extends BaseActivity {
         View btnExport = findViewById(R.id.btnExportClass);
         if (btnExport != null) btnExport.setOnClickListener(v -> exportClassToCsv());
 
+        View btnShareImage = findViewById(R.id.btnShareImage);
+        if (btnShareImage != null) btnShareImage.setOnClickListener(v -> shareClassScoreImage());
+
         FloatingActionButton fab = findViewById(R.id.fabAddStudent);
         fab.setOnClickListener(DebounceClickListener.wrap(v -> showAddStudentDialog()));
 
@@ -172,21 +177,27 @@ public class StudentListActivity extends BaseActivity {
     }
 
     private void loadStudents() {
-        List<Student> list = studentDAO.getByClassId(classId);
-        fullStudentList.clear();
-        fullStudentList.addAll(list);
-        studentList.clear();
-        studentList.addAll(list);
-        studentAdapter.notifyDataSetChanged();
+        if (progressLoading != null) progressLoading.setVisibility(View.VISIBLE);
+        new Thread(() -> {
+            List<Student> list = studentDAO.getByClassId(classId);
+            runOnUiThread(() -> {
+                if (progressLoading != null) progressLoading.setVisibility(View.GONE);
+                fullStudentList.clear();
+                fullStudentList.addAll(list);
+                studentList.clear();
+                studentList.addAll(list);
+                studentAdapter.notifyDataSetChanged();
 
-        TextView tvCount = findViewById(R.id.tvStudentCount);
-        if (tvCount != null) tvCount.setText(list.size() + " học sinh");
+                TextView tvCount = findViewById(R.id.tvStudentCount);
+                if (tvCount != null) tvCount.setText(list.size() + " học sinh");
 
-        View emptyLayout = findViewById(R.id.layoutEmptyStudents);
-        if (emptyLayout != null) {
-            emptyLayout.setVisibility(list.isEmpty() ? View.VISIBLE : View.GONE);
-            recyclerStudents.setVisibility(list.isEmpty() ? View.GONE : View.VISIBLE);
-        }
+                View emptyLayout = findViewById(R.id.layoutEmptyStudents);
+                if (emptyLayout != null) {
+                    emptyLayout.setVisibility(list.isEmpty() ? View.VISIBLE : View.GONE);
+                    recyclerStudents.setVisibility(list.isEmpty() ? View.GONE : View.VISIBLE);
+                }
+            });
+        }).start();
     }
 
     private void filterStudents(String query) {
@@ -282,6 +293,31 @@ public class StudentListActivity extends BaseActivity {
                 runOnUiThread(() -> startActivity(Intent.createChooser(intent, "Chia sẻ file điểm")));
             } catch (IOException e) {
                 runOnUiThread(() -> Toast.makeText(this, "Lỗi xuất file: " + e.getMessage(), Toast.LENGTH_LONG).show());
+            }
+        }).start();
+    }
+
+    private void shareClassScoreImage() {
+        new Thread(() -> {
+            List<Score> scores = scoreDAO.getByClassId(classId);
+            if (scores.isEmpty()) {
+                runOnUiThread(() -> Toast.makeText(this, "Lớp chưa có điểm nào để vẽ", Toast.LENGTH_SHORT).show());
+                return;
+            }
+            try {
+                File dir = new File(getCacheDir(), "shares");
+                if (!dir.exists()) dir.mkdirs();
+                File imageFile = vn.edu.vaa.classmanagerdemo.utils.ClassScoreRenderer.renderToPng(dir, className, classSubject, scores);
+                Uri uri = FileProvider.getUriForFile(this, getPackageName() + ".fileprovider", imageFile);
+
+                Intent intent = new Intent(Intent.ACTION_SEND);
+                intent.setType("image/png");
+                intent.putExtra(Intent.EXTRA_STREAM, uri);
+                intent.putExtra(Intent.EXTRA_SUBJECT, "Bảng điểm lớp " + className);
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                runOnUiThread(() -> startActivity(Intent.createChooser(intent, "Chia sẻ bảng điểm bằng ảnh")));
+            } catch (Exception e) {
+                runOnUiThread(() -> Toast.makeText(this, "Lỗi tạo ảnh: " + e.getMessage(), Toast.LENGTH_LONG).show());
             }
         }).start();
     }

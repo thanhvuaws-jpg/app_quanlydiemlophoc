@@ -73,6 +73,27 @@ public class Score {
         return "#EF4444";
     }
 
+    public String generateComment() {
+        float s = getScore();
+        if (s >= 9.0f) {
+            return "Học sinh xuất sắc, tiếp thu bài cực nhanh, tích cực phát biểu xây dựng bài.";
+        } else if (s >= 8.5f) {
+            return "Học sinh giỏi, hoàn thành tốt các bài tập, có tinh thần tự giác cao.";
+        } else if (s >= 8.0f) {
+            return "Học tập tốt, nắm vững kiến thức căn bản và nâng cao, cần phát huy hơn nữa.";
+        } else if (s >= 7.0f) {
+            return "Khá, làm bài tập đầy đủ, đôi lúc còn thiếu tập trung nhưng nhìn chung học tốt.";
+        } else if (s >= 6.0f) {
+            return "Trung bình khá, có cố gắng trong học tập, cần luyện tập thêm các bài nâng cao.";
+        } else if (s >= 5.0f) {
+            return "Trung bình, nắm được kiến thức cơ bản, cần nỗ lực nhiều hơn ở bài thi cuối kỳ.";
+        } else if (s >= 4.0f) {
+            return "Yếu, còn hổng kiến thức, bài tập chưa hoàn thiện tốt, cần phụ đạo thêm.";
+        } else {
+            return "Kém, không tập trung trong lớp, kết quả thi chưa đạt yêu cầu, gia đình cần sát sao hơn.";
+        }
+    }
+
     // Getters & Setters
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }

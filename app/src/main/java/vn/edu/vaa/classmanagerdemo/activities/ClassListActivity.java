@@ -35,6 +35,7 @@ public class ClassListActivity extends BaseActivity {
     private RecyclerView recyclerClasses;
     private List<SchoolClass> classList = new ArrayList<>();
     private ClassAdapter classAdapter;
+    private android.widget.ProgressBar progressLoading;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +49,7 @@ public class ClassListActivity extends BaseActivity {
 
         classDAO = new ClassDAO(this);
         recyclerClasses = findViewById(R.id.recyclerClasses);
+        progressLoading = findViewById(R.id.progressLoading);
 
         classAdapter = new ClassAdapter(classList,
             cls -> {
@@ -77,9 +79,11 @@ public class ClassListActivity extends BaseActivity {
     }
 
     private void loadClasses() {
+        if (progressLoading != null) progressLoading.setVisibility(android.view.View.VISIBLE);
         new Thread(() -> {
             List<SchoolClass> list = classDAO.getByTeacherId(prefs.getCurrentUserId());
             runOnUiThread(() -> {
+                if (progressLoading != null) progressLoading.setVisibility(android.view.View.GONE);
                 classList.clear();
                 classList.addAll(list);
                 classAdapter.notifyDataSetChanged();
@@ -97,6 +101,9 @@ public class ClassListActivity extends BaseActivity {
         EditText edtClassName = view.findViewById(R.id.edtClassName);
         EditText edtSubject = view.findViewById(R.id.edtSubject);
         AutoCompleteTextView actvYear = view.findViewById(R.id.actvSchoolYear);
+        EditText edtDeadline = view.findViewById(R.id.edtDeadline);
+
+        setupDatePicker(edtDeadline);
 
         String[] years = {"2024-2025", "2025-2026", "2026-2027"};
         actvYear.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, years));
@@ -111,10 +118,15 @@ public class ClassListActivity extends BaseActivity {
                 String name = edtClassName.getText().toString().trim();
                 String subject = edtSubject.getText().toString().trim();
                 String year = actvYear.getText() != null ? actvYear.getText().toString().trim() : years[0];
+                String deadline = edtDeadline.getText().toString().trim();
                 if (name.isEmpty()) { Toast.makeText(this, "Nhập tên lớp", Toast.LENGTH_SHORT).show(); return; }
                 if (subject.isEmpty()) { Toast.makeText(this, "Nhập môn học", Toast.LENGTH_SHORT).show(); return; }
-                SchoolClass cls = new SchoolClass(prefs.getCurrentUserId(), name, subject, year);
-                classDAO.insert(cls);
+                SchoolClass cls = new SchoolClass(prefs.getCurrentUserId(), name, subject, year, deadline);
+                long newId = classDAO.insert(cls);
+                if (newId != -1) {
+                    cls.setId((int) newId);
+                    vn.edu.vaa.classmanagerdemo.utils.DeadlineScheduler.scheduleAlarm(this, cls);
+                }
                 loadClasses();
                 dialog.dismiss();
                 Toast.makeText(this, "Đã thêm lớp " + name, Toast.LENGTH_SHORT).show();
@@ -127,12 +139,16 @@ public class ClassListActivity extends BaseActivity {
         EditText edtClassName = view.findViewById(R.id.edtClassName);
         EditText edtSubject = view.findViewById(R.id.edtSubject);
         AutoCompleteTextView actvYear = view.findViewById(R.id.actvSchoolYear);
+        EditText edtDeadline = view.findViewById(R.id.edtDeadline);
 
         edtClassName.setText(cls.getClassName());
         edtSubject.setText(cls.getSubject());
         String[] years = {"2024-2025", "2025-2026", "2026-2027"};
         actvYear.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, years));
         actvYear.setText(cls.getSchoolYear(), false);
+        edtDeadline.setText(cls.getDeadline());
+
+        setupDatePicker(edtDeadline);
 
         BottomSheetDialog dialog = new BottomSheetDialog(this, R.style.BottomSheetDialogTheme);
         dialog.setContentView(view);
@@ -143,7 +159,9 @@ public class ClassListActivity extends BaseActivity {
                 cls.setClassName(edtClassName.getText().toString().trim());
                 cls.setSubject(edtSubject.getText().toString().trim());
                 if (actvYear.getText() != null) cls.setSchoolYear(actvYear.getText().toString().trim());
+                cls.setDeadline(edtDeadline.getText().toString().trim());
                 classDAO.update(cls);
+                vn.edu.vaa.classmanagerdemo.utils.DeadlineScheduler.scheduleAlarm(this, cls);
                 loadClasses();
                 dialog.dismiss();
                 Toast.makeText(this, "Đã cập nhật", Toast.LENGTH_SHORT).show();
@@ -157,6 +175,7 @@ public class ClassListActivity extends BaseActivity {
             .setMessage("Xóa lớp \"" + cls.getClassName() + "\" sẽ xóa toàn bộ học sinh và điểm. Tiếp tục?")
             .setPositiveButton("Xóa", (d, w) -> {
                 classDAO.deleteById(cls.getId());
+                vn.edu.vaa.classmanagerdemo.utils.DeadlineScheduler.cancelAlarm(this, cls.getId());
                 loadClasses();
                 Toast.makeText(this, "Đã xóa lớp " + cls.getClassName(), Toast.LENGTH_SHORT).show();
             })
@@ -174,5 +193,28 @@ public class ClassListActivity extends BaseActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) { finish(); return true; }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void setupDatePicker(EditText edt) {
+        edt.setOnClickListener(v -> {
+            java.util.Calendar cal = java.util.Calendar.getInstance();
+            String existing = edt.getText().toString().trim();
+            if (!existing.isEmpty()) {
+                try {
+                    java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US);
+                    java.util.Date d = sdf.parse(existing);
+                    if (d != null) cal.setTime(d);
+                } catch (Exception ignored) {}
+            }
+            int year = cal.get(java.util.Calendar.YEAR);
+            int month = cal.get(java.util.Calendar.MONTH);
+            int day = cal.get(java.util.Calendar.DAY_OF_MONTH);
+
+            android.app.DatePickerDialog dpd = new android.app.DatePickerDialog(this, (view, y, m, d) -> {
+                String dateStr = String.format(java.util.Locale.US, "%d-%02d-%02d", y, m + 1, d);
+                edt.setText(dateStr);
+            }, year, month, day);
+            dpd.show();
+        });
     }
 }

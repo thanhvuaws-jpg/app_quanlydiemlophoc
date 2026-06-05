@@ -12,6 +12,7 @@
         android:fitsSystemWindows="true">
 
         <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/appbar_layout_classes"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <androidx.appcompat.widget.Toolbar
@@ -23,6 +24,17 @@
                 app:titleTextColor="#FFFFFF"
                 app:navigationIconTint="#FFFFFF" />
         </com.google.android.material.appbar.AppBarLayout>
+
+        <ProgressBar
+            android:id="@+id/progressLoading"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            android:indeterminate="true"
+            android:visibility="gone"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            app:layout_anchor="@id/appbar_layout_classes"
+            app:layout_anchorGravity="bottom" />
 
         <LinearLayout
             android:id="@+id/layoutEmpty"

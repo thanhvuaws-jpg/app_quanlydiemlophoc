@@ -30,6 +30,7 @@ import vn.edu.vaa.classmanagerdemo.adapters.ScoreAdapter;
 public class ScoreActivity extends BaseActivity {
 
     private ScoreDAO scoreDAO;
+    private vn.edu.vaa.classmanagerdemo.database.TemplateDAO templateDAO;
     private RecyclerView recyclerScores;
     private List<Score> scoreList = new ArrayList<>();
     private ScoreAdapter scoreAdapter;
@@ -58,6 +59,7 @@ public class ScoreActivity extends BaseActivity {
         if (tvInfo != null) tvInfo.setText("Mã: " + studentCode + "  •  Môn: " + classSubject);
 
         scoreDAO = new ScoreDAO(this);
+        templateDAO = new vn.edu.vaa.classmanagerdemo.database.TemplateDAO(this);
         recyclerScores = findViewById(R.id.recyclerScores);
 
         scoreAdapter = new ScoreAdapter(scoreList, new ScoreAdapter.OnScoreEditListener() {
@@ -110,6 +112,10 @@ public class ScoreActivity extends BaseActivity {
         EditText edtWCK = view.findViewById(R.id.edtWeightCK);
         EditText edtSemester = view.findViewById(R.id.edtSemester);
         TextView tvPreview = view.findViewById(R.id.tvScorePreview);
+        android.view.View btnUseTemplate = view.findViewById(R.id.btnUseTemplate);
+        if (btnUseTemplate != null) {
+            btnUseTemplate.setOnClickListener(v -> showTemplateSelector(edtWQT, edtWGK, edtWCK));
+        }
 
         edtWQT.setText("20"); edtWGK.setText("30"); edtWCK.setText("50");
         edtSemester.setText("HK1 2024-2025");
@@ -165,6 +171,10 @@ public class ScoreActivity extends BaseActivity {
         TextView tvPreview = view.findViewById(R.id.tvScorePreview);
         TextView tvTitle = view.findViewById(R.id.tvDialogTitle);
         if (tvTitle != null) tvTitle.setText("Chỉnh sửa điểm");
+        android.view.View btnUseTemplate = view.findViewById(R.id.btnUseTemplate);
+        if (btnUseTemplate != null) {
+            btnUseTemplate.setOnClickListener(v -> showTemplateSelector(edtWQT, edtWGK, edtWCK));
+        }
 
         edtQT.setText(String.valueOf(score.getScoreQT()));
         edtWQT.setText(String.valueOf(score.getWeightQT()));
@@ -230,5 +240,84 @@ public class ScoreActivity extends BaseActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) { NavigationHelper.finishWithSlide(this); return true; }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void showTemplateSelector(EditText edtWQT, EditText edtWGK, EditText edtWCK) {
+        int teacherId = new vn.edu.vaa.classmanagerdemo.storage.AppPreferenceManager(this).getCurrentUserId();
+        List<vn.edu.vaa.classmanagerdemo.models.ScoreTemplate> templates = templateDAO.getByTeacher(teacherId);
+        
+        List<String> items = new ArrayList<>();
+        for (vn.edu.vaa.classmanagerdemo.models.ScoreTemplate t : templates) {
+            items.add(t.getTemplateName() + " (" + t.getWeightQt() + ":" + t.getWeightGk() + ":" + t.getWeightCk() + ")");
+        }
+        items.add("+ Lưu tỉ lệ hiện tại làm template mới");
+        
+        new AlertDialog.Builder(this)
+            .setTitle("Template tỉ lệ điểm")
+            .setItems(items.toArray(new String[0]), (dialog, which) -> {
+                if (which == templates.size()) {
+                    showSaveTemplateDialog(teacherId, edtWQT, edtWGK, edtWCK);
+                } else {
+                    vn.edu.vaa.classmanagerdemo.models.ScoreTemplate selected = templates.get(which);
+                    edtWQT.setText(String.valueOf(selected.getWeightQt()));
+                    edtWGK.setText(String.valueOf(selected.getWeightGk()));
+                    edtWCK.setText(String.valueOf(selected.getWeightCk()));
+                    Toast.makeText(this, "Đã áp dụng template: " + selected.getTemplateName(), Toast.LENGTH_SHORT).show();
+                }
+            })
+            .setNeutralButton("Xóa bớt template", (dialog, which) -> {
+                showDeleteTemplatesDialog(templates);
+            })
+            .setNegativeButton("Hủy", null)
+            .show();
+    }
+
+    private void showSaveTemplateDialog(int teacherId, EditText edtWQT, EditText edtWGK, EditText edtWCK) {
+        try {
+            int wqt = Integer.parseInt(edtWQT.getText().toString().trim());
+            int wgk = Integer.parseInt(edtWGK.getText().toString().trim());
+            int wck = Integer.parseInt(edtWCK.getText().toString().trim());
+            if (wqt + wgk + wck != 100) {
+                Toast.makeText(this, "Tổng tỉ lệ hiện tại phải bằng 100% để lưu", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            EditText input = new EditText(this);
+            input.setHint("Tên template (VD: Lý thuyết, Thực hành)");
+            new AlertDialog.Builder(this)
+                .setTitle("Lưu template")
+                .setView(input)
+                .setPositiveButton("Lưu", (dialog, which) -> {
+                    String name = input.getText().toString().trim();
+                    if (name.isEmpty()) name = "Mẫu " + wqt + "-" + wgk + "-" + wck;
+                    vn.edu.vaa.classmanagerdemo.models.ScoreTemplate t = 
+                        new vn.edu.vaa.classmanagerdemo.models.ScoreTemplate(0, teacherId, name, wqt, wgk, wck);
+                    templateDAO.insert(t);
+                    Toast.makeText(this, "Đã lưu template thành công", Toast.LENGTH_SHORT).show();
+                })
+                .setNegativeButton("Hủy", null)
+                .show();
+        } catch (NumberFormatException e) {
+            Toast.makeText(this, "Vui lòng nhập đủ tỉ lệ QT, GK, CK hợp lệ trước khi lưu", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void showDeleteTemplatesDialog(List<vn.edu.vaa.classmanagerdemo.models.ScoreTemplate> templates) {
+        if (templates.isEmpty()) {
+            Toast.makeText(this, "Không có template nào để xóa", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        List<String> items = new ArrayList<>();
+        for (vn.edu.vaa.classmanagerdemo.models.ScoreTemplate t : templates) {
+            items.add(t.getTemplateName());
+        }
+        new AlertDialog.Builder(this)
+            .setTitle("Chọn template cần xóa")
+            .setItems(items.toArray(new String[0]), (dialog, which) -> {
+                vn.edu.vaa.classmanagerdemo.models.ScoreTemplate selected = templates.get(which);
+                templateDAO.delete(selected.getId());
+                Toast.makeText(this, "Đã xóa template", Toast.LENGTH_SHORT).show();
+            })
+            .setNegativeButton("Hủy", null)
+            .show();
     }
 }

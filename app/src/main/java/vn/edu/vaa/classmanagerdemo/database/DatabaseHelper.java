@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String DB_NAME = "so_diem.db";
-    public static final int DB_VERSION = 2;
+    public static final int DB_VERSION = 4;
 
     // ── users (giáo viên) ──
     public static final String TABLE_USERS = "users";
@@ -24,6 +24,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String CLS_NAME = "class_name";
     public static final String CLS_SUBJECT = "subject";
     public static final String CLS_SCHOOL_YEAR = "school_year";
+    public static final String CLS_DEADLINE = "deadline";
 
     // ── students (học sinh) ──
     public static final String TABLE_STUDENTS = "students";
@@ -48,6 +49,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String SCR_VALUE = "score";
     public static final String SCR_SEMESTER = "semester";
 
+    // ── score_templates (mẫu tỉ lệ điểm) ──
+    public static final String TABLE_TEMPLATES = "score_templates";
+    public static final String TPL_ID = "id";
+    public static final String TPL_TEACHER_ID = "teacher_id";
+    public static final String TPL_NAME = "template_name";
+    public static final String TPL_W_QT = "weight_qt";
+    public static final String TPL_W_GK = "weight_gk";
+    public static final String TPL_W_CK = "weight_ck";
+
     private static DatabaseHelper instance;
 
     public static synchronized DatabaseHelper getInstance(Context context) {
@@ -55,6 +65,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             instance = new DatabaseHelper(context.getApplicationContext());
         }
         return instance;
+    }
+
+    public static synchronized void resetInstance() {
+        if (instance != null) {
+            instance.close();
+            instance = null;
+        }
     }
 
     private DatabaseHelper(Context context) {
@@ -76,7 +93,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 CLS_TEACHER_ID + " INTEGER NOT NULL, " +
                 CLS_NAME + " TEXT NOT NULL, " +
                 CLS_SUBJECT + " TEXT NOT NULL, " +
-                CLS_SCHOOL_YEAR + " TEXT NOT NULL);");
+                CLS_SCHOOL_YEAR + " TEXT NOT NULL, " +
+                CLS_DEADLINE + " TEXT DEFAULT '');");
 
         db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_STUDENTS + " (" +
                 STU_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -84,7 +102,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 STU_CODE + " TEXT NOT NULL, " +
                 STU_FULL_NAME + " TEXT NOT NULL, " +
                 STU_NOTE + " TEXT DEFAULT '');");
-
 
         db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_SCORES + " (" +
                 SCR_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -100,6 +117,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 SCR_VALUE + " REAL NOT NULL, " +
                 SCR_SEMESTER + " TEXT);");
 
+        db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_TEMPLATES + " (" +
+                TPL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                TPL_TEACHER_ID + " INTEGER NOT NULL, " +
+                TPL_NAME + " TEXT NOT NULL, " +
+                TPL_W_QT + " INTEGER NOT NULL, " +
+                TPL_W_GK + " INTEGER NOT NULL, " +
+                TPL_W_CK + " INTEGER NOT NULL);");
+
         seedData(db);
     }
 
@@ -108,13 +133,23 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (oldVersion < 2) {
             try {
                 db.execSQL("ALTER TABLE " + TABLE_STUDENTS + " ADD COLUMN " + STU_NOTE + " TEXT DEFAULT ''");
-            } catch (Exception e) {
-                db.execSQL("DROP TABLE IF EXISTS " + TABLE_SCORES);
-                db.execSQL("DROP TABLE IF EXISTS " + TABLE_STUDENTS);
-                db.execSQL("DROP TABLE IF EXISTS " + TABLE_CLASSES);
-                db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
-                onCreate(db);
-            }
+            } catch (Exception ignored) {}
+        }
+        if (oldVersion < 3) {
+            try {
+                db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_TEMPLATES + " (" +
+                        TPL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                        TPL_TEACHER_ID + " INTEGER NOT NULL, " +
+                        TPL_NAME + " TEXT NOT NULL, " +
+                        TPL_W_QT + " INTEGER NOT NULL, " +
+                        TPL_W_GK + " INTEGER NOT NULL, " +
+                        TPL_W_CK + " INTEGER NOT NULL);");
+            } catch (Exception ignored) {}
+        }
+        if (oldVersion < 4) {
+            try {
+                db.execSQL("ALTER TABLE " + TABLE_CLASSES + " ADD COLUMN " + CLS_DEADLINE + " TEXT DEFAULT ''");
+            } catch (Exception ignored) {}
         }
     }
 

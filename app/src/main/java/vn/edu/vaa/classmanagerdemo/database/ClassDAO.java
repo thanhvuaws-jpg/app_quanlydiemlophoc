@@ -24,6 +24,7 @@ public class ClassDAO {
         v.put(DatabaseHelper.CLS_NAME, c.getClassName());
         v.put(DatabaseHelper.CLS_SUBJECT, c.getSubject());
         v.put(DatabaseHelper.CLS_SCHOOL_YEAR, c.getSchoolYear());
+        v.put(DatabaseHelper.CLS_DEADLINE, c.getDeadline());
         return db.insert(DatabaseHelper.TABLE_CLASSES, null, v);
     }
 
@@ -33,6 +34,7 @@ public class ClassDAO {
         v.put(DatabaseHelper.CLS_NAME, c.getClassName());
         v.put(DatabaseHelper.CLS_SUBJECT, c.getSubject());
         v.put(DatabaseHelper.CLS_SCHOOL_YEAR, c.getSchoolYear());
+        v.put(DatabaseHelper.CLS_DEADLINE, c.getDeadline());
         return db.update(DatabaseHelper.TABLE_CLASSES, v,
                 DatabaseHelper.CLS_ID + "=?", new String[]{String.valueOf(c.getId())});
     }
@@ -89,7 +91,8 @@ public class ClassDAO {
                 c.getInt(c.getColumnIndexOrThrow(DatabaseHelper.CLS_TEACHER_ID)),
                 c.getString(c.getColumnIndexOrThrow(DatabaseHelper.CLS_NAME)),
                 c.getString(c.getColumnIndexOrThrow(DatabaseHelper.CLS_SUBJECT)),
-                c.getString(c.getColumnIndexOrThrow(DatabaseHelper.CLS_SCHOOL_YEAR))
+                c.getString(c.getColumnIndexOrThrow(DatabaseHelper.CLS_SCHOOL_YEAR)),
+                c.getString(c.getColumnIndexOrThrow(DatabaseHelper.CLS_DEADLINE))
         );
     }
 }

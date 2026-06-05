@@ -47,6 +47,18 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.ViewHold
         this.avgCallback = avgCallback;
     }
 
+    private static final String[] AVATAR_COLORS = {
+        "#4F46E5", "#0891B2", "#059669", "#D97706",
+        "#DC2626", "#7C3AED", "#0284C7", "#15803D"
+    };
+
+    private static String getAvatarColor(String name) {
+        if (name == null || name.isEmpty()) return AVATAR_COLORS[0];
+        int hash = 0;
+        for (char c : name.toCharArray()) hash = hash * 31 + c;
+        return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
+    }
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -58,6 +70,14 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.ViewHold
     public void onBindViewHolder(@NonNull ViewHolder h, int position) {
         Student s = list.get(position);
         h.tvInitials.setText(s.getInitials());
+
+        // Đổi màu avatar theo tên — mỗi học sinh có màu riêng
+        String avatarColor = getAvatarColor(s.getFullName());
+        try {
+            ((com.google.android.material.card.MaterialCardView) h.tvInitials.getParent())
+                .setCardBackgroundColor(android.graphics.Color.parseColor(avatarColor));
+        } catch (Exception ignored) {}
+
         h.tvName.setText(s.getFullName());
         h.tvCode.setText(s.getStudentCode());
 

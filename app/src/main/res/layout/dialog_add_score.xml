@@ -13,7 +13,16 @@
     <TextView android:id="@+id/tvDialogTitle"
         android:layout_width="wrap_content" android:layout_height="wrap_content"
         android:text="Nhập Điểm" android:textSize="18sp" android:textStyle="bold"
-        android:textColor="@color/text_primary" android:layout_marginBottom="20dp" />
+        android:textColor="@color/text_primary" android:layout_marginBottom="12dp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnUseTemplate"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:text="📋 Chọn/Lưu Template tỉ lệ"
+        android:textColor="@color/primary" />
 
     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
         android:orientation="horizontal" android:weightSum="2">
