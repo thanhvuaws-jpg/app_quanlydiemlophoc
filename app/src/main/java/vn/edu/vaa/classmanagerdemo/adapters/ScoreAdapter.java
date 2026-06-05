@@ -42,9 +42,41 @@ public class ScoreAdapter extends RecyclerView.Adapter<ScoreAdapter.ViewHolder> 
         Score score = list.get(position);
 
         h.tvSemester.setText(score.getSemester());
-        h.tvScoreQT.setText(String.format(Locale.US, "QT (%.0f%%): %.1f", (float)score.getWeightQT(), score.getScoreQT()));
-        h.tvScoreGK.setText(String.format(Locale.US, "GK (%.0f%%): %.1f", (float)score.getWeightGK(), score.getScoreGK()));
-        h.tvScoreCK.setText(String.format(Locale.US, "CK (%.0f%%): %.1f", (float)score.getWeightCK(), score.getScoreCK()));
+        
+        if (score.getWeightQT() <= 0) {
+            h.tvScoreQT.setVisibility(View.GONE);
+            
+            android.widget.LinearLayout.LayoutParams lpGK = (android.widget.LinearLayout.LayoutParams) h.tvScoreGK.getLayoutParams();
+            lpGK.weight = 1.5f;
+            h.tvScoreGK.setLayoutParams(lpGK);
+            h.tvScoreGK.setGravity(android.view.Gravity.START);
+            h.tvScoreGK.setText(String.format(Locale.US, "GK (%.0f%%): %.1f", (float)score.getWeightGK(), score.getScoreGK()));
+            
+            android.widget.LinearLayout.LayoutParams lpCK = (android.widget.LinearLayout.LayoutParams) h.tvScoreCK.getLayoutParams();
+            lpCK.weight = 1.5f;
+            h.tvScoreCK.setLayoutParams(lpCK);
+            h.tvScoreCK.setGravity(android.view.Gravity.END);
+            h.tvScoreCK.setText(String.format(Locale.US, "CK (%.0f%%): %.1f", (float)score.getWeightCK(), score.getScoreCK()));
+        } else {
+            h.tvScoreQT.setVisibility(View.VISIBLE);
+            
+            android.widget.LinearLayout.LayoutParams lpQT = (android.widget.LinearLayout.LayoutParams) h.tvScoreQT.getLayoutParams();
+            lpQT.weight = 1f;
+            h.tvScoreQT.setLayoutParams(lpQT);
+            h.tvScoreQT.setText(String.format(Locale.US, "QT (%.0f%%): %.1f", (float)score.getWeightQT(), score.getScoreQT()));
+            
+            android.widget.LinearLayout.LayoutParams lpGK = (android.widget.LinearLayout.LayoutParams) h.tvScoreGK.getLayoutParams();
+            lpGK.weight = 1f;
+            h.tvScoreGK.setLayoutParams(lpGK);
+            h.tvScoreGK.setGravity(android.view.Gravity.CENTER);
+            h.tvScoreGK.setText(String.format(Locale.US, "GK (%.0f%%): %.1f", (float)score.getWeightGK(), score.getScoreGK()));
+            
+            android.widget.LinearLayout.LayoutParams lpCK = (android.widget.LinearLayout.LayoutParams) h.tvScoreCK.getLayoutParams();
+            lpCK.weight = 1f;
+            h.tvScoreCK.setLayoutParams(lpCK);
+            h.tvScoreCK.setGravity(android.view.Gravity.END);
+            h.tvScoreCK.setText(String.format(Locale.US, "CK (%.0f%%): %.1f", (float)score.getWeightCK(), score.getScoreCK()));
+        }
 
         float finalScore = score.getScore();
         h.tvFinalScore.setText(String.format(Locale.US, "%.1f", finalScore));

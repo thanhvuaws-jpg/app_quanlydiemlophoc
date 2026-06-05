@@ -110,15 +110,26 @@ public class ScoreActivity extends BaseActivity {
         EditText edtWGK = view.findViewById(R.id.edtWeightGK);
         EditText edtCK = view.findViewById(R.id.edtScoreCK);
         EditText edtWCK = view.findViewById(R.id.edtWeightCK);
-        EditText edtSemester = view.findViewById(R.id.edtSemester);
+        android.widget.AutoCompleteTextView edtSemester = view.findViewById(R.id.edtSemester);
         TextView tvPreview = view.findViewById(R.id.tvScorePreview);
         android.view.View btnUseTemplate = view.findViewById(R.id.btnUseTemplate);
         if (btnUseTemplate != null) {
             btnUseTemplate.setOnClickListener(v -> showTemplateSelector(edtWQT, edtWGK, edtWCK));
         }
 
-        edtWQT.setText("20"); edtWGK.setText("30"); edtWCK.setText("50");
-        edtSemester.setText("HK1 2024-2025");
+        edtQT.setText("0");
+        edtWQT.setText("0");
+        edtWGK.setText("50");
+        edtWCK.setText("50");
+        
+        String[] semesters = {
+            "HK1 2024-2025", "HK2 2024-2025",
+            "HK1 2025-2026", "HK2 2025-2026",
+            "HK1 2026-2027", "HK2 2026-2027"
+        };
+        android.widget.ArrayAdapter<String> semesterAdapter = new android.widget.ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, semesters);
+        edtSemester.setAdapter(semesterAdapter);
+        edtSemester.setText("HK1 2024-2025", false);
 
         TextWatcher watcher = new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int a, int b, int c) {}
@@ -131,8 +142,13 @@ public class ScoreActivity extends BaseActivity {
 
         view.findViewById(R.id.btnSaveScore).setOnClickListener(DebounceClickListener.wrap(v -> {
             try {
-                float qt = Float.parseFloat(edtQT.getText().toString().trim());
-                int wqt = Integer.parseInt(edtWQT.getText().toString().trim());
+                float qt = 0f;
+                int wqt = 0;
+                String qtStr = edtQT.getText().toString().trim();
+                String wqtStr = edtWQT.getText().toString().trim();
+                if (!qtStr.isEmpty()) qt = Float.parseFloat(qtStr);
+                if (!wqtStr.isEmpty()) wqt = Integer.parseInt(wqtStr);
+
                 float gk = Float.parseFloat(edtGK.getText().toString().trim());
                 int wgk = Integer.parseInt(edtWGK.getText().toString().trim());
                 float ck = Float.parseFloat(edtCK.getText().toString().trim());
@@ -140,7 +156,7 @@ public class ScoreActivity extends BaseActivity {
                 String semester = edtSemester.getText().toString().trim();
 
                 if (wqt + wgk + wck != 100) {
-                    Toast.makeText(this, "Tổng tỉ lệ phải bằng 100%", Toast.LENGTH_SHORT).show(); return;
+                    Toast.makeText(this, "Tổng tỉ lệ GK và CK phải bằng 100%", Toast.LENGTH_SHORT).show(); return;
                 }
                 Score score = new Score(studentId, classId, qt, wqt, gk, wgk, ck, wck, semester);
                 score.setSubject(classSubject);
@@ -167,7 +183,7 @@ public class ScoreActivity extends BaseActivity {
         EditText edtWGK = view.findViewById(R.id.edtWeightGK);
         EditText edtCK = view.findViewById(R.id.edtScoreCK);
         EditText edtWCK = view.findViewById(R.id.edtWeightCK);
-        EditText edtSemester = view.findViewById(R.id.edtSemester);
+        android.widget.AutoCompleteTextView edtSemester = view.findViewById(R.id.edtSemester);
         TextView tvPreview = view.findViewById(R.id.tvScorePreview);
         TextView tvTitle = view.findViewById(R.id.tvDialogTitle);
         if (tvTitle != null) tvTitle.setText("Chỉnh sửa điểm");
@@ -182,19 +198,47 @@ public class ScoreActivity extends BaseActivity {
         edtWGK.setText(String.valueOf(score.getWeightGK()));
         edtCK.setText(String.valueOf(score.getScoreCK()));
         edtWCK.setText(String.valueOf(score.getWeightCK()));
-        edtSemester.setText(score.getSemester());
+        
+        String[] semesters = {
+            "HK1 2024-2025", "HK2 2024-2025",
+            "HK1 2025-2026", "HK2 2025-2026",
+            "HK1 2026-2027", "HK2 2026-2027"
+        };
+        android.widget.ArrayAdapter<String> semesterAdapter = new android.widget.ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, semesters);
+        edtSemester.setAdapter(semesterAdapter);
+        edtSemester.setText(score.getSemester(), false);
 
         updatePreview(edtQT, edtWQT, edtGK, edtWGK, edtCK, edtWCK, tvPreview);
 
+        TextWatcher watcher = new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int a, int b, int c) {}
+            @Override public void onTextChanged(CharSequence s, int a, int b, int c) { updatePreview(edtQT, edtWQT, edtGK, edtWGK, edtCK, edtWCK, tvPreview); }
+            @Override public void afterTextChanged(Editable s) {}
+        };
+        edtQT.addTextChangedListener(watcher);
+        edtGK.addTextChangedListener(watcher);
+        edtCK.addTextChangedListener(watcher);
+
         view.findViewById(R.id.btnSaveScore).setOnClickListener(DebounceClickListener.wrap(v -> {
             try {
-                score.setScoreQT(Float.parseFloat(edtQT.getText().toString().trim()));
-                score.setWeightQT(Integer.parseInt(edtWQT.getText().toString().trim()));
+                float qt = 0f;
+                int wqt = 0;
+                String qtStr = edtQT.getText().toString().trim();
+                String wqtStr = edtWQT.getText().toString().trim();
+                if (!qtStr.isEmpty()) qt = Float.parseFloat(qtStr);
+                if (!wqtStr.isEmpty()) wqt = Integer.parseInt(wqtStr);
+
+                score.setScoreQT(qt);
+                score.setWeightQT(wqt);
                 score.setScoreGK(Float.parseFloat(edtGK.getText().toString().trim()));
                 score.setWeightGK(Integer.parseInt(edtWGK.getText().toString().trim()));
                 score.setScoreCK(Float.parseFloat(edtCK.getText().toString().trim()));
                 score.setWeightCK(Integer.parseInt(edtWCK.getText().toString().trim()));
                 score.setSemester(edtSemester.getText().toString().trim());
+
+                if (wqt + score.getWeightGK() + score.getWeightCK() != 100) {
+                    Toast.makeText(this, "Tổng tỉ lệ GK và CK phải bằng 100%", Toast.LENGTH_SHORT).show(); return;
+                }
                 scoreDAO.update(score);
                 loadScores();
                 dialog.dismiss();
@@ -210,8 +254,13 @@ public class ScoreActivity extends BaseActivity {
     private void updatePreview(EditText edtQT, EditText edtWQT, EditText edtGK, EditText edtWGK,
                                EditText edtCK, EditText edtWCK, TextView tvPreview) {
         try {
-            float qt = Float.parseFloat(edtQT.getText().toString().trim());
-            int wqt = Integer.parseInt(edtWQT.getText().toString().trim());
+            float qt = 0f;
+            int wqt = 0;
+            String qtStr = edtQT.getText().toString().trim();
+            String wqtStr = edtWQT.getText().toString().trim();
+            if (!qtStr.isEmpty()) qt = Float.parseFloat(qtStr);
+            if (!wqtStr.isEmpty()) wqt = Integer.parseInt(wqtStr);
+
             float gk = Float.parseFloat(edtGK.getText().toString().trim());
             int wgk = Integer.parseInt(edtWGK.getText().toString().trim());
             float ck = Float.parseFloat(edtCK.getText().toString().trim());
@@ -248,7 +297,7 @@ public class ScoreActivity extends BaseActivity {
         
         List<String> items = new ArrayList<>();
         for (vn.edu.vaa.classmanagerdemo.models.ScoreTemplate t : templates) {
-            items.add(t.getTemplateName() + " (" + t.getWeightQt() + ":" + t.getWeightGk() + ":" + t.getWeightCk() + ")");
+            items.add(t.getTemplateName() + " (" + t.getWeightGk() + ":" + t.getWeightCk() + ")");
         }
         items.add("+ Lưu tỉ lệ hiện tại làm template mới");
         
@@ -259,7 +308,7 @@ public class ScoreActivity extends BaseActivity {
                     showSaveTemplateDialog(teacherId, edtWQT, edtWGK, edtWCK);
                 } else {
                     vn.edu.vaa.classmanagerdemo.models.ScoreTemplate selected = templates.get(which);
-                    edtWQT.setText(String.valueOf(selected.getWeightQt()));
+                    edtWQT.setText("0");
                     edtWGK.setText(String.valueOf(selected.getWeightGk()));
                     edtWCK.setText(String.valueOf(selected.getWeightCk()));
                     Toast.makeText(this, "Đã áp dụng template: " + selected.getTemplateName(), Toast.LENGTH_SHORT).show();
@@ -274,21 +323,21 @@ public class ScoreActivity extends BaseActivity {
 
     private void showSaveTemplateDialog(int teacherId, EditText edtWQT, EditText edtWGK, EditText edtWCK) {
         try {
-            int wqt = Integer.parseInt(edtWQT.getText().toString().trim());
+            int wqt = 0;
             int wgk = Integer.parseInt(edtWGK.getText().toString().trim());
             int wck = Integer.parseInt(edtWCK.getText().toString().trim());
-            if (wqt + wgk + wck != 100) {
-                Toast.makeText(this, "Tổng tỉ lệ hiện tại phải bằng 100% để lưu", Toast.LENGTH_SHORT).show();
+            if (wgk + wck != 100) {
+                Toast.makeText(this, "Tổng tỉ lệ GK và CK phải bằng 100% để lưu", Toast.LENGTH_SHORT).show();
                 return;
             }
             EditText input = new EditText(this);
-            input.setHint("Tên template (VD: Lý thuyết, Thực hành)");
+            input.setHint("Tên template (VD: GK 50% - CK 50%)");
             new AlertDialog.Builder(this)
                 .setTitle("Lưu template")
                 .setView(input)
                 .setPositiveButton("Lưu", (dialog, which) -> {
                     String name = input.getText().toString().trim();
-                    if (name.isEmpty()) name = "Mẫu " + wqt + "-" + wgk + "-" + wck;
+                    if (name.isEmpty()) name = "Mẫu GK " + wgk + "% - CK " + wck + "%";
                     vn.edu.vaa.classmanagerdemo.models.ScoreTemplate t = 
                         new vn.edu.vaa.classmanagerdemo.models.ScoreTemplate(0, teacherId, name, wqt, wgk, wck);
                     templateDAO.insert(t);
@@ -297,7 +346,7 @@ public class ScoreActivity extends BaseActivity {
                 .setNegativeButton("Hủy", null)
                 .show();
         } catch (NumberFormatException e) {
-            Toast.makeText(this, "Vui lòng nhập đủ tỉ lệ QT, GK, CK hợp lệ trước khi lưu", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Vui lòng nhập đủ tỉ lệ GK và CK hợp lệ trước khi lưu", Toast.LENGTH_SHORT).show();
         }
     }
 

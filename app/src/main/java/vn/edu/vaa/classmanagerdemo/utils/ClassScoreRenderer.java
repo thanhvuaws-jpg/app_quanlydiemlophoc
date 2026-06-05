@@ -97,13 +97,28 @@ public class ClassScoreRenderer {
         tableTextPaint.setTextSize(spToPx(13));
         tableTextPaint.setFakeBoldText(true);
 
+        boolean hasQT = false;
+        for (Score s : scores) {
+            if (s.getWeightQT() > 0) {
+                hasQT = true;
+                break;
+            }
+        }
+
         canvas.drawText("Mã HS", 40, y + 28, tableTextPaint);
         canvas.drawText("Họ và tên", 180, y + 28, tableTextPaint);
-        canvas.drawText("QT", 440, y + 28, tableTextPaint);
-        canvas.drawText("GK", 500, y + 28, tableTextPaint);
-        canvas.drawText("CK", 560, y + 28, tableTextPaint);
-        canvas.drawText("TK", 620, y + 28, tableTextPaint);
-        canvas.drawText("Xếp loại", 680, y + 28, tableTextPaint);
+        if (hasQT) {
+            canvas.drawText("QT", 440, y + 28, tableTextPaint);
+            canvas.drawText("GK", 500, y + 28, tableTextPaint);
+            canvas.drawText("CK", 560, y + 28, tableTextPaint);
+            canvas.drawText("TK", 620, y + 28, tableTextPaint);
+            canvas.drawText("Xếp loại", 680, y + 28, tableTextPaint);
+        } else {
+            canvas.drawText("GK", 460, y + 28, tableTextPaint);
+            canvas.drawText("CK", 540, y + 28, tableTextPaint);
+            canvas.drawText("TK", 620, y + 28, tableTextPaint);
+            canvas.drawText("Xếp loại", 690, y + 28, tableTextPaint);
+        }
 
         // Table Rows
         tableTextPaint.setFakeBoldText(false);
@@ -127,11 +142,7 @@ public class ClassScoreRenderer {
             // Column texts
             canvas.drawText(s.getStudentCode() != null ? s.getStudentCode() : "", 40, y + 28, tableTextPaint);
             canvas.drawText(s.getStudentName() != null ? s.getStudentName() : "", 180, y + 28, tableTextPaint);
-            canvas.drawText(String.format(Locale.US, "%.1f", s.getScoreQT()), 440, y + 28, tableTextPaint);
-            canvas.drawText(String.format(Locale.US, "%.1f", s.getScoreGK()), 500, y + 28, tableTextPaint);
-            canvas.drawText(String.format(Locale.US, "%.1f", s.getScoreCK()), 560, y + 28, tableTextPaint);
-
-            // TK & Grade Letter with Colors
+            
             Paint colorPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
             colorPaint.setTextSize(spToPx(13));
             colorPaint.setFakeBoldText(true);
@@ -140,8 +151,19 @@ public class ClassScoreRenderer {
             } catch (Exception e) {
                 colorPaint.setColor(Color.BLACK);
             }
-            canvas.drawText(String.format(Locale.US, "%.1f", s.getScore()), 620, y + 28, colorPaint);
-            canvas.drawText(s.getGradeLetter(), 680, y + 28, colorPaint);
+
+            if (hasQT) {
+                canvas.drawText(String.format(Locale.US, "%.1f", s.getScoreQT()), 440, y + 28, tableTextPaint);
+                canvas.drawText(String.format(Locale.US, "%.1f", s.getScoreGK()), 500, y + 28, tableTextPaint);
+                canvas.drawText(String.format(Locale.US, "%.1f", s.getScoreCK()), 560, y + 28, tableTextPaint);
+                canvas.drawText(String.format(Locale.US, "%.1f", s.getScore()), 620, y + 28, colorPaint);
+                canvas.drawText(s.getGradeLetter(), 680, y + 28, colorPaint);
+            } else {
+                canvas.drawText(String.format(Locale.US, "%.1f", s.getScoreGK()), 460, y + 28, tableTextPaint);
+                canvas.drawText(String.format(Locale.US, "%.1f", s.getScoreCK()), 540, y + 28, tableTextPaint);
+                canvas.drawText(String.format(Locale.US, "%.1f", s.getScore()), 620, y + 28, colorPaint);
+                canvas.drawText(s.getGradeLetter(), 690, y + 28, colorPaint);
+            }
         }
 
         // Draw side borders of table
