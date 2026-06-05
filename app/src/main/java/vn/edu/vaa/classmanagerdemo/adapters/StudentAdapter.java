@@ -7,11 +7,11 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.card.MaterialCardView;
-
 import java.util.List;
+import java.util.Locale;
 
 import vn.edu.vaa.classmanagerdemo.R;
 import vn.edu.vaa.classmanagerdemo.models.Student;
@@ -20,15 +20,31 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.ViewHold
 
     public interface OnStudentClickListener { void onClick(Student student); }
     public interface OnStudentDeleteListener { void onDelete(Student student); }
+    public interface OnStudentLongClickListener { void onLongClick(Student student); }
+    public interface OnGetAvgScoreCallback { float getAvg(int studentId); }
 
     private final List<Student> list;
     private final OnStudentClickListener clickListener;
     private final OnStudentDeleteListener deleteListener;
+    private OnStudentLongClickListener longClickListener;
+    private OnGetAvgScoreCallback avgCallback;
 
+    /** Legacy 2-param constructor for backward compat */
     public StudentAdapter(List<Student> list, OnStudentClickListener click, OnStudentDeleteListener delete) {
         this.list = list;
         this.clickListener = click;
         this.deleteListener = delete;
+    }
+
+    /** Full constructor with avg score callback */
+    public StudentAdapter(List<Student> list, OnStudentClickListener click,
+                          OnStudentDeleteListener delete, OnStudentLongClickListener longClick,
+                          OnGetAvgScoreCallback avgCallback) {
+        this.list = list;
+        this.clickListener = click;
+        this.deleteListener = delete;
+        this.longClickListener = longClick;
+        this.avgCallback = avgCallback;
     }
 
     @NonNull
@@ -45,9 +61,31 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.ViewHold
         h.tvName.setText(s.getFullName());
         h.tvCode.setText(s.getStudentCode());
 
+        // Average score display
+        if (h.tvAvg != null && avgCallback != null) {
+            float avg = avgCallback.getAvg(s.getId());
+            if (avg > 0) {
+                h.tvAvg.setText("TB: " + String.format(Locale.US, "%.1f", avg));
+                String color = avg >= 8.5f ? "#10B981" : avg >= 7.0f ? "#3B82F6" : avg >= 5.5f ? "#F59E0B" : "#EF4444";
+                try { h.tvAvg.setTextColor(Color.parseColor(color)); } catch (Exception ignored) {}
+                h.tvAvg.setVisibility(View.VISIBLE);
+            } else {
+                h.tvAvg.setVisibility(View.GONE);
+            }
+        }
+
         h.itemView.setOnClickListener(v -> clickListener.onClick(s));
         h.itemView.setOnLongClickListener(v -> {
-            deleteListener.onDelete(s);
+            if (longClickListener != null) {
+                new AlertDialog.Builder(v.getContext())
+                    .setTitle(s.getFullName())
+                    .setItems(new String[]{"Chỉnh sửa", "Xóa"}, (d, which) -> {
+                        if (which == 0) longClickListener.onLongClick(s);
+                        else deleteListener.onDelete(s);
+                    }).show();
+            } else {
+                deleteListener.onDelete(s);
+            }
             return true;
         });
     }
@@ -56,12 +94,13 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.ViewHold
     public int getItemCount() { return list.size(); }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tvInitials, tvName, tvCode;
+        TextView tvInitials, tvName, tvCode, tvAvg;
         ViewHolder(View v) {
             super(v);
             tvInitials = v.findViewById(R.id.tvInitials);
             tvName = v.findViewById(R.id.tvStudentName);
             tvCode = v.findViewById(R.id.tvStudentCode);
+            tvAvg = v.findViewById(R.id.tvStudentAvgScore);
         }
     }
 }

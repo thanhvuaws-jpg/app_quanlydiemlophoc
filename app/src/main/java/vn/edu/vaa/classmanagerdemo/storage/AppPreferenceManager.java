@@ -17,7 +17,6 @@ public class AppPreferenceManager {
     public static final String KEY_FULL_NAME = "fullName";
     public static final String KEY_EMAIL = "email";
     public static final String KEY_PHONE = "phone";
-    public static final String KEY_TUITION_RATE = "tuitionRate";
 
     private final SharedPreferences prefs;
 
@@ -50,33 +49,6 @@ public class AppPreferenceManager {
                     .putString(KEY_LANGUAGE, language)
                     .apply();
         }
-    }
-
-    public long getTuitionRate() {
-        String username = getUsername();
-        if (!username.isEmpty()) {
-            return prefs.getLong(KEY_TUITION_RATE + "_" + username, 400000L); // 400k VND default
-        }
-        return prefs.getLong(KEY_TUITION_RATE, 400000L);
-    }
-
-    public void saveTuitionRate(long rate) {
-        String username = getUsername();
-        if (!username.isEmpty()) {
-            prefs.edit().putLong(KEY_TUITION_RATE + "_" + username, rate).apply();
-        } else {
-            prefs.edit().putLong(KEY_TUITION_RATE, rate).apply();
-        }
-    }
-
-    @Deprecated
-    public void save(String username, boolean remember, boolean darkMode, String language) {
-        prefs.edit()
-                .putString(KEY_USERNAME, username)
-                .putBoolean(KEY_REMEMBER, remember)
-                .putBoolean(KEY_DARK_MODE, darkMode)
-                .putString(KEY_LANGUAGE, language)
-                .apply();
     }
 
     public boolean isLoggedIn() { return prefs.getBoolean(KEY_LOGGED_IN, false); }

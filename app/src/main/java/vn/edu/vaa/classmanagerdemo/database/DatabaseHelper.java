@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String DB_NAME = "so_diem.db";
-    public static final int DB_VERSION = 1;
+    public static final int DB_VERSION = 2;
 
     // ── users (giáo viên) ──
     public static final String TABLE_USERS = "users";
@@ -31,6 +31,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String STU_CLASS_ID = "class_id";
     public static final String STU_CODE = "student_code";
     public static final String STU_FULL_NAME = "full_name";
+    public static final String STU_NOTE = "note";
 
     // ── scores (điểm) ──
     public static final String TABLE_SCORES = "scores";
@@ -81,7 +82,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 STU_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 STU_CLASS_ID + " INTEGER NOT NULL, " +
                 STU_CODE + " TEXT NOT NULL, " +
-                STU_FULL_NAME + " TEXT NOT NULL);");
+                STU_FULL_NAME + " TEXT NOT NULL, " +
+                STU_NOTE + " TEXT DEFAULT '');");
+
 
         db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_SCORES + " (" +
                 SCR_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -102,11 +105,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_SCORES);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_STUDENTS);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_CLASSES);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
-        onCreate(db);
+        if (oldVersion < 2) {
+            try {
+                db.execSQL("ALTER TABLE " + TABLE_STUDENTS + " ADD COLUMN " + STU_NOTE + " TEXT DEFAULT ''");
+            } catch (Exception e) {
+                db.execSQL("DROP TABLE IF EXISTS " + TABLE_SCORES);
+                db.execSQL("DROP TABLE IF EXISTS " + TABLE_STUDENTS);
+                db.execSQL("DROP TABLE IF EXISTS " + TABLE_CLASSES);
+                db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
+                onCreate(db);
+            }
+        }
     }
 
     private void seedData(SQLiteDatabase db) {

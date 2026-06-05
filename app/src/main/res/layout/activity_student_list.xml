@@ -10,21 +10,45 @@
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-            <androidx.appcompat.widget.Toolbar
-                android:id="@+id/toolbarStudents"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:background="@color/bg_light"
-                app:titleTextColor="@color/text_primary"
-                app:navigationIconTint="@color/text_primary" />
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbarStudents"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/primary"
+            app:titleTextColor="#FFFFFF"
+            app:navigationIconTint="#FFFFFF" />
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabLayoutStudents"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/primary"
+            app:tabTextColor="#FFFFFF80"
+            app:tabSelectedTextColor="#FFFFFF"
+            app:tabIndicatorColor="#FFFFFF"
+            app:tabMode="fixed" />
     </com.google.android.material.appbar.AppBarLayout>
 
+    <!-- Tab 1: Danh sách học sinh -->
     <LinearLayout
+        android:id="@+id/layoutTabStudents"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:padding="12dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <!-- Search bar -->
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.App.TextInputLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="12dp">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edtSearchStudent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Tìm theo tên hoặc mã học sinh..."
+                android:inputType="text" />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <TextView
             android:id="@+id/tvStudentCount"
@@ -32,13 +56,158 @@
             android:layout_height="wrap_content"
             android:textSize="13sp"
             android:textColor="@color/text_secondary"
-            android:layout_marginBottom="8dp" />
+            android:layout_marginStart="12dp"
+            android:layout_marginBottom="4dp" />
+
+        <LinearLayout
+            android:id="@+id/layoutEmptyStudents"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:visibility="gone">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="👤" android:textSize="48sp" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="Chưa có học sinh nào" android:textSize="16sp" android:textStyle="bold"
+                android:textColor="@color/text_primary" android:layout_marginTop="12dp" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="Nhấn + để thêm học sinh" android:textSize="13sp"
+                android:textColor="@color/text_secondary" android:layout_marginTop="6dp" />
+        </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerStudents"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:padding="8dp"
+            android:clipToPadding="false" />
+    </LinearLayout>
+
+    <!-- Tab 2: Thống kê lớp -->
+    <LinearLayout
+        android:id="@+id/layoutTabStats"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:padding="12dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <!-- Card phân phối xếp loại -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            app:cardCornerRadius="14dp"
+            app:cardElevation="2dp">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="vertical" android:padding="16dp">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="Phân phối xếp loại" android:textSize="14sp" android:textStyle="bold"
+                    android:textColor="@color/text_primary" android:layout_marginBottom="12dp"/>
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:weightSum="5">
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:orientation="vertical" android:gravity="center">
+                        <TextView android:id="@+id/tvCountA" android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" android:text="0" android:textSize="20sp"
+                            android:textStyle="bold" android:textColor="#10B981"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Giỏi" android:textSize="11sp" android:textColor="@color/text_secondary"/>
+                    </LinearLayout>
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:orientation="vertical" android:gravity="center">
+                        <TextView android:id="@+id/tvCountB" android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" android:text="0" android:textSize="20sp"
+                            android:textStyle="bold" android:textColor="#3B82F6"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Khá" android:textSize="11sp" android:textColor="@color/text_secondary"/>
+                    </LinearLayout>
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:orientation="vertical" android:gravity="center">
+                        <TextView android:id="@+id/tvCountC" android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" android:text="0" android:textSize="20sp"
+                            android:textStyle="bold" android:textColor="#F59E0B"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="TB" android:textSize="11sp" android:textColor="@color/text_secondary"/>
+                    </LinearLayout>
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:orientation="vertical" android:gravity="center">
+                        <TextView android:id="@+id/tvCountD" android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" android:text="0" android:textSize="20sp"
+                            android:textStyle="bold" android:textColor="#F97316"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Yếu" android:textSize="11sp" android:textColor="@color/text_secondary"/>
+                    </LinearLayout>
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:orientation="vertical" android:gravity="center">
+                        <TextView android:id="@+id/tvCountF" android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" android:text="0" android:textSize="20sp"
+                            android:textStyle="bold" android:textColor="#EF4444"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Kém" android:textSize="11sp" android:textColor="@color/text_secondary"/>
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Card điểm TB lớp -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp" app:cardCornerRadius="14dp" app:cardElevation="2dp">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="horizontal" android:padding="16dp" android:weightSum="3">
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:orientation="vertical" android:gravity="center">
+                    <TextView android:id="@+id/tvClassAvg" android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:text="--" android:textSize="22sp"
+                        android:textStyle="bold" android:textColor="@color/primary"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Điểm TB lớp" android:textSize="11sp" android:textColor="@color/text_secondary"/>
+                </LinearLayout>
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:orientation="vertical" android:gravity="center">
+                    <TextView android:id="@+id/tvClassMax" android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:text="--" android:textSize="22sp"
+                        android:textStyle="bold" android:textColor="@color/success"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Điểm cao nhất" android:textSize="11sp" android:textColor="@color/text_secondary"/>
+                </LinearLayout>
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:orientation="vertical" android:gravity="center">
+                    <TextView android:id="@+id/tvClassMin" android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:text="--" android:textSize="22sp"
+                        android:textStyle="bold" android:textColor="@color/danger"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Điểm thấp nhất" android:textSize="11sp" android:textColor="@color/text_secondary"/>
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Xếp hạng -->
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="Xếp hạng học sinh" android:textSize="14sp" android:textStyle="bold"
+            android:textColor="@color/text_primary" android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerRanking"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:nestedScrollingEnabled="false" />
+
+        <!-- Nút xuất CSV -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnExportClass"
+            style="@style/Widget.App.Button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="📥  Xuất điểm cả lớp (CSV)" />
+
     </LinearLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton

@@ -23,6 +23,7 @@ public class StudentDAO {
         v.put(DatabaseHelper.STU_CLASS_ID, s.getClassId());
         v.put(DatabaseHelper.STU_CODE, s.getStudentCode());
         v.put(DatabaseHelper.STU_FULL_NAME, s.getFullName());
+        v.put(DatabaseHelper.STU_NOTE, s.getNote());
         return db.insert(DatabaseHelper.TABLE_STUDENTS, null, v);
     }
 
@@ -31,6 +32,7 @@ public class StudentDAO {
         ContentValues v = new ContentValues();
         v.put(DatabaseHelper.STU_CODE, s.getStudentCode());
         v.put(DatabaseHelper.STU_FULL_NAME, s.getFullName());
+        v.put(DatabaseHelper.STU_NOTE, s.getNote());
         return db.update(DatabaseHelper.TABLE_STUDENTS, v,
                 DatabaseHelper.STU_ID + "=?", new String[]{String.valueOf(s.getId())});
     }
@@ -70,11 +72,14 @@ public class StudentDAO {
     }
 
     private Student fromCursor(Cursor c) {
-        return new Student(
+        Student student = new Student(
                 c.getInt(c.getColumnIndexOrThrow(DatabaseHelper.STU_ID)),
                 c.getInt(c.getColumnIndexOrThrow(DatabaseHelper.STU_CLASS_ID)),
                 c.getString(c.getColumnIndexOrThrow(DatabaseHelper.STU_CODE)),
                 c.getString(c.getColumnIndexOrThrow(DatabaseHelper.STU_FULL_NAME))
         );
+        int noteIdx = c.getColumnIndex(DatabaseHelper.STU_NOTE);
+        if (noteIdx >= 0) student.setNote(c.getString(noteIdx));
+        return student;
     }
 }

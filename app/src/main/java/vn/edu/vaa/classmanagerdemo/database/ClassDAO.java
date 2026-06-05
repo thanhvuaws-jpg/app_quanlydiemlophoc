@@ -70,6 +70,19 @@ public class ClassDAO {
         return list;
     }
 
+    public int getTotalScoreCount(int teacherId) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor c = db.rawQuery(
+            "SELECT COUNT(sc.id) FROM " + DatabaseHelper.TABLE_SCORES + " sc " +
+            "JOIN " + DatabaseHelper.TABLE_CLASSES + " cl ON cl." + DatabaseHelper.CLS_ID + "=sc." + DatabaseHelper.SCR_CLASS_ID + " " +
+            "WHERE cl." + DatabaseHelper.CLS_TEACHER_ID + "=?",
+            new String[]{String.valueOf(teacherId)});
+        int count = 0;
+        if (c.moveToFirst()) count = c.getInt(0);
+        c.close();
+        return count;
+    }
+
     private SchoolClass fromCursor(Cursor c) {
         return new SchoolClass(
                 c.getInt(c.getColumnIndexOrThrow(DatabaseHelper.CLS_ID)),

@@ -9,7 +9,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
 import vn.edu.vaa.classmanagerdemo.R;
@@ -21,12 +20,9 @@ import vn.edu.vaa.classmanagerdemo.utils.NavigationHelper;
 public class SettingsActivity extends BaseActivity {
     private SwitchMaterial swDarkMode;
     private TextInputEditText spLanguage;
-    private TextInputEditText edtTrainingPoints;
-    private TextInputEditText edtTuitionRate;
     private TextView txtAccountInfo;
     private AppPreferenceManager prefs;
     private UserDAO userDAO;
-    private User currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +34,6 @@ public class SettingsActivity extends BaseActivity {
         }
         setContentView(R.layout.activity_settings);
         userDAO = new UserDAO(this);
-        currentUser = userDAO.findById(prefs.getCurrentUserId());
 
         initViews();
         initSpinner();
@@ -57,8 +52,6 @@ public class SettingsActivity extends BaseActivity {
         txtAccountInfo = findViewById(R.id.txtAccountInfo);
         swDarkMode = findViewById(R.id.swDarkMode);
         spLanguage = findViewById(R.id.spLanguage);
-        edtTrainingPoints = findViewById(R.id.edtTrainingPoints);
-        edtTuitionRate = findViewById(R.id.edtTuitionRate);
     }
 
     private void initSpinner() {
@@ -85,71 +78,24 @@ public class SettingsActivity extends BaseActivity {
     }
 
     private void readAndRender() {
-        if (currentUser == null) {
-            currentUser = userDAO.findById(prefs.getCurrentUserId());
-        }
-        int pts = currentUser != null ? currentUser.getTrainingPoints() : 80;
-        
         txtAccountInfo.setText("Họ tên: " + prefs.getFullName() + "\n" +
                 "Username: " + prefs.getUsername() + "\n" +
                 "Email: " + prefs.getEmail() + "\n" +
                 "SĐT: " + prefs.getPhone() + "\n" +
                 "Giữ đăng nhập: " + (prefs.isRememberLogin() ? "Có" : "Không"));
-        
+
         swDarkMode.setChecked(prefs.isDarkMode());
         spLanguage.setText(prefs.getLanguage());
-        edtTrainingPoints.setText(String.valueOf(pts));
-        edtTuitionRate.setText(String.valueOf(prefs.getTuitionRate()));
     }
 
     private void handleSavePrefs() {
         boolean darkMode = swDarkMode.isChecked();
         String language = spLanguage.getText() != null ? spLanguage.getText().toString().trim() : "vi";
         if (language.isEmpty()) language = "vi";
-        
-        String strPoints = edtTrainingPoints.getText() != null ? edtTrainingPoints.getText().toString().trim() : "80";
-        String strRate = edtTuitionRate.getText() != null ? edtTuitionRate.getText().toString().trim() : "400000";
-        
-        int points = 80;
-        try {
-            points = Integer.parseInt(strPoints);
-            if (points < 0 || points > 100) {
-                edtTrainingPoints.setError(getString(R.string.error_invalid_points));
-                edtTrainingPoints.requestFocus();
-                return;
-            }
-        } catch (Exception e) {
-            edtTrainingPoints.setError(getString(R.string.error_parsing_number));
-            edtTrainingPoints.requestFocus();
-            return;
-        }
-
-        long tuitionRate = 400000L;
-        try {
-            tuitionRate = Long.parseLong(strRate);
-            if (tuitionRate < 0) {
-                edtTuitionRate.setError(getString(R.string.error_tuition_negative));
-                edtTuitionRate.requestFocus();
-                return;
-            }
-        } catch (Exception e) {
-            edtTuitionRate.setError(getString(R.string.error_invalid_tuition));
-            edtTuitionRate.requestFocus();
-            return;
-        }
 
         String oldLang = prefs.getLanguage();
-
-        // Save preferences and database
         prefs.saveAppSettings(darkMode, language);
-        prefs.saveTuitionRate(tuitionRate);
-        
-        if (currentUser != null) {
-            userDAO.updateTrainingPoints(currentUser.getId(), points);
-            currentUser.setTrainingPoints(points);
-        }
 
-        // Apply dark mode immediately
         if (darkMode) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         } else {
@@ -173,7 +119,6 @@ public class SettingsActivity extends BaseActivity {
                 .setMessage(getString(R.string.logout_message))
                 .setPositiveButton(getString(R.string.logout), (dialog, which) -> {
                     prefs.clearLoginSession();
-                    // Reset to light mode upon logout
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
                     goLogin();
                 })

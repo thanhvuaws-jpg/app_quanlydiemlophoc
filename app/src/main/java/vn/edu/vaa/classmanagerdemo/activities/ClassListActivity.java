@@ -83,6 +83,11 @@ public class ClassListActivity extends BaseActivity {
                 classList.clear();
                 classList.addAll(list);
                 classAdapter.notifyDataSetChanged();
+                android.view.View layoutEmpty = findViewById(R.id.layoutEmpty);
+                if (layoutEmpty != null) {
+                    layoutEmpty.setVisibility(list.isEmpty() ? android.view.View.VISIBLE : android.view.View.GONE);
+                    recyclerClasses.setVisibility(list.isEmpty() ? android.view.View.GONE : android.view.View.VISIBLE);
+                }
             });
         }).start();
     }

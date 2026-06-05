@@ -5,6 +5,7 @@ public class Student {
     private int classId;
     private String studentCode;
     private String fullName;
+    private String note = "";
 
     public Student() {}
 
@@ -35,4 +36,7 @@ public class Student {
         String[] parts = fullName.trim().split("\\s+");
         return parts[parts.length - 1].substring(0, 1).toUpperCase();
     }
+
+    public String getNote() { return note != null ? note : ""; }
+    public void setNote(String note) { this.note = note; }
 }

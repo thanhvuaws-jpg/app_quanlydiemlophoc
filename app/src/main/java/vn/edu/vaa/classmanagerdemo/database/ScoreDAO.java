@@ -109,6 +109,42 @@ public class ScoreDAO {
         return exists;
     }
 
+    public float getAverageByStudentAndClass(int studentId, int classId) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor c = db.rawQuery(
+            "SELECT AVG(" + DatabaseHelper.SCR_VALUE + ") FROM " + DatabaseHelper.TABLE_SCORES +
+            " WHERE " + DatabaseHelper.SCR_STUDENT_ID + "=? AND " + DatabaseHelper.SCR_CLASS_ID + "=?",
+            new String[]{String.valueOf(studentId), String.valueOf(classId)});
+        float avg = 0f;
+        if (c.moveToFirst() && !c.isNull(0)) avg = c.getFloat(0);
+        c.close();
+        return Math.round(avg * 10f) / 10f;
+    }
+
+    public List<Score> getRankedByClass(int classId) {
+        List<Score> list = new ArrayList<>();
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor c = db.rawQuery(
+            "SELECT sc.*, st." + DatabaseHelper.STU_FULL_NAME + " as studentName, st." + DatabaseHelper.STU_CODE + " as studentCode" +
+            " FROM " + DatabaseHelper.TABLE_SCORES + " sc" +
+            " JOIN " + DatabaseHelper.TABLE_STUDENTS + " st ON st." + DatabaseHelper.STU_ID + "=sc." + DatabaseHelper.SCR_STUDENT_ID +
+            " WHERE sc." + DatabaseHelper.SCR_CLASS_ID + "=?" +
+            " ORDER BY sc." + DatabaseHelper.SCR_VALUE + " DESC",
+            new String[]{String.valueOf(classId)});
+        if (c.moveToFirst()) {
+            do {
+                Score s = fromCursor(c);
+                int nameIdx = c.getColumnIndex("studentName");
+                int codeIdx = c.getColumnIndex("studentCode");
+                if (nameIdx >= 0) s.setStudentName(c.getString(nameIdx));
+                if (codeIdx >= 0) s.setStudentCode(c.getString(codeIdx));
+                list.add(s);
+            } while (c.moveToNext());
+        }
+        c.close();
+        return list;
+    }
+
     private Score fromCursor(Cursor c) {
         Score s = new Score();
         s.setId(c.getInt(c.getColumnIndexOrThrow(DatabaseHelper.SCR_ID)));

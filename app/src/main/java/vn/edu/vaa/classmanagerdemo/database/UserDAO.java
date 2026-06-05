@@ -73,8 +73,7 @@ public class UserDAO {
                 c.getString(c.getColumnIndexOrThrow(DatabaseHelper.USER_USERNAME)),
                 c.getString(c.getColumnIndexOrThrow(DatabaseHelper.USER_PASSWORD)),
                 c.getString(c.getColumnIndexOrThrow(DatabaseHelper.USER_EMAIL)),
-                c.getString(c.getColumnIndexOrThrow(DatabaseHelper.USER_PHONE)),
-                80 // Default training points as column removed
+                c.getString(c.getColumnIndexOrThrow(DatabaseHelper.USER_PHONE))
         );
     }
 

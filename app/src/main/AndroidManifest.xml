@@ -26,6 +26,7 @@
         <activity android:name=".activities.StudentListActivity" />
         <activity android:name=".activities.ScoreActivity" />
         <activity android:name=".activities.ImportExportActivity" />
+        <activity android:name=".activities.BulkScoreActivity" />
         <activity
             android:name=".activities.SettingsActivity"
             android:launchMode="singleTask"
