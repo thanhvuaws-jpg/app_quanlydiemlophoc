@@ -40,6 +40,11 @@ import vn.edu.vaa.classmanagerdemo.models.Student;
 import vn.edu.vaa.classmanagerdemo.utils.DebounceClickListener;
 import vn.edu.vaa.classmanagerdemo.utils.NavigationHelper;
 
+import org.dhatim.fastexcel.reader.ReadableWorkbook;
+import org.dhatim.fastexcel.reader.Sheet;
+import org.dhatim.fastexcel.reader.Row;
+import org.dhatim.fastexcel.reader.Cell;
+
 public class StudentListActivity extends BaseActivity {
     private static final int RC_IMPORT_CSV = 1001;
 
@@ -90,9 +95,17 @@ public class StudentListActivity extends BaseActivity {
                 return true;
             } else if (item.getItemId() == R.id.action_import_csv) {
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                intent.setType("text/*");
+                intent.setType("*/*");
+                String[] mimeTypes = {
+                    "text/comma-separated-values",
+                    "text/csv",
+                    "text/plain",
+                    "application/vnd.ms-excel",
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                };
+                intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
                 intent.addCategory(Intent.CATEGORY_OPENABLE);
-                startActivityForResult(Intent.createChooser(intent, "Chọn file CSV"), RC_IMPORT_CSV);
+                startActivityForResult(Intent.createChooser(intent, "Chọn file CSV hoặc Excel"), RC_IMPORT_CSV);
                 return true;
             }
             return false;
@@ -404,9 +417,163 @@ public class StudentListActivity extends BaseActivity {
         if (requestCode == RC_IMPORT_CSV && resultCode == RESULT_OK && data != null) {
             Uri uri = data.getData();
             if (uri != null) {
-                processCsvFile(uri);
+                String fileName = getFileName(uri);
+                if (fileName != null && (fileName.toLowerCase().endsWith(".xlsx") || fileName.toLowerCase().endsWith(".xls"))) {
+                    processXlsxFile(uri);
+                } else {
+                    processCsvFile(uri);
+                }
             }
         }
+    }
+
+    private String getFileName(Uri uri) {
+        String result = null;
+        if ("content".equals(uri.getScheme())) {
+            android.database.Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+            try {
+                if (cursor != null && cursor.moveToFirst()) {
+                    int idx = cursor.getColumnIndex(android.provider.OpenableColumns.DISPLAY_NAME);
+                    if (idx != -1) result = cursor.getString(idx);
+                }
+            } finally {
+                if (cursor != null) cursor.close();
+            }
+        }
+        if (result == null) {
+            result = uri.getPath();
+            int cut = result.lastIndexOf('/');
+            if (cut != -1) {
+                result = result.substring(cut + 1);
+            }
+        }
+        return result;
+    }
+
+    private void processXlsxFile(Uri uri) {
+        try {
+            java.io.InputStream inputStream = getContentResolver().openInputStream(uri);
+            try (ReadableWorkbook wb = new ReadableWorkbook(inputStream)) {
+                Sheet sheet = wb.getFirstSheet();
+                List<Row> rows = sheet.read();
+                
+                if (rows == null || rows.isEmpty()) {
+                    Toast.makeText(this, "File Excel trống", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                
+                Row headerRow = rows.get(0);
+                List<String> headers = new ArrayList<>();
+                for (int i = 0; i < headerRow.getCellCount(); i++) {
+                    Cell c = headerRow.getCell(i);
+                    headers.add(c != null ? c.getText().trim() : "");
+                }
+                
+                if (headers.size() < 2) {
+                    Toast.makeText(this, "File Excel phải có ít nhất 2 cột dữ liệu", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                
+                showXlsxMappingDialog(rows, headers);
+            }
+        } catch (Exception e) {
+            Toast.makeText(this, "Lỗi đọc file Excel: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void showXlsxMappingDialog(List<Row> rows, List<String> headers) {
+        LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setPadding(50, 40, 50, 40);
+        
+        TextView tvNameHint = new TextView(this);
+        tvNameHint.setText("Chọn cột chứa Họ và tên:");
+        tvNameHint.setTextColor(getResources().getColor(R.color.text_secondary));
+        tvNameHint.setPadding(0, 10, 0, 10);
+        layout.addView(tvNameHint);
+        
+        android.widget.Spinner spinnerName = new android.widget.Spinner(this);
+        android.widget.ArrayAdapter<String> adapter = new android.widget.ArrayAdapter<>(
+            this, android.R.layout.simple_spinner_item, headers);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerName.setAdapter(adapter);
+        layout.addView(spinnerName);
+        
+        TextView tvCodeHint = new TextView(this);
+        tvCodeHint.setText("Chọn cột chứa Mã học sinh / MSSV:");
+        tvCodeHint.setTextColor(getResources().getColor(R.color.text_secondary));
+        tvCodeHint.setPadding(0, 20, 0, 10);
+        layout.addView(tvCodeHint);
+        
+        android.widget.Spinner spinnerCode = new android.widget.Spinner(this);
+        spinnerCode.setAdapter(adapter);
+        layout.addView(spinnerCode);
+        
+        // Auto select best match
+        int nameIndex = 0;
+        int codeIndex = 0;
+        for (int i = 0; i < headers.size(); i++) {
+            String h = headers.get(i).toLowerCase();
+            if (h.contains("tên") || h.contains("name") || h.contains("ten") || h.contains("họ") || h.contains("ho")) {
+                nameIndex = i;
+            }
+            if (h.contains("mã") || h.contains("code") || h.contains("mssv") || h.contains("ms") || h.contains("id") || h.contains("ma")) {
+                codeIndex = i;
+            }
+        }
+        if (nameIndex == codeIndex && headers.size() > 1) {
+            codeIndex = (nameIndex + 1) % headers.size();
+        }
+        spinnerName.setSelection(nameIndex);
+        spinnerCode.setSelection(codeIndex);
+        
+        new AlertDialog.Builder(this)
+            .setTitle("Ánh xạ cột từ Excel")
+            .setView(layout)
+            .setPositiveButton("Bắt đầu Import", (dialog, which) -> {
+                int selectedNameCol = spinnerName.getSelectedItemPosition();
+                int selectedCodeCol = spinnerCode.getSelectedItemPosition();
+                importXlsxData(rows, selectedNameCol, selectedCodeCol);
+            })
+            .setNegativeButton("Hủy", null)
+            .show();
+    }
+
+    private void importXlsxData(List<Row> rows, int nameCol, int codeCol) {
+        new Thread(() -> {
+            int success = 0;
+            int duplicate = 0;
+            for (int i = 1; i < rows.size(); i++) {
+                Row row = rows.get(i);
+                if (row == null) continue;
+                if (row.getCellCount() <= Math.max(nameCol, codeCol)) continue;
+                
+                Cell nameCell = row.getCell(nameCol);
+                Cell codeCell = row.getCell(codeCol);
+                
+                String name = nameCell != null ? nameCell.getText().trim() : "";
+                String code = codeCell != null ? codeCell.getText().trim() : "";
+                
+                if (name.isEmpty() || code.isEmpty()) continue;
+                
+                if (studentDAO.existsByCode(classId, code)) {
+                    duplicate++;
+                } else {
+                    Student s = new Student(classId, code, name);
+                    studentDAO.insert(s);
+                    success++;
+                }
+            }
+            
+            final int fSuccess = success;
+            final int fDuplicate = duplicate;
+            runOnUiThread(() -> {
+                loadStudents();
+                Toast.makeText(this, 
+                    "Đã thêm thành công " + fSuccess + " học sinh từ file Excel. Trùng lặp: " + fDuplicate, 
+                    Toast.LENGTH_LONG).show();
+            });
+        }).start();
     }
 
     private void processCsvFile(Uri uri) {

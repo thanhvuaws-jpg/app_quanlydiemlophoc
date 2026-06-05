@@ -5,6 +5,6 @@
         android:title="Nhập điểm hàng loạt"
         app:showAsAction="never" />
     <item android:id="@+id/action_import_csv"
-        android:title="Nhập học sinh từ file CSV"
+        android:title="Nhập học sinh từ CSV / Excel"
         app:showAsAction="never" />
 </menu>
