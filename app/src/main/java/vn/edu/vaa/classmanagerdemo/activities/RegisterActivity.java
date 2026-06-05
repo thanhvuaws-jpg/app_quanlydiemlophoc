@@ -36,7 +36,7 @@ public class RegisterActivity extends BaseActivity {
 
     private void initListeners() {
         Button btnRegister = findViewById(R.id.btnRegisterAccount);
-        Button btnBackLogin = findViewById(R.id.btnBackLogin);
+        android.view.View btnBackLogin = findViewById(R.id.btnBackLogin);
         btnRegister.setOnClickListener(v -> handleRegister());
         btnBackLogin.setOnClickListener(v -> finish());
     }

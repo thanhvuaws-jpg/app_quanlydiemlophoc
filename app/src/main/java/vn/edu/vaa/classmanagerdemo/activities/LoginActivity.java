@@ -45,7 +45,7 @@ public class LoginActivity extends BaseActivity {
 
     private void initListeners() {
         Button btnLogin = findViewById(R.id.btnLogin);
-        Button btnRegister = findViewById(R.id.btnOpenRegister);
+        android.view.View btnRegister = findViewById(R.id.btnOpenRegister);
         btnLogin.setOnClickListener(v -> handleLogin());
         btnRegister.setOnClickListener(v -> startActivity(new Intent(this, RegisterActivity.class)));
     }
