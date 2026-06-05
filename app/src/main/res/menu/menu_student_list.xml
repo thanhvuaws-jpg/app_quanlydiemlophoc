@@ -4,4 +4,7 @@
     <item android:id="@+id/action_bulk_score"
         android:title="Nhập điểm hàng loạt"
         app:showAsAction="never" />
+    <item android:id="@+id/action_import_csv"
+        android:title="Nhập học sinh từ file CSV"
+        app:showAsAction="never" />
 </menu>

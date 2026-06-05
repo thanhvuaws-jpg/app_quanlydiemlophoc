@@ -41,6 +41,7 @@ import vn.edu.vaa.classmanagerdemo.utils.DebounceClickListener;
 import vn.edu.vaa.classmanagerdemo.utils.NavigationHelper;
 
 public class StudentListActivity extends BaseActivity {
+    private static final int RC_IMPORT_CSV = 1001;
 
     private StudentDAO studentDAO;
     private ScoreDAO scoreDAO;
@@ -86,6 +87,12 @@ public class StudentListActivity extends BaseActivity {
                 i.putExtra("class_name", className);
                 i.putExtra("class_subject", classSubject);
                 startActivity(i);
+                return true;
+            } else if (item.getItemId() == R.id.action_import_csv) {
+                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                intent.setType("text/*");
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
+                startActivityForResult(Intent.createChooser(intent, "Chọn file CSV"), RC_IMPORT_CSV);
                 return true;
             }
             return false;
@@ -389,6 +396,174 @@ public class StudentListActivity extends BaseActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) { NavigationHelper.finishWithSlide(this); return true; }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == RC_IMPORT_CSV && resultCode == RESULT_OK && data != null) {
+            Uri uri = data.getData();
+            if (uri != null) {
+                processCsvFile(uri);
+            }
+        }
+    }
+
+    private void processCsvFile(Uri uri) {
+        try {
+            java.io.InputStream inputStream = getContentResolver().openInputStream(uri);
+            java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.InputStreamReader(inputStream, "UTF-8"));
+            
+            List<String> lines = new ArrayList<>();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (lines.isEmpty() && line.startsWith("\uFEFF")) {
+                    line = line.substring(1);
+                }
+                if (!line.trim().isEmpty()) {
+                    lines.add(line);
+                }
+            }
+            reader.close();
+            inputStream.close();
+            
+            if (lines.isEmpty()) {
+                Toast.makeText(this, "File CSV trống", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            
+            String firstLine = lines.get(0);
+            String delimiter = ",";
+            if (firstLine.contains(";")) {
+                int commaCount = firstLine.length() - firstLine.replace(",", "").length();
+                int semiCount = firstLine.length() - firstLine.replace(";", "").length();
+                if (semiCount > commaCount) {
+                    delimiter = ";";
+                }
+            }
+            
+            List<String> headers = parseCsvLine(firstLine, delimiter);
+            if (headers.size() < 2) {
+                Toast.makeText(this, "File CSV phải có ít nhất 2 cột dữ liệu", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            
+            showCsvMappingDialog(lines, headers, delimiter);
+            
+        } catch (Exception e) {
+            Toast.makeText(this, "Lỗi đọc file: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private List<String> parseCsvLine(String line, String delimiter) {
+        List<String> result = new ArrayList<>();
+        if (line == null) return result;
+        boolean inQuotes = false;
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < line.length(); i++) {
+            char c = line.charAt(i);
+            if (c == '\"') {
+                inQuotes = !inQuotes;
+            } else if (String.valueOf(c).equals(delimiter) && !inQuotes) {
+                result.add(sb.toString().trim());
+                sb.setLength(0);
+            } else {
+                sb.append(c);
+            }
+        }
+        result.add(sb.toString().trim());
+        return result;
+    }
+
+    private void showCsvMappingDialog(List<String> lines, List<String> headers, String delimiter) {
+        LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setPadding(50, 40, 50, 40);
+        
+        TextView tvNameHint = new TextView(this);
+        tvNameHint.setText("Chọn cột chứa Họ và tên:");
+        tvNameHint.setTextColor(getResources().getColor(R.color.text_secondary));
+        tvNameHint.setPadding(0, 10, 0, 10);
+        layout.addView(tvNameHint);
+        
+        android.widget.Spinner spinnerName = new android.widget.Spinner(this);
+        android.widget.ArrayAdapter<String> adapter = new android.widget.ArrayAdapter<>(
+            this, android.R.layout.simple_spinner_item, headers);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerName.setAdapter(adapter);
+        layout.addView(spinnerName);
+        
+        TextView tvCodeHint = new TextView(this);
+        tvCodeHint.setText("Chọn cột chứa Mã học sinh / MSSV:");
+        tvCodeHint.setTextColor(getResources().getColor(R.color.text_secondary));
+        tvCodeHint.setPadding(0, 20, 0, 10);
+        layout.addView(tvCodeHint);
+        
+        android.widget.Spinner spinnerCode = new android.widget.Spinner(this);
+        spinnerCode.setAdapter(adapter);
+        layout.addView(spinnerCode);
+        
+        // Auto select best match
+        int nameIndex = 0;
+        int codeIndex = 0;
+        for (int i = 0; i < headers.size(); i++) {
+            String h = headers.get(i).toLowerCase();
+            if (h.contains("tên") || h.contains("name") || h.contains("ten") || h.contains("họ") || h.contains("ho")) {
+                nameIndex = i;
+            }
+            if (h.contains("mã") || h.contains("code") || h.contains("mssv") || h.contains("ms") || h.contains("id") || h.contains("ma")) {
+                codeIndex = i;
+            }
+        }
+        if (nameIndex == codeIndex && headers.size() > 1) {
+            codeIndex = (nameIndex + 1) % headers.size();
+        }
+        spinnerName.setSelection(nameIndex);
+        spinnerCode.setSelection(codeIndex);
+        
+        new AlertDialog.Builder(this)
+            .setTitle("Ánh xạ cột từ CSV")
+            .setView(layout)
+            .setPositiveButton("Bắt đầu Import", (dialog, which) -> {
+                int selectedNameCol = spinnerName.getSelectedItemPosition();
+                int selectedCodeCol = spinnerCode.getSelectedItemPosition();
+                importCsvData(lines, selectedNameCol, selectedCodeCol, delimiter);
+            })
+            .setNegativeButton("Hủy", null)
+            .show();
+    }
+
+    private void importCsvData(List<String> lines, int nameCol, int codeCol, String delimiter) {
+        new Thread(() -> {
+            int success = 0;
+            int duplicate = 0;
+            for (int i = 1; i < lines.size(); i++) {
+                List<String> cols = parseCsvLine(lines.get(i), delimiter);
+                if (cols.size() <= Math.max(nameCol, codeCol)) continue;
+                
+                String name = cols.get(nameCol);
+                String code = cols.get(codeCol);
+                
+                if (name.isEmpty() || code.isEmpty()) continue;
+                
+                if (studentDAO.existsByCode(classId, code)) {
+                    duplicate++;
+                } else {
+                    Student s = new Student(classId, code, name);
+                    studentDAO.insert(s);
+                    success++;
+                }
+            }
+            
+            final int fSuccess = success;
+            final int fDuplicate = duplicate;
+            runOnUiThread(() -> {
+                loadStudents();
+                Toast.makeText(this, 
+                    "Đã thêm thành công " + fSuccess + " học sinh. Trùng lặp: " + fDuplicate, 
+                    Toast.LENGTH_LONG).show();
+            });
+        }).start();
     }
 
     // ── Ranking Adapter (inline) ──────────────────────────────────────────────

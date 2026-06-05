@@ -68,14 +68,14 @@ public class ClassListActivity extends BaseActivity {
         FloatingActionButton fab = findViewById(R.id.fabAddClass);
         fab.setOnClickListener(DebounceClickListener.wrap(v -> showAddClassDialog()));
 
-        NavigationHelper.setupBottomNavigation(this, R.id.nav_home);
+        NavigationHelper.setupBottomNavigation(this, R.id.nav_grades);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         loadClasses();
-        NavigationHelper.setupBottomNavigation(this, R.id.nav_home);
+        NavigationHelper.setupBottomNavigation(this, R.id.nav_grades);
     }
 
     private void loadClasses() {
