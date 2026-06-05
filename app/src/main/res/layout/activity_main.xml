@@ -54,10 +54,10 @@
                         android:id="@+id/tvHeaderTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Sổ Điểm Giáo Viên"
-                        android:textColor="@color/text_primary"
-                        android:textSize="18sp"
-                        android:textStyle="bold" />
+                        android:text="@string/app_name"
+                        android:textColor="@color/primary"
+                        android:textSize="22sp"
+                        android:fontFamily="sans-serif-black" />
 
                     <TextView
                         android:id="@+id/tvWelcome"
@@ -74,13 +74,12 @@
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="24dp"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="3dp"
-                app:strokeWidth="1dp"
-                app:strokeColor="#E2E8F0">
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="32dp"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="8dp"
+                app:strokeWidth="0dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -174,10 +173,9 @@
                     android:clickable="true"
                     android:focusable="true"
                     android:foreground="?attr/selectableItemBackground"
-                    app:cardCornerRadius="16dp"
-                    app:cardElevation="2dp"
-                    app:strokeWidth="1dp"
-                    app:strokeColor="#F1F5F9">
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="4dp"
+                    app:strokeWidth="0dp">
                     
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -186,22 +184,22 @@
                         android:gravity="center"
                         android:padding="24dp">
                         <com.google.android.material.card.MaterialCardView
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
-                            app:cardCornerRadius="24dp"
+                            android:layout_width="56dp"
+                            android:layout_height="56dp"
+                            app:cardCornerRadius="28dp"
                             app:cardElevation="0dp"
-                            app:cardBackgroundColor="#EEF2FF">
-                            <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:gravity="center"
-                                android:text="📚"
-                                android:textSize="24sp" />
+                            app:cardBackgroundColor="@color/primary_light">
+                            <ImageView
+                                android:layout_width="32dp"
+                                android:layout_height="32dp"
+                                android:layout_gravity="center"
+                                android:src="@drawable/ic_school"
+                                app:tint="@color/primary" />
                         </com.google.android.material.card.MaterialCardView>
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Lớp Học"
+                            android:text="Quản Lý Lớp"
                             android:textSize="15sp"
                             android:textStyle="bold"
                             android:textColor="@color/text_primary"
@@ -218,10 +216,9 @@
                     android:clickable="true"
                     android:focusable="true"
                     android:foreground="?attr/selectableItemBackground"
-                    app:cardCornerRadius="16dp"
-                    app:cardElevation="2dp"
-                    app:strokeWidth="1dp"
-                    app:strokeColor="#F1F5F9">
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="4dp"
+                    app:strokeWidth="0dp">
                     
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -230,17 +227,17 @@
                         android:gravity="center"
                         android:padding="24dp">
                         <com.google.android.material.card.MaterialCardView
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
-                            app:cardCornerRadius="24dp"
+                            android:layout_width="56dp"
+                            android:layout_height="56dp"
+                            app:cardCornerRadius="28dp"
                             app:cardElevation="0dp"
-                            app:cardBackgroundColor="#F3F4F6">
-                            <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:gravity="center"
-                                android:text="⚙️"
-                                android:textSize="24sp" />
+                            app:cardBackgroundColor="@color/primary_light">
+                            <ImageView
+                                android:layout_width="32dp"
+                                android:layout_height="32dp"
+                                android:layout_gravity="center"
+                                android:src="@drawable/ic_settings"
+                                app:tint="@color/primary" />
                         </com.google.android.material.card.MaterialCardView>
                         <TextView
                             android:layout_width="wrap_content"

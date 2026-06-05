@@ -18,9 +18,9 @@
                 android:id="@+id/toolbarClasses"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:background="@color/primary"
+                android:background="@color/bg_light"
                 app:title="Danh sách lớp học"
-                app:titleTextColor="#FFFFFF" />
+                app:titleTextColor="@color/text_primary" />
         </com.google.android.material.appbar.AppBarLayout>
 
         <androidx.recyclerview.widget.RecyclerView

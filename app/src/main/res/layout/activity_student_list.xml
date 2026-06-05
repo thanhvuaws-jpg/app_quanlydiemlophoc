@@ -10,13 +10,13 @@
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbarStudents"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@color/primary"
-            app:titleTextColor="#FFFFFF"
-            app:navigationIconTint="#FFFFFF" />
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbarStudents"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="@color/bg_light"
+                app:titleTextColor="@color/text_primary"
+                app:navigationIconTint="@color/text_primary" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <LinearLayout

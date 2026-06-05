@@ -12,42 +12,42 @@
 
     <!-- Outlined TextInput style with rounded corners -->
     <style name="Widget.App.TextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-        <item name="boxCornerRadiusTopStart">12dp</item>
-        <item name="boxCornerRadiusTopEnd">12dp</item>
-        <item name="boxCornerRadiusBottomStart">12dp</item>
-        <item name="boxCornerRadiusBottomEnd">12dp</item>
+        <item name="boxCornerRadiusTopStart">16dp</item>
+        <item name="boxCornerRadiusTopEnd">16dp</item>
+        <item name="boxCornerRadiusBottomStart">16dp</item>
+        <item name="boxCornerRadiusBottomEnd">16dp</item>
         <item name="boxStrokeColor">@color/primary</item>
         <item name="boxStrokeWidth">1.5dp</item>
         <item name="hintTextColor">@color/primary</item>
-        <item name="android:layout_marginBottom">12dp</item>
+        <item name="android:layout_marginBottom">16dp</item>
     </style>
 
     <!-- Styled Material Button -->
     <style name="Widget.App.Button" parent="Widget.MaterialComponents.Button">
-        <item name="cornerRadius">24dp</item>
+        <item name="cornerRadius">16dp</item>
         <item name="android:insetTop">0dp</item>
         <item name="android:insetBottom">0dp</item>
         <item name="android:textAllCaps">false</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:textSize">15sp</item>
+        <item name="android:textSize">16sp</item>
         <item name="android:layout_marginBottom">8dp</item>
-        <item name="android:paddingTop">12dp</item>
+        <item name="android:paddingTop">14dp</item>
         <item name="android:paddingBottom">12dp</item>
     </style>
 
     <!-- Styled Outlined Button -->
     <style name="Widget.App.Button.Outlined" parent="Widget.MaterialComponents.Button.OutlinedButton">
-        <item name="cornerRadius">24dp</item>
+        <item name="cornerRadius">16dp</item>
         <item name="android:insetTop">0dp</item>
         <item name="android:insetBottom">0dp</item>
         <item name="android:textAllCaps">false</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:textSize">15sp</item>
+        <item name="android:textSize">16sp</item>
         <item name="android:layout_marginBottom">8dp</item>
         <item name="strokeColor">@color/primary</item>
         <item name="strokeWidth">1.5dp</item>
         <item name="android:textColor">@color/primary</item>
-        <item name="android:paddingTop">12dp</item>
+        <item name="android:paddingTop">14dp</item>
         <item name="android:paddingBottom">12dp</item>
     </style>
 
@@ -62,8 +62,8 @@
     </style>
 
     <style name="BottomSheetShapeAppearance" parent="ShapeAppearance.MaterialComponents.LargeComponent">
-        <item name="cornerSizeTopLeft">24dp</item>
-        <item name="cornerSizeTopRight">24dp</item>
+        <item name="cornerSizeTopLeft">32dp</item>
+        <item name="cornerSizeTopRight">32dp</item>
         <item name="cornerSizeBottomLeft">0dp</item>
         <item name="cornerSizeBottomRight">0dp</item>
     </style>

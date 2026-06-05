@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.Toast;
+import android.widget.TextView;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import android.widget.EditText;
 import android.widget.AutoCompleteTextView;
 import android.widget.ArrayAdapter;
@@ -95,10 +97,12 @@ public class ClassListActivity extends BaseActivity {
         actvYear.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, years));
         actvYear.setText(years[0], false);
 
-        new AlertDialog.Builder(this)
-            .setTitle("Thêm lớp học mới")
-            .setView(view)
-            .setPositiveButton("Lưu", (d, w) -> {
+        BottomSheetDialog dialog = new BottomSheetDialog(this, R.style.BottomSheetDialogTheme);
+        dialog.setContentView(view);
+        TextView tvTitle = view.findViewById(R.id.tvDialogTitle);
+        if (tvTitle != null) tvTitle.setText("Thêm lớp học mới");
+        
+        view.findViewById(R.id.btnSaveClass).setOnClickListener(DebounceClickListener.wrap(v -> {
                 String name = edtClassName.getText().toString().trim();
                 String subject = edtSubject.getText().toString().trim();
                 String year = actvYear.getText() != null ? actvYear.getText().toString().trim() : years[0];
@@ -107,10 +111,10 @@ public class ClassListActivity extends BaseActivity {
                 SchoolClass cls = new SchoolClass(prefs.getCurrentUserId(), name, subject, year);
                 classDAO.insert(cls);
                 loadClasses();
+                dialog.dismiss();
                 Toast.makeText(this, "Đã thêm lớp " + name, Toast.LENGTH_SHORT).show();
-            })
-            .setNegativeButton("Hủy", null)
-            .show();
+        }));
+        dialog.show();
     }
 
     private void showEditClassDialog(SchoolClass cls) {
@@ -125,19 +129,21 @@ public class ClassListActivity extends BaseActivity {
         actvYear.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, years));
         actvYear.setText(cls.getSchoolYear(), false);
 
-        new AlertDialog.Builder(this)
-            .setTitle("Chỉnh sửa lớp học")
-            .setView(view)
-            .setPositiveButton("Lưu", (d, w) -> {
+        BottomSheetDialog dialog = new BottomSheetDialog(this, R.style.BottomSheetDialogTheme);
+        dialog.setContentView(view);
+        TextView tvTitle = view.findViewById(R.id.tvDialogTitle);
+        if (tvTitle != null) tvTitle.setText("Chỉnh sửa lớp học");
+
+        view.findViewById(R.id.btnSaveClass).setOnClickListener(DebounceClickListener.wrap(v -> {
                 cls.setClassName(edtClassName.getText().toString().trim());
                 cls.setSubject(edtSubject.getText().toString().trim());
                 if (actvYear.getText() != null) cls.setSchoolYear(actvYear.getText().toString().trim());
                 classDAO.update(cls);
                 loadClasses();
+                dialog.dismiss();
                 Toast.makeText(this, "Đã cập nhật", Toast.LENGTH_SHORT).show();
-            })
-            .setNegativeButton("Hủy", null)
-            .show();
+        }));
+        dialog.show();
     }
 
     private void confirmDeleteClass(SchoolClass cls) {

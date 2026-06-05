@@ -1,7 +1,7 @@
 <resources>
     <!-- App & General -->
-    <string name="app_name">GPA Tracker</string>
-    <string name="app_title">Sổ tay GPA VAA</string>
+    <string name="app_name">TeacherPro</string>
+    <string name="app_title">Sổ Điểm Giáo Viên</string>
     <string name="save">Lưu</string>
     <string name="cancel">Hủy</string>
     <string name="edit">Sửa</string>
@@ -12,7 +12,7 @@
     <string name="error">Lỗi</string>
     
     <!-- Login & Register -->
-    <string name="login_title">Đăng nhập hệ thống quản lý điểm VAA</string>
+    <string name="login_title">Đăng nhập TeacherPro</string>
     <string name="login_button">Đăng nhập</string>
     <string name="register_title">Tạo tài khoản mới</string>
     <string name="register_button">Đăng ký</string>
@@ -177,8 +177,8 @@
     <string name="predict_desc">Ước lượng điểm tương lai</string>
     <string name="import_export_desc">Sao lưu điểm ra file CSV</string>
     <string name="settings_desc">Thiết lập tài khoản &amp; giao diện</string>
-    <string name="gpa_chart_title">📈  Biểu đồ tiến trình GPA</string>
-    <string name="scholarship_evaluation">Đánh giá học bổng VAA</string>
+    <string name="gpa_chart_title">📈  Biểu đồ lớp học</string>
+    <string name="scholarship_evaluation">Đánh giá chung</string>
     <string name="scholarship_unclassified">Chưa xếp loại học bổng</string>
     <string name="scholarship_hint_default">Cần GPA 3.20 để đạt học bổng Giỏi</string>
     <string name="estimated_tuition_cumulative">Học phí ước tính tích lũy</string>
@@ -202,8 +202,8 @@
     <string name="stats_by_semester">Thống kê theo từng Học kỳ</string>
 
     <string name="loading_processing">Đang xử lý...</string>
-    <string name="gpa_card_footer">Được tạo bởi ứng dụng Sổ tay GPA VAA</string>
-    <string name="vaa_name">HỌC VIỆN HÀNG KHÔNG VIỆT NAM</string>
+    <string name="gpa_card_footer">Được tạo bởi ứng dụng TeacherPro</string>
+    <string name="vaa_name">ỨNG DỤNG QUẢN LÝ LỚP HỌC &amp; ĐIỂM SỐ</string>
     <string name="gpa_card_title">BẢNG VÀNG THÀNH TÍCH</string>
     <string name="student_id_label">Mã sinh viên: %s</string>
     <string name="gpa_cumulative_4_label">GPA TÍCH LŨY (HỆ 4)</string>

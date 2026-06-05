@@ -4,16 +4,16 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="20dp">
+    android:padding="24dp">
 
     <View android:layout_width="40dp" android:layout_height="4dp"
-        android:layout_gravity="center_horizontal" android:layout_marginBottom="16dp"
+        android:layout_gravity="center_horizontal" android:layout_marginBottom="24dp"
         android:background="#CBD5E1" />
 
     <TextView android:id="@+id/tvDialogTitle"
         android:layout_width="wrap_content" android:layout_height="wrap_content"
-        android:text="Nhập điểm" android:textSize="16sp" android:textStyle="bold"
-        android:textColor="@color/text_primary" android:layout_marginBottom="16dp" />
+        android:text="Nhập Điểm" android:textSize="18sp" android:textStyle="bold"
+        android:textColor="@color/text_primary" android:layout_marginBottom="20dp" />
 
     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
         android:orientation="horizontal" android:weightSum="2">
@@ -97,14 +97,14 @@
         app:cardCornerRadius="10dp" app:cardElevation="0dp"
         app:cardBackgroundColor="#EEF2FF" app:strokeWidth="0dp">
         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:orientation="horizontal" android:padding="12dp" android:gravity="center_vertical">
+            android:orientation="horizontal" android:padding="16dp" android:gravity="center_vertical">
             <TextView android:layout_width="0dp" android:layout_height="wrap_content"
                 android:layout_weight="1" android:text="Điểm tổng kết:"
-                android:textSize="13sp" android:textColor="#4F46E5" />
+                android:textSize="14sp" android:textColor="@color/primary" />
             <TextView android:id="@+id/tvScorePreview"
                 android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:text="--" android:textSize="22sp" android:textStyle="bold"
-                android:textColor="#4F46E5" />
+                android:text="--" android:textSize="24sp" android:textStyle="bold"
+                android:textColor="@color/primary" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
@@ -112,5 +112,6 @@
         android:id="@+id/btnSaveScore"
         style="@style/Widget.App.Button"
         android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:text="Lưu điểm" />
 </LinearLayout>
