@@ -19,6 +19,7 @@ import vn.edu.vaa.classmanagerdemo.database.ClassDAO;
 import vn.edu.vaa.classmanagerdemo.models.SchoolClass;
 import vn.edu.vaa.classmanagerdemo.storage.AppPreferenceManager;
 import vn.edu.vaa.classmanagerdemo.utils.NavigationHelper;
+import vn.edu.vaa.classmanagerdemo.utils.DemoDataSeeder;
 
 public class MainActivity extends BaseActivity {
     private AppPreferenceManager prefs;
@@ -51,6 +52,7 @@ public class MainActivity extends BaseActivity {
         super.onResume();
         if (prefs != null && prefs.isLoggedIn()) {
             renderUserInfo();
+            DemoDataSeeder.seedDemoDataIfEmpty(this, prefs.getCurrentUserId());
             loadStats();
             NavigationHelper.setupBottomNavigation(this, R.id.nav_home);
         }
